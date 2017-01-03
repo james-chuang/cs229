@@ -1,0 +1,163 @@
+---
+output:
+  html_document:
+    toc: TRUE
+    fig_width: 4.5
+    css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
+---
+
+My notes on CS229 lecture notes 1 by Andrew Ng
+
+## **Supervised learning**
+Notation:
+
+  - $x^{(i)} \rightarrow$ input variables, aka ***features***.
+  - $y^{(i)} \rightarrow$ output variables, aka the ***target***.
+  - $\left(x^{(i)}, y^{(i)} \right) \rightarrow$  ***training example***.
+  - $\left\{\left(x^{(i)}, y^{(i)} \right); i=1,\dots,m \right\} \rightarrow$ ***training set***, a list of $m$ training examples
+  - $\mathcal{X} \rightarrow$ the space of input values
+  - $\mathcal{Y} \rightarrow$ the space of output values
+  
+The goal of supervised learning: Given a training set, learn a ***'hypothesis'*** function $h: \mathcal{X} \mapsto \mathcal{Y}$ such that $h(x)$ is a "good" predictor for the corresponding value of $y$.
+
+- Continuous targets $\rightarrow$ ***regression***.
+- Discrete targets $\rightarrow$ ***classification***.
+
+## **Linear Regression**
+Linear model: $h(x) = \sum_{i=0}^n \theta_i x_i = \theta^T x$, where $x_0 = 1$ to account for an intercept.
+
+Cost function (squared error loss):
+$$
+\begin{align}
+J(\theta) & = \frac{1}{2}\sum_{i=1}^m \left(h_\theta \left(x^{(i)}\right) - \left(y^{(i)}\right) \right)^2 \\
+          & = \frac{1}{2} \left(\mathbf{X}\theta-y \right)^T \left(\mathbf{X}\theta-y \right)
+\end{align}
+$$
+
+
+Minimize cost function using ***gradient descent***. The update rule: $\theta_j \gets \theta_j-\alpha \frac{\partial}{\partial \theta_j}J(\theta)$, i.e. $\mathbf{\theta} \gets \mathbf{\theta} - \alpha \nabla_\theta J(\theta)$.
+
+Calculate $\frac{\partial}{\partial \theta_j}J(\theta)$:
+$$
+\begin{align}
+\frac{\partial}{\partial \theta_j}J(\theta) & = \frac{\partial}{\partial \theta_j} \frac{1}{2} \left(h_\theta(x)-y \right)^2 \\
+                                            & = 2 \cdot \frac{1}{2} \left(h_\theta(x)-y\right) \cdot \frac{\partial}{\partial\theta_j}\left(h_\theta(x)-y\right) \\
+                                            & = \left(h_\theta(x)-y\right) \cdot \frac{\partial}{\partial \theta_j} \left(\mathbf{\theta}^T\mathbf{x} - y\right) \\
+                                            & = \left(h_\theta(x)-y\right)x_j
+\end{align}
+$$
+
+Therefore, the update rule is: $\theta \gets \theta + \alpha\left(y^{(i)} - h_\theta\left(x^{(i)} \right) \right)x_j^{(i)}$. This is the ***LMS*** (least mean square) update rule, aka the ***Widrow-Hoff*** learning rule. Note that the magnitude of the update is proportional to the error term.
+
+- ***Batch gradient descent***- use every example in the training set to estimate the gradient
+- ***Stochastic gradient descent***- use a subset (minibatch) of the training set to estimate the gradient
+
+## ***The normal equations***
+In the case of squared error loss, can analytically solve for the minimum instead of resorting to an iterative, numerical algorithm.
+
+### ***Some properties of matrix derivatives***
+$\nabla_A \text{tr}AB = B^T$:
+  - For $A \in \mathbb{R}^{m \times n}, B \in \mathbb{R}^{n \times m}$
+  
+$$
+\begin{align}
+                  AB & =  \begin{bmatrix}
+                          - & a_1^T   & - \\
+                          - & a_2^T   & - \\
+                            & \vdots  &   \\
+                          - & a_m^T   & - 
+                          \end{bmatrix}
+                          \begin{bmatrix}
+                          \mid  & \mid  &         & \mid  \\
+                          b_1   & b_2   & \cdots  & b_m   \\
+                          \mid  & \mid  &         & \mid
+                          \end{bmatrix} \\
+\text{tr}AB           & = \sum_{i=1}^m a_i^T b_i \\
+\text{tr}AB           & = \sum_{i=1}^m \sum_{j=1}^n A_{i,j}B_{j,i} \\
+\nabla_A \text{tr}AB  & = \begin{bmatrix}
+                          B_{1,1} & B_{2,1} & \cdots  & B_{n,1} \\
+                          B_{1,2} & B_{2,2} & \cdots  & B_{n,2} \\
+                          \vdots  & \vdots  & \ddots  & \vdots  \\
+                          B_{1,m} & B_{2,m} & \cdots  & B_{n,m}
+                          \end{bmatrix} \\
+\nabla_A \text{tr}AB  & = B^T                          
+\end{align}
+$$
+
+$\nabla_{A^T}f(A) = \left(\nabla_Af(A) \right)^T$:
+
+$$
+\begin{align}
+\nabla_{A^T}f(A) & =  \begin{bmatrix}
+                      \frac{\partial f}{\partial A_{1,1}} & \frac{\partial f}{\partial A_{2,1}} & \cdots  & \frac{\partial f}{\partial A_{m,1}} \\
+                      \frac{\partial f}{\partial A_{1,2}} & \frac{\partial f}{\partial A_{2,2}} & \cdots  & \frac{\partial f}{\partial A_{m,2}} \\
+                      \vdots                              & \vdots                              & \ddots  & \vdots                              \\
+                      \frac{\partial f}{\partial A_{1,n}} & \frac{\partial f}{\partial A_{2,n}} & \cdots  & \frac{\partial f}{\partial A_{n,m}}
+                      \end{bmatrix} \\
+                  & = \begin{bmatrix}
+                      \frac{\partial f}{\partial A_{1,1}} & \frac{\partial f}{\partial A_{1,2}} & \cdots  & \frac{\partial f}{\partial A_{1,n}} \\
+                      \frac{\partial f}{\partial A_{2,1}} & \frac{\partial f}{\partial A_{2,2}} & \cdots  & \frac{\partial f}{\partial A_{2,n}} \\
+                      \vdots                              & \vdots                              & \ddots  & \vdots                              \\
+                      \frac{\partial f}{\partial A_{m,1}} & \frac{\partial f}{\partial A_{m,2}} & \cdots  & \frac{\partial f}{\partial A_{m,n}}
+                      \end{bmatrix}^T \\
+                  & = \left(\nabla_A f(A) \right)^T
+\end{align}
+$$
+$\nabla_A \text{tr}ABA^TC = CAB + C^TAB^T$:
+
+$$
+\begin{align}
+\nabla_A \text{tr}ABA^TC & = 
+\end{align}
+$$
+Calculate $\nabla_\theta J(\theta)$:
+$$
+\begin{align}
+\nabla_\theta J(\theta) & = \nabla_\theta\left[\frac{1}{2} \left(\mathbf{X\theta} - \mathbf{y} \right)^T\left(\mathbf{X\theta} - \mathbf{y} \right) \right]\\
+          & = \frac{1}{2}\nabla_\theta\left[\left(\mathbf{X\theta} \right)^T\left(\mathbf{X\theta} \right) - \left(\mathbf{X\theta}\right)^T\mathbf{y} - \mathbf{y}^T(\mathbf{X\theta}) + \mathbf{y}^T \mathbf{y} \right] \\
+          & = \frac{1}{2}\nabla_\theta\left[ \mathbf{\theta}^T\mathbf{X}^T\mathbf{X\theta} - 2\mathbf{y}^T\mathbf{X\theta} + \mathbf{y}^T\mathbf{y} \right]\\
+          & = \frac{1}{2}\left[2\mathbf{X}^T\mathbf{X\theta} - 2\mathbf{X}^T\mathbf{y} \right] \\
+          & = \mathbf{X}^T\mathbf{X\theta} - \mathbf{X}^T\mathbf{y}
+\end{align}
+$$
+
+To minimize $J$, set the derivatives to zero to get the ***normal equations***
+$$
+\begin{align}
+\mathbf{X}^T\mathbf{X\theta} - \mathbf{X}^T\mathbf{y} & = 0 \\
+\mathbf{X}^T\mathbf{X\theta} & = \mathbf{X}^T\mathbf{y} \\
+\mathbf{\theta} & = \left(\mathbf{X}^T\mathbf{X} \right)^{-1} \mathbf{X}^T\mathbf{y}
+\end{align}
+$$
+
+## ***Probabilistic interpretation***
+The least squares cost function is a reasonable choice because it is the ***maximum likelihood estimator***, assuming that the target is linearly related to the inputs, with Gaussian noise arising from unmodeled effects or random noise:
+$$
+y^{(i)} = \theta^T x^{(i)} + \epsilon^{(i)}
+$$
+
+Assume the $\epsilon^{(i)}$ are ***IID (independent and identically distributed)*** and $\epsilon^{(i)} \sim \mathcal{N}(0, \sigma^2)$. Then the density of $\epsilon^{(i)}$ is given by
+$$
+\begin{align}
+p(\epsilon^{(i)})           & = \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left(\frac{-\left( e^{(i)} \right)^2}{2\sigma^2}\right) \\
+p(y^{(i)}|x^{(i)}; \theta)  & = \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left(\frac{- \left(y^{(i)} - \theta^Tx^{(i)} \right)^2}{2\sigma^2} \right)
+\end{align}
+$$
+
+***Likelihood*** function:
+$$
+\begin{align}
+L(\theta) & = L(\theta; \mathbf{X},\mathbf{y}) = p(\mathbf{y} \mid \mathbf{X}; \mathbf{\theta}) \\
+          & = \prod_{i=1}^m p\left(y^{(i)} \mid x^{(i)}; \theta \right) & \text{data points are independent}\\
+          & = \prod_{i=1}^m \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left(\frac{- \left(y^{(i)} - \theta^Tx^{(i)} \right)^2}{2\sigma^2} \right) \\
+\ell(\theta) & = \log \prod_{i=1}^m \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left(\frac{- \left(y^{(i)} - \theta^Tx^{(i)} \right)^2}{2\sigma^2} \right)  & \text{>>>>>>} \\
+          & = \sum_{i=1}^m \log \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left(\frac{- \left(y^{(i)} - \theta^Tx^{(i)} \right)^2}{2\sigma^2} \right) \\
+          & = m \log \frac{1}{\sqrt{2\pi\sigma^2}} - \frac{1}{\sigma^2} \cdot \frac{1}{2} \sum_{i=1}^m \left(y^{(i)} - \theta^Tx^{(i)} \right)^2
+\end{align}
+$$
+
+The only term dependent on $\theta$ is the rightmost term. Therefore,
+$$
+\underset{\theta}{\text{argmax}} \ell (\theta) = \underset{\theta}{\text{argmax}} -\frac{1}{2} \sum_{i=1}^m \left(y^{(i)} - \theta^Tx^{(i)} \right)^2 = \underset{\theta}{\text{argmin}} \frac{1}{2} \sum_{i=1}^m \left(y^{(i)} - \theta^Tx^{(i)} \right)^2 = \underset{\theta}{\text{argmin}}J(\theta)
+$$
+. I.e., maximizing $\ell(\theta)$ is equivalent to minimizing the least-squares cost function.
