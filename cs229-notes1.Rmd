@@ -8,7 +8,7 @@ output:
 
 My notes on CS229 lecture notes 1 by Andrew Ng
 
-## **Supervised learning**
+# **Supervised learning**
 Notation:
 
   - $x^{(i)} \rightarrow$ input variables, aka ***features***.
@@ -52,10 +52,10 @@ Therefore, the update rule is: $\theta \gets \theta + \alpha\left(y^{(i)} - h_\t
 - ***Batch gradient descent***- use every example in the training set to estimate the gradient
 - ***Stochastic gradient descent***- use a subset (minibatch) of the training set to estimate the gradient
 
-## ***The normal equations***
+## **The normal equations**
 In the case of squared error loss, can analytically solve for the minimum instead of resorting to an iterative, numerical algorithm.
 
-### ***Some properties of matrix derivatives***
+### **Some properties of matrix derivatives**
 $\nabla_A \text{tr}AB = B^T$:
   - For $A \in \mathbb{R}^{m \times n}, B \in \mathbb{R}^{n \times m}$
   
@@ -130,7 +130,7 @@ $$
 \end{align}
 $$
 
-## ***Probabilistic interpretation***
+## **Probabilistic interpretation**
 The least squares cost function is a reasonable choice because it is the ***maximum likelihood estimator***, assuming that the target is linearly related to the inputs, with Gaussian noise arising from unmodeled effects or random noise:
 $$
 y^{(i)} = \theta^T x^{(i)} + \epsilon^{(i)}
@@ -161,3 +161,189 @@ $$
 \underset{\theta}{\text{argmax}} \ell (\theta) = \underset{\theta}{\text{argmax}} -\frac{1}{2} \sum_{i=1}^m \left(y^{(i)} - \theta^Tx^{(i)} \right)^2 = \underset{\theta}{\text{argmin}} \frac{1}{2} \sum_{i=1}^m \left(y^{(i)} - \theta^Tx^{(i)} \right)^2 = \underset{\theta}{\text{argmin}}J(\theta)
 $$
 . I.e., maximizing $\ell(\theta)$ is equivalent to minimizing the least-squares cost function.
+
+## **Locally weighted linear regression**
+Simple linear regression algorithm:
+
+  - Fit $\theta$ to minimize $\sum_i\left(y^{(i)}-\theta^Tx^{(i)} \right)^2$.
+  - Output $\theta^Tx$.
+
+Locally weighted linear regression algorithm:
+
+  - Fit $\theta$ to minimize $\sum_i w^{(i)}\left(y^{(i)}-\theta^Tx^{(i)} \right)^2$.
+  - Output $\theta^Tx$.
+  
+The $w^{(i)}$ are non-negative valued ***weights***. A standard choice for the weights is
+$$
+w^{(i)} = \exp \left(-\frac{\left(x^{(i)}-x\right)^2}{2\tau^2} \right)
+$$
+
+, where $\tau$ is the ***bandwidth*** parameter controlling how quickly the weight drops off with distance from a training example. Note that if the distance to the training example is small, $w^{(i)} \rightarrow e^{0}=1$ and when the distance is large, $w^{(i)} \rightarrow e^{-\infty} \approx 0$. Locally weighted linear regression is a ***non-parametric*** algorithm, because it needs the entire training set in order to calculate distances for weights when predicting values for new points. In contrast, unweighted linear regression is ***parametric***, since once the parameters $\theta$ are learned from the training set, the training set is no longer needed for prediction.
+
+# **Classification and logistic regression**
+Start with ***binary classification***, where $y$ can take on two values, $0$ or $1$, aka the ***negative class (-)*** and the ***positive class (+)***. The $y^{(i)}$ corresponding to a training example $x^{(i)}$ is also called its ***label***.
+
+## **Logistic Regression**
+Classification by linear regression runs into the problem that $h_\theta(x)$ can return values outside of $[0,1]$, which cannot be interpreted as valid probabilities. This can be addressed by squashing the $h_\theta(x)$ into the range $(0,1)$ using the ***logistic*** aka ***sigmoid*** function $g(z)$ such that:
+$$
+h_\theta(x) = g(\theta^Tx) = \frac{1}{1+e^{-\theta^Tx}}, \quad \text{where } g(z) = \frac{1}{1+e^{-z}}
+$$
+
+```{r, echo=FALSE, fig.align='center', fig.asp=.6, fig.width = 4}
+library(tibble)
+library(ggplot2)
+z = seq(-5,5,0.1)
+g = 1/(1+exp(-z))
+plotdata = as_data_frame(cbind(z,g))
+
+(plot1 = ggplot(data = plotdata, aes(x=z,y=g)) +
+          geom_line())
+```
+
+As $z \rightarrow \infty$, $g \rightarrow 1$. As $z \rightarrow -\infty$, $g \rightarrow 0$.
+
+The derivative of the logistic sigmoid:
+$$
+\begin{align}
+g^\prime (z)  & = \frac{d}{dz} \frac{1}{1+e^{-z}} \\
+              & = \frac{-1}{\left(1+e^{-z} \right)^2} \left(-e^{-z} \right) \\
+              & = \frac{1}{1+e^{-z}} \left(1- \frac{1}{\left(1+e^{-z} \right)} \right) ???????????????\\
+              & = g(z) \left(1-g(z) \right)
+\end{align}
+$$
+
+Fitting for $\theta$ by maximum likelihood:
+Assume that:
+$$
+\begin{align}
+P(y=1 \mid x; \theta) & = h_\theta(x)   \\
+P(y=0 \mid x; \theta) & = 1-h_\theta(x)
+\end{align}
+$$
+i.e.,
+$$
+p(y \mid x; \theta) = \left(h_\theta(x) \right)^y \left(1-h_\theta(x) \right)^{1-y}
+$$
+Likelihood function, assuming $m$ independent training examples:
+$$
+\begin{align}
+L(\theta) & = p(\mathbf{y} \mid \mathbf{X}; \theta) \\
+          & = \prod_{i=1}^m p\left(y^{(i)} \mid x^{(i)}; \theta \right) \\
+          & = \prod_{i=1}^m \left(h_\theta \left(x^{(i)}\right) \right)^{y^{(i)}} \left(1-h_\theta\left(x^{(i)}\right) \right)^{1-y^{(i)}} \\
+\ell(\theta) & = \sum_{i=1}^m y^{(i)} \log h_\theta \left(x^{(i)} \right) + \left(1-y^{(i)} \right) \log \left(1-h_\theta \left(x^{(i)} \right)\right)
+\end{align}
+$$
+
+Maximize the log-likehood $\ell(\theta)$ by gradient ascent with the update rule $\theta \gets \theta + \alpha \nabla_\theta \ell(\theta)$. For one training example:
+$$
+\begin{align}
+\frac{d}{d\theta_j} \ell(\theta)  & = \frac{d}{d\theta_j} \left[ y \log h_\theta(x) + (1-y) \log (1-h(x)) \right] \\
+                                  & = y \frac{1}{g(\theta^Tx)} \frac{dg}{d\theta_j} - (1-y)\frac{1}{1-g(\theta^Tx)} \frac{dg}{d\theta_j} \\
+                                  & = \left(y \frac{1}{g(\theta^Tx)} - (1-y)\frac{1}{1-g(\theta^Tx)}\right) \frac{d}{d\theta_j} g(\theta^Tx) \\
+                                  & = \left(y \frac{1}{g(\theta^Tx)} - (1-y)\frac{1}{1-g(\theta^Tx)}\right) g(\theta^Tx)\left(1-g(\theta^Tx) \right) \frac{d}{d_{\theta_j}} \theta^Tx \\
+                                  & = \left(y\left(1-g(\theta^Tx)\right)- \left(1-y \right)g(\theta^Tx) \right) x_j \\
+                                  & = \left(y-h_\theta(x) \right)x_j
+\end{align}
+$$
+Therefore, the stochastic gradient ascent rule is:
+$$
+\theta_j \gets \theta_j + \alpha \left(y^{(i)}-h_\theta(x^{\left(i\right)}) \right)x_j^{(i)}
+$$
+This looks identical to the LMS update rule, but is not the same because $h_\theta(x^{(i)})$ is a non-linear function of $\theta^Tx^{(i)}$.
+
+## **Digression: The perceptron learning algorithm**
+Consider modifying logistic regression such that it outputs $0$ or $1$ exactly. This can be done by changing $g$ to be the threshold function:
+$$
+g(z) = \begin{cases}
+        1 & \text{if } z \geq 0 \\
+        0 & \text{if } z < 0
+        \end{cases}
+$$
+Letting $h_\theta(x) = g(\theta^Tx)$ with this modified $g$, and using the update rule
+$$
+\theta_j \gets \theta_j + \alpha \left(y^{(i)}-h_\theta \left(x^{(i)} \right) \right) x_j^{(i)}
+$$
+give the ***perceptron learning algorithm***.
+
+## **Another algorithm for maximizing $\ell(\theta)$**
+
+Consider Newton's method for finding a zero of a function, i.e. suppose a function $f : \mathbb{R} \mapsto \mathbb{R}$, and we want to find a value $\theta$ such that $f(\theta)=0$.
+
+$$
+\begin{align}
+y & = f^\prime(\theta_{n}) \left(\theta_{n+1}- \theta_n \right) + f(\theta_n) & \text{first order (linear) Taylor approx. about }\theta_n \\
+0 & = f^\prime(\theta_{n}) \left(\theta_{n+1}- \theta_n \right) + f(\theta_n) & \text{solve for where linear approx. = 0} \\
+f^\prime(\theta_{n}) \left(\theta_{n+1}- \theta_n \right) & = -f(\theta_n) \\
+\theta_{n+1}- \theta_n  & = - \frac{f(\theta_n)}{f^\prime(\theta_n)} \\
+\theta_{n+1} & = \theta_n - \frac{f(\theta_n)}{f^\prime(\theta_n)} & \text{update rule for Newton's method}
+\end{align}
+$$
+
+What if we wanted to use this method to maximize a function $\ell$? The maxima of $\ell$ are the zeros of the first derivative $\ell^\prime \left(\theta \right)$. Therefore, we can let $f(\theta) = \ell^\prime(\theta)$ and use the same algorithm to maximize $\ell$. The update rule is then:
+$$
+\theta \gets \theta - \frac{\ell^\prime(\theta)}{\ell^{\prime\prime}(\theta)}
+$$
+
+Newton's method generalized to the multidimensional setting, aka the ***Newton-Raphson method***:
+$$
+\theta \gets \theta - H^{-1} \nabla_\theta \ell(\theta)
+$$
+, where $H$ is the ***Hessian***.
+
+Newton's method typically converges faster than batch gradient descent and requires fewer iterations to get close to the minimum (because it takes curvature into account). One iteration of Newton's can, however, be more expensive than one iteration of gradient descent since it requires finding and inverting an $n by n$ Hessian; but so long as $n$ is not too large, it is usually much faster overall. Newton's method applied to maximizing the logistic regression log likelihood function $\ell(\theta)$ is called ***Fisher scoring***.
+
+# **Generalized Linear Models**
+The regression example with $y \mid x; \theta \sim \mathcal{N}(\mu, \sigma^2)$, and the classification example with $y \mid x ; \theta \sim \text{Bernoulli}(\phi)$ are special cases of ***Genearlized Linear Models (GLMs)***. Other models in the GLM family can be applied to classification and regression.
+
+## **The exponential family**
+A class of distributions is in the exponential family if it can be witten in the form
+$$
+p(y;\eta) = b(y) \exp(\eta^TT(y)-a(\eta))
+$$
+
+- $\eta \rightarrow$ the ***natural parameter***, aka the ***canonical parameter***
+- $T(y) \rightarrow$ the ***sufficient statistic*** (often, $T(y)=y$)
+- $a(\eta) \rightarrow$ the ***log partition function***. The $e^{-a(\eta)}$ term normalizes the distribution such that it sums/integrates to $1$.
+
+A fixed choice of $T$, $a$, and $b$ defines *family* (set) of distributions parameterized by $\eta$.
+
+The Bernoulli and Gaussian distributions are exponential family distributions.
+
+The Bernoulli distribution:
+$$
+\begin{align} 
+p(y; \phi)  & = \phi^y \left(1-\phi \right)^{1-y} \\
+            & = \exp \left(y \log \theta + (1-y) \log (1-\phi) \right) \\
+            & = \exp \left(\left(\log\left(\frac{\phi}{1-\phi}\right) \right) y + \log (1-\phi) \right)
+\end{align}
+$$
+
+Therefore,
+$$
+\begin{align}
+\eta  & = \log\left(\frac{\phi}{1-\phi}\right)  & \overset{\text{invert}}{\longrightarrow} \phi & = \frac{1}{1+e^{-\eta}}\\
+T(y)  & = y \\
+a(\eta) & = -\log(1-\phi) \\
+        & = \log\left(1+e^\eta \right) \\
+b(y)    & = 1
+\end{align}
+$$
+
+The Gaussian distribution. The value of $\sigma^2$ has no effect on the choice of $\theta$ and $h_\theta(x)$. Thus, we can set $\sigma^2=1$ to simplify the derivation:
+$$
+\begin{align}
+p(y;\mu)  & = \frac{1}{\sqrt{2\pi}} \exp \left(- \frac{1}{2} \left(y-\mu \right)^2 \right) \\
+          & = \frac{1}{\sqrt{2\pi}} \exp \left(-\frac{1}{2} y^2 + \mu y - \frac{1}{2}\mu^2 \right) \\
+          & = \frac{1}{\sqrt{2\pi}} \exp \left(-\frac{1}{2} y^2 \right) \cdot \exp\left(\mu y - \frac{1}{2} \mu^2 \right)
+\end{align}
+$$
+Therefore,
+$$
+\begin{align}
+\eta & = \mu  \\
+T(y) & = y    \\
+a(\eta) & = \frac{\mu^2}{2} \\
+        & = \frac{\eta^2}{2} \\
+b(y)  & = \frac{1}{\sqrt{2\pi}}\exp\left(\frac{-y^2}{2}\right)
+\end{align}
+$$

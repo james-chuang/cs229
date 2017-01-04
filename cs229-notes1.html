@@ -121,18 +121,25 @@ $(document).ready(function () {
 
 <div id="TOC">
 <ul>
-<li><a href="#supervised-learning"><strong>Supervised learning</strong></a></li>
+<li><a href="#supervised-learning"><strong>Supervised learning</strong></a><ul>
 <li><a href="#linear-regression"><strong>Linear Regression</strong></a></li>
-<li><a href="#the-normal-equations"><strong><em>The normal equations</em></strong></a><ul>
-<li><a href="#some-properties-of-matrix-derivatives"><strong><em>Some properties of matrix derivatives</em></strong></a></li>
+<li><a href="#the-normal-equations"><strong>The normal equations</strong></a><ul>
+<li><a href="#some-properties-of-matrix-derivatives"><strong>Some properties of matrix derivatives</strong></a></li>
 </ul></li>
-<li><a href="#probabilistic-interpretation"><strong><em>Probabilistic interpretation</em></strong></a></li>
+<li><a href="#probabilistic-interpretation"><strong>Probabilistic interpretation</strong></a></li>
+<li><a href="#locally-weighted-linear-regression"><strong>Locally weighted linear regression</strong></a></li>
+</ul></li>
+<li><a href="#classification-and-logistic-regression"><strong>Classification and logistic regression</strong></a><ul>
+<li><a href="#logistic-regression"><strong>Logistic Regression</strong></a></li>
+<li><a href="#digression-the-perceptron-learning-algorithm"><strong>Digression: The perceptron learning algorithm</strong></a></li>
+<li><a href="#another-algorithm-for-maximizing-elltheta"><strong>Another algorithm for maximizing <span class="math inline">\(\ell(\theta)\)</span></strong></a></li>
+</ul></li>
 </ul>
 </div>
 
 <p>My notes on CS229 lecture notes 1 by Andrew Ng</p>
-<div id="supervised-learning" class="section level2">
-<h2><strong>Supervised learning</strong></h2>
+<div id="supervised-learning" class="section level1">
+<h1><strong>Supervised learning</strong></h1>
 <p>Notation:</p>
 <ul>
 <li><span class="math inline">\(x^{(i)} \rightarrow\)</span> input variables, aka <strong><em>features</em></strong>.</li>
@@ -147,7 +154,6 @@ $(document).ready(function () {
 <li>Continuous targets <span class="math inline">\(\rightarrow\)</span> <strong><em>regression</em></strong>.</li>
 <li>Discrete targets <span class="math inline">\(\rightarrow\)</span> <strong><em>classification</em></strong>.</li>
 </ul>
-</div>
 <div id="linear-regression" class="section level2">
 <h2><strong>Linear Regression</strong></h2>
 <p>Linear model: <span class="math inline">\(h(x) = \sum_{i=0}^n \theta_i x_i = \theta^T x\)</span>, where <span class="math inline">\(x_0 = 1\)</span> to account for an intercept.</p>
@@ -173,10 +179,10 @@ J(\theta) &amp; = \frac{1}{2}\sum_{i=1}^m \left(h_\theta \left(x^{(i)}\right) - 
 </ul>
 </div>
 <div id="the-normal-equations" class="section level2">
-<h2><strong><em>The normal equations</em></strong></h2>
+<h2><strong>The normal equations</strong></h2>
 <p>In the case of squared error loss, can analytically solve for the minimum instead of resorting to an iterative, numerical algorithm.</p>
 <div id="some-properties-of-matrix-derivatives" class="section level3">
-<h3><strong><em>Some properties of matrix derivatives</em></strong></h3>
+<h3><strong>Some properties of matrix derivatives</strong></h3>
 <p><span class="math inline">\(\nabla_A \text{tr}AB = B^T\)</span>: - For <span class="math inline">\(A \in \mathbb{R}^{m \times n}, B \in \mathbb{R}^{n \times m}\)</span></p>
 <p><span class="math display">\[
 \begin{align}
@@ -243,11 +249,119 @@ J(\theta) &amp; = \frac{1}{2}\sum_{i=1}^m \left(h_\theta \left(x^{(i)}\right) - 
 </div>
 </div>
 <div id="probabilistic-interpretation" class="section level2">
-<h2><strong><em>Probabilistic interpretation</em></strong></h2>
+<h2><strong>Probabilistic interpretation</strong></h2>
 <p>The least squares cost function is a reasonable choice because it is the <strong><em>maximum likelihood estimator</em></strong>, assuming that the target is linearly related to the inputs, with Gaussian noise arising from unmodeled effects or random noise: <span class="math display">\[
 y^{(i)} = \theta^T x^{(i)} + \epsilon^{(i)}
 \]</span></p>
-<p>Assume the <span class="math inline">\(\epsilon^{(i)}\)</span> are <strong><em>IID (independent and identically distributed)</em></strong> and <span class="math inline">\(\epsilon^{(i)} \sim \mathcal{N}(0, \sigma^2)\)</span>.</p>
+<p>Assume the <span class="math inline">\(\epsilon^{(i)}\)</span> are <strong><em>IID (independent and identically distributed)</em></strong> and <span class="math inline">\(\epsilon^{(i)} \sim \mathcal{N}(0, \sigma^2)\)</span>. Then the density of <span class="math inline">\(\epsilon^{(i)}\)</span> is given by <span class="math display">\[
+\begin{align}
+p(\epsilon^{(i)})           &amp; = \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left(\frac{-\left( e^{(i)} \right)^2}{2\sigma^2}\right) \\
+p(y^{(i)}|x^{(i)}; \theta)  &amp; = \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left(\frac{- \left(y^{(i)} - \theta^Tx^{(i)} \right)^2}{2\sigma^2} \right)
+\end{align}
+\]</span></p>
+<p><strong><em>Likelihood</em></strong> function: <span class="math display">\[
+\begin{align}
+L(\theta) &amp; = L(\theta; \mathbf{X},\mathbf{y}) = p(\mathbf{y} \mid \mathbf{X}; \mathbf{\theta}) \\
+          &amp; = \prod_{i=1}^m p\left(y^{(i)} \mid x^{(i)}; \theta \right) &amp; \text{data points are independent}\\
+          &amp; = \prod_{i=1}^m \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left(\frac{- \left(y^{(i)} - \theta^Tx^{(i)} \right)^2}{2\sigma^2} \right) \\
+\ell(\theta) &amp; = \log \prod_{i=1}^m \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left(\frac{- \left(y^{(i)} - \theta^Tx^{(i)} \right)^2}{2\sigma^2} \right)  &amp; \text{&gt;&gt;&gt;&gt;&gt;&gt;} \\
+          &amp; = \sum_{i=1}^m \log \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left(\frac{- \left(y^{(i)} - \theta^Tx^{(i)} \right)^2}{2\sigma^2} \right) \\
+          &amp; = m \log \frac{1}{\sqrt{2\pi\sigma^2}} - \frac{1}{\sigma^2} \cdot \frac{1}{2} \sum_{i=1}^m \left(y^{(i)} - \theta^Tx^{(i)} \right)^2
+\end{align}
+\]</span></p>
+<p>The only term dependent on <span class="math inline">\(\theta\)</span> is the rightmost term. Therefore, <span class="math display">\[
+\underset{\theta}{\text{argmax}} \ell (\theta) = \underset{\theta}{\text{argmax}} -\frac{1}{2} \sum_{i=1}^m \left(y^{(i)} - \theta^Tx^{(i)} \right)^2 = \underset{\theta}{\text{argmin}} \frac{1}{2} \sum_{i=1}^m \left(y^{(i)} - \theta^Tx^{(i)} \right)^2 = \underset{\theta}{\text{argmin}}J(\theta)
+\]</span> . I.e., maximizing <span class="math inline">\(\ell(\theta)\)</span> is equivalent to minimizing the least-squares cost function.</p>
+</div>
+<div id="locally-weighted-linear-regression" class="section level2">
+<h2><strong>Locally weighted linear regression</strong></h2>
+<p>Simple linear regression algorithm:</p>
+<ul>
+<li>Fit <span class="math inline">\(\theta\)</span> to minimize <span class="math inline">\(\sum_i\left(y^{(i)}-\theta^Tx^{(i)} \right)^2\)</span>.</li>
+<li>Output <span class="math inline">\(\theta^Tx\)</span>.</li>
+</ul>
+<p>Locally weighted linear regression algorithm:</p>
+<ul>
+<li>Fit <span class="math inline">\(\theta\)</span> to minimize <span class="math inline">\(\sum_i w^{(i)}\left(y^{(i)}-\theta^Tx^{(i)} \right)^2\)</span>.</li>
+<li>Output <span class="math inline">\(\theta^Tx\)</span>.</li>
+</ul>
+<p>The <span class="math inline">\(w^{(i)}\)</span> are non-negative valued <strong><em>weights</em></strong>. A standard choice for the weights is <span class="math display">\[
+w^{(i)} = \exp \left(-\frac{\left(x^{(i)}-x\right)^2}{2\tau^2} \right)
+\]</span></p>
+<p>, where <span class="math inline">\(\tau\)</span> is the <strong><em>bandwidth</em></strong> parameter controlling how quickly the weight drops off with distance from a training example. Note that if the distance to the training example is small, <span class="math inline">\(w^{(i)} \rightarrow e^{0}=1\)</span> and when the distance is large, <span class="math inline">\(w^{(i)} \rightarrow e^{-\infty} \approx 0\)</span>. Locally weighted linear regression is a <strong><em>non-parametric</em></strong> algorithm, because it needs the entire training set in order to calculate distances for weights when predicting values for new points. In contrast, unweighted linear regression is <strong><em>parametric</em></strong>, since once the parameters <span class="math inline">\(\theta\)</span> are learned from the training set, the training set is no longer needed for prediction.</p>
+</div>
+</div>
+<div id="classification-and-logistic-regression" class="section level1">
+<h1><strong>Classification and logistic regression</strong></h1>
+<p>Start with <strong><em>binary classification</em></strong>, where <span class="math inline">\(y\)</span> can take on two values, <span class="math inline">\(0\)</span> or <span class="math inline">\(1\)</span>, aka the <strong><em>negative class (-)</em></strong> and the <strong><em>positive class (+)</em></strong>. The <span class="math inline">\(y^{(i)}\)</span> corresponding to a training example <span class="math inline">\(x^{(i)}\)</span> is also called its <strong><em>label</em></strong>.</p>
+<div id="logistic-regression" class="section level2">
+<h2><strong>Logistic Regression</strong></h2>
+<p>Classification by linear regression runs into the problem that <span class="math inline">\(h_\theta(x)\)</span> can return values outside of <span class="math inline">\([0,1]\)</span>, which cannot be interpreted as valid probabilities. This can be addressed by squashing the <span class="math inline">\(h_\theta(x)\)</span> into the range <span class="math inline">\((0,1)\)</span> using the <strong><em>logistic</em></strong> aka <strong><em>sigmoid</em></strong> function <span class="math inline">\(g(z)\)</span> such that: <span class="math display">\[
+h_\theta(x) = g(\theta^Tx) = \frac{1}{1+e^{-\theta^Tx}}, \quad \text{where } g(z) = \frac{1}{1+e^{-z}}
+\]</span></p>
+<p><img src="data:image/png;base64,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" width="384" style="display: block; margin: auto;" /></p>
+<p>As <span class="math inline">\(z \rightarrow \infty\)</span>, <span class="math inline">\(g \rightarrow 1\)</span>. As <span class="math inline">\(z \rightarrow -\infty\)</span>, <span class="math inline">\(g \rightarrow 0\)</span>.</p>
+<p>The derivative of the logistic sigmoid: <span class="math display">\[
+\begin{align}
+g^\prime (z)  &amp; = \frac{d}{dz} \frac{1}{1+e^{-z}} \\
+              &amp; = \frac{-1}{\left(1+e^{-z} \right)^2} \left(-e^{-z} \right) \\
+              &amp; = \frac{1}{1+e^{-z}} \left(1- \frac{1}{\left(1+e^{-z} \right)} \right) ???????????????\\
+              &amp; = g(z) \left(1-g(z) \right)
+\end{align}
+\]</span></p>
+<p>Fitting for <span class="math inline">\(\theta\)</span> by maximum likelihood: Assume that: <span class="math display">\[
+\begin{align}
+P(y=1 \mid x; \theta) &amp; = h_\theta(x)   \\
+P(y=0 \mid x; \theta) &amp; = 1-h_\theta(x)
+\end{align}
+\]</span> i.e., <span class="math display">\[
+p(y \mid x; \theta) = \left(h_\theta(x) \right)^y \left(1-h_\theta(x) \right)^{1-y}
+\]</span> Likelihood function, assuming <span class="math inline">\(m\)</span> independent training examples: <span class="math display">\[
+\begin{align}
+L(\theta) &amp; = p(\mathbf{y} \mid \mathbf{X}; \theta) \\
+          &amp; = \prod_{i=1}^m p\left(y^{(i)} \mid x^{(i)}; \theta \right) \\
+          &amp; = \prod_{i=1}^m \left(h_\theta \left(x^{(i)}\right) \right)^{y^{(i)}} \left(1-h_\theta\left(x^{(i)}\right) \right)^{1-y^{(i)}} \\
+\ell(\theta) &amp; = \sum_{i=1}^m y^{(i)} \log h_\theta \left(x^{(i)} \right) + \left(1-y^{(i)} \right) \log \left(1-h_\theta \left(x^{(i)} \right)\right)
+\end{align}
+\]</span></p>
+<p>Maximize the log-likehood <span class="math inline">\(\ell(\theta)\)</span> by gradient ascent with the update rule <span class="math inline">\(\theta \gets \theta + \alpha \nabla_\theta \ell(\theta)\)</span>. For one training example: <span class="math display">\[
+\begin{align}
+\frac{d}{d\theta_j} \ell(\theta)  &amp; = \frac{d}{d\theta_j} \left[ y \log h_\theta(x) + (1-y) \log (1-h(x)) \right] \\
+                                  &amp; = y \frac{1}{g(\theta^Tx)} \frac{dg}{d\theta_j} - (1-y)\frac{1}{1-g(\theta^Tx)} \frac{dg}{d\theta_j} \\
+                                  &amp; = \left(y \frac{1}{g(\theta^Tx)} - (1-y)\frac{1}{1-g(\theta^Tx)}\right) \frac{d}{d\theta_j} g(\theta^Tx) \\
+                                  &amp; = \left(y \frac{1}{g(\theta^Tx)} - (1-y)\frac{1}{1-g(\theta^Tx)}\right) g(\theta^Tx)\left(1-g(\theta^Tx) \right) \frac{d}{d_{\theta_j}} \theta^Tx \\
+                                  &amp; = \left(y\left(1-g(\theta^Tx)\right)- \left(1-y \right)g(\theta^Tx) \right) x_j \\
+                                  &amp; = \left(y-h_\theta(x) \right)x_j
+\end{align}
+\]</span> Therefore, the stochastic gradient ascent rule is: <span class="math display">\[
+\theta_j \gets \theta_j + \alpha \left(y^{(i)}-h_\theta(x^{\left(i\right)}) \right)x_j^{(i)}
+\]</span> This looks identical to the LMS update rule, but is not the same because <span class="math inline">\(h_\theta(x^{(i)})\)</span> is a non-linear function of <span class="math inline">\(\theta^Tx^{(i)}\)</span>.</p>
+</div>
+<div id="digression-the-perceptron-learning-algorithm" class="section level2">
+<h2><strong>Digression: The perceptron learning algorithm</strong></h2>
+<p>Consider modifying logistic regression such that it outputs <span class="math inline">\(0\)</span> or <span class="math inline">\(1\)</span> exactly. This can be done by changing <span class="math inline">\(g\)</span> to be the threshold function: <span class="math display">\[
+g(z) = \begin{cases}
+        1 &amp; \text{if } z \geq 0 \\
+        0 &amp; \text{if } z &lt; 0
+        \end{cases}
+\]</span> Letting <span class="math inline">\(h_\theta(x) = g(\theta^Tx)\)</span> with this modified <span class="math inline">\(g\)</span>, and using the update rule <span class="math display">\[
+\theta_j \gets \theta_j + \alpha \left(y^{(i)}-h_\theta \left(x^{(i)} \right) \right) x_j^{(i)}
+\]</span> give the <strong><em>perceptron learning algorithm</em></strong>.</p>
+</div>
+<div id="another-algorithm-for-maximizing-elltheta" class="section level2">
+<h2><strong>Another algorithm for maximizing <span class="math inline">\(\ell(\theta)\)</span></strong></h2>
+<p>Consider Newton’s method for finding a zero of a function, i.e. suppose a function <span class="math inline">\(f : \mathbb{R} \mapsto \mathbb{R}\)</span>, and we want to find a value <span class="math inline">\(\theta\)</span> such that <span class="math inline">\(f(\theta)=0\)</span>.</p>
+<p><span class="math display">\[
+\begin{align}
+y &amp; = f^\prime(\theta_{n}) \left(\theta_{n+1}- \theta_n \right) + f(\theta_n) &amp; \text{first order (linear) Taylor approx. about }\theta_n \\
+0 &amp; = f^\prime(\theta_{n}) \left(\theta_{n+1}- \theta_n \right) + f(\theta_n) &amp; \text{solve for where linear approx. = 0} \\
+f^\prime(\theta_{n}) \left(\theta_{n+1}- \theta_n \right) &amp; = -f(\theta_n) \\
+\theta_{n+1}- \theta_n  &amp; = - \frac{f(\theta_n)}{f^\prime(\theta_n)} \\
+\theta_{n+1} &amp; = \theta_n - \frac{f(\theta_n)}{f^\prime(\theta_n)} &amp; \text{update rule for Newton's method}
+\end{align}
+\]</span></p>
+<p>What if we wanted to use a similar method to maximize a function <span class="math inline">\(\ell\)</span>? The maxima of <span class="math inline">\(\ell\)</span> are the zeros of the first derivative <span class="math inline">\(\ell^\prime \left(\theta \right)\)</span>.</p>
+</div>
 </div>
 
 
