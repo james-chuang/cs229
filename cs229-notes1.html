@@ -140,11 +140,12 @@ $(document).ready(function () {
 <li><a href="#ordinary-least-squares-as-a-glm"><strong>Ordinary Least Squares as a GLM</strong></a></li>
 <li><a href="#logistic-regression-as-a-glm"><strong>Logistic Regression as a GLM</strong></a></li>
 </ul></li>
+<li><a href="#softmax-regression-as-a-glm"><strong>Softmax Regression as a GLM</strong></a></li>
 </ul></li>
 </ul>
 </div>
 
-<p>My notes on CS229 lecture notes 1 by Andrew Ng</p>
+<p>My notes on Andrew Ng’s CS229 lecture 1 notes.</p>
 <div id="supervised-learning" class="section level1">
 <h1><strong>Supervised learning</strong></h1>
 <p>Notation:</p>
@@ -232,12 +233,8 @@ J(\theta) &amp; = \frac{1}{2}\sum_{i=1}^m \left(h_\theta \left(x^{(i)}\right) - 
                       \end{bmatrix}^T \\
                   &amp; = \left(\nabla_A f(A) \right)^T
 \end{align}
-\]</span> <span class="math inline">\(\nabla_A \text{tr}ABA^TC = CAB + C^TAB^T\)</span>:</p>
-<p><span class="math display">\[
-\begin{align}
-\nabla_A \text{tr}ABA^TC &amp; = 
-\end{align}
-\]</span> Calculate <span class="math inline">\(\nabla_\theta J(\theta)\)</span>: <span class="math display">\[
+\]</span> <span class="math inline">\(\nabla_A \text{tr}ABA^TC = CAB + C^TAB^T\)</span>: Okay I get that knowing this makes the derivation below easier, but that’s not really a reason to learn such a convoluted identity…</p>
+<p>Calculate <span class="math inline">\(\nabla_\theta J(\theta)\)</span>: <span class="math display">\[
 \begin{align}
 \nabla_\theta J(\theta) &amp; = \nabla_\theta\left[\frac{1}{2} \left(\mathbf{X\theta} - \mathbf{y} \right)^T\left(\mathbf{X\theta} - \mathbf{y} \right) \right]\\
           &amp; = \frac{1}{2}\nabla_\theta\left[\left(\mathbf{X\theta} \right)^T\left(\mathbf{X\theta} \right) - \left(\mathbf{X\theta}\right)^T\mathbf{y} - \mathbf{y}^T(\mathbf{X\theta}) + \mathbf{y}^T \mathbf{y} \right] \\
@@ -246,7 +243,7 @@ J(\theta) &amp; = \frac{1}{2}\sum_{i=1}^m \left(h_\theta \left(x^{(i)}\right) - 
           &amp; = \mathbf{X}^T\mathbf{X\theta} - \mathbf{X}^T\mathbf{y}
 \end{align}
 \]</span></p>
-<p>To minimize <span class="math inline">\(J\)</span>, set the derivatives to zero to get the <strong><em>normal equations</em></strong> <span class="math display">\[
+<p>To minimize <span class="math inline">\(J\)</span>, set the derivatives to zero to get the <strong><em>normal equations</em></strong>: <span class="math display">\[
 \begin{align}
 \mathbf{X}^T\mathbf{X\theta} - \mathbf{X}^T\mathbf{y} &amp; = 0 \\
 \mathbf{X}^T\mathbf{X\theta} &amp; = \mathbf{X}^T\mathbf{y} \\
@@ -271,7 +268,7 @@ p(y^{(i)}|x^{(i)}; \theta)  &amp; = \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left(\fr
 L(\theta) &amp; = L(\theta; \mathbf{X},\mathbf{y}) = p(\mathbf{y} \mid \mathbf{X}; \mathbf{\theta}) \\
           &amp; = \prod_{i=1}^m p\left(y^{(i)} \mid x^{(i)}; \theta \right) &amp; \text{data points are independent}\\
           &amp; = \prod_{i=1}^m \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left(\frac{- \left(y^{(i)} - \theta^Tx^{(i)} \right)^2}{2\sigma^2} \right) \\
-\ell(\theta) &amp; = \log \prod_{i=1}^m \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left(\frac{- \left(y^{(i)} - \theta^Tx^{(i)} \right)^2}{2\sigma^2} \right)  &amp; \text{&gt;&gt;&gt;&gt;&gt;&gt;} \\
+\ell(\theta) &amp; = \log \prod_{i=1}^m \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left(\frac{- \left(y^{(i)} - \theta^Tx^{(i)} \right)^2}{2\sigma^2} \right)  &amp; \text{take log-likelihood} \\
           &amp; = \sum_{i=1}^m \log \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left(\frac{- \left(y^{(i)} - \theta^Tx^{(i)} \right)^2}{2\sigma^2} \right) \\
           &amp; = m \log \frac{1}{\sqrt{2\pi\sigma^2}} - \frac{1}{\sigma^2} \cdot \frac{1}{2} \sum_{i=1}^m \left(y^{(i)} - \theta^Tx^{(i)} \right)^2
 \end{align}
@@ -312,7 +309,7 @@ h_\theta(x) = g(\theta^Tx) = \frac{1}{1+e^{-\theta^Tx}}, \quad \text{where } g(z
 \begin{align}
 g^\prime (z)  &amp; = \frac{d}{dz} \frac{1}{1+e^{-z}} \\
               &amp; = \frac{-1}{\left(1+e^{-z} \right)^2} \left(-e^{-z} \right) \\
-              &amp; = \frac{1}{1+e^{-z}} \left(1- \frac{1}{\left(1+e^{-z} \right)} \right) ???????????????\\
+              &amp; = \frac{1}{1+e^{-z}} \left(1- \frac{1}{\left(1+e^{-z} \right)} \right) \\
               &amp; = g(z) \left(1-g(z) \right)
 \end{align}
 \]</span></p>
@@ -373,12 +370,12 @@ f^\prime(\theta_{n}) \left(\theta_{n+1}- \theta_n \right) &amp; = -f(\theta_n) \
 <p>Newton’s method generalized to the multidimensional setting, aka the <strong><em>Newton-Raphson method</em></strong>: <span class="math display">\[
 \theta \gets \theta - H^{-1} \nabla_\theta \ell(\theta)
 \]</span> , where <span class="math inline">\(H\)</span> is the <strong><em>Hessian</em></strong>.</p>
-<p>Newton’s method typically converges faster than batch gradient descent and requires fewer iterations to get close to the minimum (because it takes curvature into account). One iteration of Newton’s can, however, be more expensive than one iteration of gradient descent since it requires finding and inverting an <span class="math inline">\(n by n\)</span> Hessian; but so long as <span class="math inline">\(n\)</span> is not too large, it is usually much faster overall. Newton’s method applied to maximizing the logistic regression log likelihood function <span class="math inline">\(\ell(\theta)\)</span> is called <strong><em>Fisher scoring</em></strong>.</p>
+<p>Newton’s method typically converges faster than batch gradient descent and requires fewer iterations to get close to the minimum (because it takes curvature into account). One iteration of Newton’s can, however, be more expensive than one iteration of gradient descent since it requires finding and inverting an <span class="math inline">\(n\)</span> by <span class="math inline">\(n\)</span> Hessian; but so long as <span class="math inline">\(n\)</span> is not too large, it is usually much faster overall. Newton’s method applied to maximizing the logistic regression log likelihood function <span class="math inline">\(\ell(\theta)\)</span> is called <strong><em>Fisher scoring</em></strong>.</p>
 </div>
 </div>
 <div id="generalized-linear-models" class="section level1">
 <h1><strong>Generalized Linear Models</strong></h1>
-<p>The regression example with <span class="math inline">\(y \mid x; \theta \sim \mathcal{N}(\mu, \sigma^2)\)</span>, and the classification example with <span class="math inline">\(y \mid x ; \theta \sim \text{Bernoulli}(\phi)\)</span> are special cases of <strong><em>Genearlized Linear Models (GLMs)</em></strong>. Other models in the GLM family can be applied to classification and regression.</p>
+<p>The regression example with <span class="math inline">\(y \mid x; \theta \sim \mathcal{N}(\mu, \sigma^2)\)</span>, and the classification example with <span class="math inline">\(y \mid x ; \theta \sim \text{Bernoulli}(\phi)\)</span> are special cases of <strong><em>Generalized Linear Models (GLMs)</em></strong>. Other models in the GLM family can be applied to classification and regression.</p>
 <div id="the-exponential-family" class="section level2">
 <h2><strong>The exponential family</strong></h2>
 <p>A class of distributions is in the exponential family if it can be witten in the form <span class="math display">\[
@@ -389,7 +386,7 @@ p(y;\eta) = b(y) \exp(\eta^TT(y)-a(\eta))
 <li><span class="math inline">\(T(y) \rightarrow\)</span> the <strong><em>sufficient statistic</em></strong> (often, <span class="math inline">\(T(y)=y\)</span>)</li>
 <li><span class="math inline">\(a(\eta) \rightarrow\)</span> the <strong><em>log partition function</em></strong>. The <span class="math inline">\(e^{-a(\eta)}\)</span> term normalizes the distribution such that it sums/integrates to <span class="math inline">\(1\)</span>.</li>
 </ul>
-<p>A fixed choice of <span class="math inline">\(T\)</span>, <span class="math inline">\(a\)</span>, and <span class="math inline">\(b\)</span> defines <em>family</em> (set) of distributions parameterized by <span class="math inline">\(\eta\)</span>.</p>
+<p>A fixed choice of <span class="math inline">\(T\)</span>, <span class="math inline">\(a\)</span>, and <span class="math inline">\(b\)</span> defines a <em>family</em> (set) of distributions parameterized by <span class="math inline">\(\eta\)</span>.</p>
 <p>The Bernoulli and Gaussian distributions are exponential family distributions.</p>
 <p>The Bernoulli distribution: <span class="math display">\[
 \begin{align} 
@@ -444,7 +441,7 @@ b(y)  &amp; = \frac{1}{\sqrt{2\pi}}\exp\left(\frac{-y^2}{2}\right)
 <h3><strong>Ordinary Least Squares as a GLM</strong></h3>
 <ul>
 <li>target variable (aka <strong><em>response variable</em></strong>) <span class="math inline">\(y\)</span> is continuous</li>
-<li>model <span class="math inline">\(P(y\mid x) \sim \mathcal{N}(\mu,sigma^2)\)</span></li>
+<li>model <span class="math inline">\(P(y\mid x) \sim \mathcal{N}(\mu,\sigma^2)\)</span></li>
 </ul>
 <p>Then, <span class="math display">\[
 \begin{align}
@@ -458,9 +455,122 @@ h_\theta(x) &amp; = \text{E}\left[y \mid x; \theta \right]  &amp; \text{assumpti
 <div id="logistic-regression-as-a-glm" class="section level3">
 <h3><strong>Logistic Regression as a GLM</strong></h3>
 <ul>
-<li>target variable <span class="math inline">\(y\)</span> is binary valued (<span class="math inline">\(y \in \left\{0,1\right\}\)</span>)</li>
+<li>target variable <span class="math inline">\(y\)</span> is binary-valued (<span class="math inline">\(y \in \left\{0,1\right\}\)</span>)</li>
+<li>model <span class="math inline">\(P(y\mid x) \sim \text{Bernoulli}(\phi)\)</span></li>
+</ul>
+<p>Then, <span class="math display">\[
+\begin{align}
+h_\theta(x) &amp; = \text{E} \left[y \mid x; \theta \right] &amp; \text{assumption 2} \\
+            &amp; = \phi                                    &amp; \text{expected value of Bernoulli}(\phi) \\
+            &amp; = \frac{1}{1+e^{-\eta}}                   &amp; \phi(\eta)\text{ from Bernoulli as exp. family dist.} \\
+            &amp; = \frac{1}{1+e^{-\theta^Tx}}              &amp; \text{assumption 3}
+\end{align}
+\]</span> So, the hypothesis function above arises from the definitions of GLMs and exponential family distributions, assuming that <span class="math inline">\(y \mid x \sim \text{Bernoulli}\)</span>.</p>
+<p>Some terminology:</p>
+<ul>
+<li><p>the function <span class="math inline">\(g\)</span> giving the expected value as a function of the natural parameter <span class="math inline">\(\eta\)</span> is called the <strong><em>canonical response function</em></strong>: <span class="math display">\[
+  g(\eta) = \text{E}\left[T(y); \eta \right]
+  \]</span></p>
+<ul>
+<li>for the Gaussian family, <span class="math inline">\(g(\eta)\)</span> is the identity function</li>
+<li>for the Bernoulli, <span class="math inline">\(g(\eta)\)</span> is the logistic function</li>
+</ul></li>
+<li><p>its inverse, <span class="math inline">\(g^{-1}\)</span> is called the <strong><em>canonical link function</em></strong></p></li>
 </ul>
 </div>
+</div>
+<div id="softmax-regression-as-a-glm" class="section level2">
+<h2><strong>Softmax Regression as a GLM</strong></h2>
+<ul>
+<li>classification, <span class="math inline">\(y \in \left\{1,2,\cdots,k \right\}\)</span>.</li>
+<li>model <span class="math inline">\(P(y \mid x) \sim \text{Multinomial}(\phi_1, \cdots, \phi_{k-1})\)</span> (parameterized by <span class="math inline">\(k-1\)</span> parameters since <span class="math inline">\(\phi_k\)</span> must satisfy <span class="math inline">\(\sum_{i=1}^{k-1}\phi_i\)</span>).</li>
+<li>define <span class="math inline">\(T(y) \in \mathbb{R}^{k-1}\)</span> as follows:</li>
+</ul>
+<p><span class="math display">\[
+  T(1) =  \begin{bmatrix} 1 \\ 0 \\ \vdots \\0  \end{bmatrix}, \quad
+  T(2) =  \begin{bmatrix} 0 \\ 1 \\ \vdots \\0  \end{bmatrix}, \quad
+  \cdots, \quad
+  T(k-1) = \begin{bmatrix} 0 \\ 0 \\ \vdots \\1  \end{bmatrix}, \quad
+  T(k) = \begin{bmatrix} 0 \\ 0 \\ \vdots \\0  \end{bmatrix}
+  \]</span> It is useful to now introduce the <strong><em>indicator function</em></strong> <span class="math inline">\(1 \left\{\cdot \right\}\)</span>: <span class="math display">\[
+\begin{cases}
+1\left\{\text{True} \right\} = 1 \\
+1\left\{\text{False} \right\} = 0
+\end{cases}
+\]</span> Using the indicator function, we can write <span class="math display">\[
+\left(T(y) \right)_i = 1\left\{y=i \right\}
+\]</span></p>
+<p>Also, <span class="math display">\[
+\text{E}\left[\left(T(y) \right)_i \right] = P(y=i) = \phi_i
+\]</span></p>
+<p>Show that softmax regression is a member of the exponential family <span class="math display">\[
+\begin{align}
+p(y;\phi) &amp; = \phi_1^{1\{y=1\}} \phi_2^{1\{y=2\}} \dots \phi_k^{1\{y=k\}} \\
+          &amp; = \phi_1^{1\{y=1\}} \phi_2^{1\{y=2\}} \dots \phi_k^{1-\sum_{i=1}^{k-1}1\{y=k\}} \\
+          &amp; = \phi_1^{(T(y))_1} \phi_2^{(T(y))_2} \dots \phi_k^{(T(y))_i} \\
+          &amp; = \exp \left( (T(y))_1 \log(\phi_1) + (T(y))_2\log(\phi_2) + \dots + \left(1-\sum_{i=1}^{k-1}\left(T(y)\right)_i \right)\log(\phi_k)\right)\\
+          &amp; = \exp \left( (T(y))_1 \log\left(\frac{\phi_1}{\phi_k}\right) + (T(y))_2 \log\left(\frac{\phi_2}{\phi_k}\right) + \dots + (T(y))_{k-1} \log\left(\frac{\phi_{k-1}}{\phi_k}\right) + \log(\phi_k) \right) \\
+          &amp; = b(y) \exp \left(\eta^T T(y)-a(\eta)\right)
+\end{align}
+\]</span></p>
+<p>where <span class="math display">\[
+\begin{align}
+\eta &amp; =  \begin{bmatrix}
+          \log \left(\frac{\phi_1}{\phi_k} \right) \\
+          \log \left(\frac{\phi_2}{\phi_k} \right) \\
+          \vdots                                   \\
+          \log \left(\frac{\phi_{k-1}}{\phi_k} \right)
+          \end{bmatrix}, \\
+a(\eta) &amp; = -\log \left(\phi_k \right), \\
+b(y)    &amp; = 1
+\end{align}
+\]</span></p>
+<p>The link function is given by <span class="math display">\[
+\eta_i = \log \left(\frac{\phi_i}{\phi_k} \right), \qquad \text{for }i=1,\dots,k
+\]</span> The response function is found by inverting the link function, first solving for <span class="math inline">\(\phi_k\)</span>: <span class="math display">\[
+\begin{align}
+e^{\eta_i} &amp; = \frac{\phi_i}{\phi_k}  \\
+\phi_k e^{\eta_i} &amp; = \phi_i          \\
+\phi_k \sum_{i=1}^k e^{\eta_i} &amp; = \sum_{i=1}^k \phi_i = 1 \\
+\phi_k &amp; = \frac{1}{\sum_{i=1}^k e^{\eta_i}}
+\end{align}
+\]</span> Then, substituting to solve for <span class="math inline">\(\phi_i\)</span>: <span class="math display">\[
+\phi_i = \frac{e^{\eta_i}}{\sum_{j=1}^k e^{\eta_j}}
+\]</span></p>
+<p>This response function is called the <strong><em>softmax</em></strong> function.</p>
+<p>To complete the GLM, we use assumption 3, i.e. the <span class="math inline">\(\eta_i = \theta^Tx\)</span> for <span class="math inline">\(i=1, \dots, k-1\)</span>. We can also define <span class="math inline">\(\theta_k = 0\)</span>, so that <span class="math inline">\(\eta_k = \theta_k^T x = 0\)</span>. Hence, <span class="math display">\[
+\begin{align}
+p(y=i \mid x; \theta) &amp; = \phi_i \\
+                      &amp; = \frac{e^{\eta_i}}{\sum_{j=1}^k e^{\eta_j}} \\
+                      &amp; = \frac{e^{\theta_i^Tx}}{\sum_{j=1}^k e^{\theta^Tx}}
+\end{align}
+\]</span></p>
+<p>This is the <strong><em>softmax regression</em></strong> model, a generalization of logistic regression to <span class="math inline">\(k\)</span> classes.</p>
+<p>The hypothesis function will output: <span class="math display">\[
+\begin{align}
+h_\theta(x) &amp; = \text{E}\left[T(y) \mid x; \theta \right] \\
+            &amp; = \begin{bmatrix}
+                \begin{matrix} 1\left\{y=1\right\}  \\ 1\left\{y=2\right\} \\ \vdots \\ 1\left\{y=k-1\right\}\end{matrix}     &amp; \vert &amp; x; \theta
+                \end{bmatrix} \\
+            &amp; = \begin{bmatrix}
+                \phi_1 \\ \phi_2 \\ \vdots  \\ \phi_{k-1}
+                \end{bmatrix} \\
+            &amp; = \begin{bmatrix}
+                \frac{\exp\left(\theta_1^Tx \right)}{ \sum_{j=1}^k \exp\left(\theta_j^T x \right)} \\
+                \frac{\exp\left(\theta_2^Tx \right)}{ \sum_{j=1}^k \exp\left(\theta_j^T x \right)} \\
+                \vdots  \\
+                \frac{\exp\left(\theta_{k-1}^Tx \right)}{ \sum_{j=1}^k \exp\left(\theta_j^T x \right)} \\
+                \end{bmatrix}
+\end{align}
+\]</span></p>
+<p>I.e., the hypothesis will output the estimated probability that <span class="math inline">\(p(y=i \mid x; \theta)\)</span>, for every value of <span class="math inline">\(i=1, \dots, k\)</span>.</p>
+<p>How do we fit to learn the parameters <span class="math inline">\(\theta_i\)</span>? Given a training set of <span class="math inline">\(m\)</span> examples <span class="math inline">\(\left\{\left(x^{(i)}, y^{(i)} \right); i=1, \dots, m \right\}\)</span>, we can do it by maximizing the log-likelihood <span class="math display">\[
+\begin{align}
+\ell(\theta)  &amp; = \sum_{i=1}^m \log p\left(y^{(i)} \mid x^{(i)}; \theta \right) \\
+              &amp; = \sum_{i=1}^m \log \prod_{p=1} ^ k \left(\frac{e^{\theta_p^T x^{(i)}}}{\sum_{j-1}^k e^{\theta_j^T}x^{(i)}} \right)^{1\left\{y^{(i)} = p\right\}}
+\end{align}
+\]</span></p>
+<p>The log-likelihood can then be maximized using a method such as gradient ascent or Newton’s method.</p>
 </div>
 </div>
 
