@@ -347,3 +347,46 @@ a(\eta) & = \frac{\mu^2}{2} \\
 b(y)  & = \frac{1}{\sqrt{2\pi}}\exp\left(\frac{-y^2}{2}\right)
 \end{align}
 $$
+Other members of the exponential family:
+
+- multinomial
+- Poisson (for count data)
+- gamma and exponential (for continuous, non-negative random variables, e.g. time-intervals)
+- beta and Dirichlet (for distributions over probabilities)
+
+## **Constructing GLMs**
+Consider a classification or regression problem with the goal of predicting the value of a random variable $y$ as a function of $x$. To derive a GLM for this problem, make three assumptions about $P(y \mid x)$ and the model:
+
+1. $y \mid x; \theta \sim \text{ExponentialFamily}(\eta)$
+2. Goal: predict $\text{E}\left[T(y)\right]$ given $x$.
+    - In most examples, $T(y) = y$, so we want the prediction $h(x)= \text{E}\left[y \mid x \right]$
+3. The natural parameter $\eta$ and the inputs $x$ are linearly related: $\eta = \theta^Tx$ ($\eta_i = \theta_i^T x$)
+
+### **Ordinary Least Squares as a GLM**
+ - target variable (aka ***response variable***) $y$ is continuous
+ - model $P(y\mid x) \sim \mathcal{N}(\mu,sigma^2)$
+ 
+Then,
+$$
+\begin{align}
+h_\theta(x) & = \text{E}\left[y \mid x; \theta \right]  & \text{assumption 2} \\
+            & = \mu                                     & \text{expected value of } \mathcal{N}(\mu, \sigma^2)\\
+            & = \eta                                    & \mu = \eta \text{ from Gaussian as exp. family dist.}\\
+            & = \theta^T x                              & \text{assumption 3}
+\end{align}
+$$
+
+### **Logistic Regression as a GLM**
+  - target variable $y$ is binary-valued ($y \in \left\{0,1\right\}$)
+  - model $P(y\mid x) \sim \text{Bernoulli}(\phi)$
+  
+Then,
+$$
+\begin{align}
+h_\theta(x) & = \text{E} \left[y \mid x; \theta \right] & \text{assumption 2} \\
+            & = \phi                                    & \text{expected value of Bernoulli}(\phi) \\
+            & = \frac{1}{1+e^{-\eta}}                   & \phi(\eta)\text{ from Bernoulli as exp. family dist.} \\
+            & = \frac{1}{1+e^{-\theta^Tx}}              & \text{assumption 3}
+\end{align}
+$$
+So, the hypothesis function above arises from the definitions of GLMs and exponential family distributions, assuming that $y \mid x \sim \text{Bernoulli}$

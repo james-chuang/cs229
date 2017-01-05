@@ -134,6 +134,13 @@ $(document).ready(function () {
 <li><a href="#digression-the-perceptron-learning-algorithm"><strong>Digression: The perceptron learning algorithm</strong></a></li>
 <li><a href="#another-algorithm-for-maximizing-elltheta"><strong>Another algorithm for maximizing <span class="math inline">\(\ell(\theta)\)</span></strong></a></li>
 </ul></li>
+<li><a href="#generalized-linear-models"><strong>Generalized Linear Models</strong></a><ul>
+<li><a href="#the-exponential-family"><strong>The exponential family</strong></a></li>
+<li><a href="#constructing-glms"><strong>Constructing GLMs</strong></a><ul>
+<li><a href="#ordinary-least-squares-as-a-glm"><strong>Ordinary Least Squares as a GLM</strong></a></li>
+<li><a href="#logistic-regression-as-a-glm"><strong>Logistic Regression as a GLM</strong></a></li>
+</ul></li>
+</ul></li>
 </ul>
 </div>
 
@@ -360,7 +367,100 @@ f^\prime(\theta_{n}) \left(\theta_{n+1}- \theta_n \right) &amp; = -f(\theta_n) \
 \theta_{n+1} &amp; = \theta_n - \frac{f(\theta_n)}{f^\prime(\theta_n)} &amp; \text{update rule for Newton's method}
 \end{align}
 \]</span></p>
-<p>What if we wanted to use a similar method to maximize a function <span class="math inline">\(\ell\)</span>? The maxima of <span class="math inline">\(\ell\)</span> are the zeros of the first derivative <span class="math inline">\(\ell^\prime \left(\theta \right)\)</span>.</p>
+<p>What if we wanted to use this method to maximize a function <span class="math inline">\(\ell\)</span>? The maxima of <span class="math inline">\(\ell\)</span> are the zeros of the first derivative <span class="math inline">\(\ell^\prime \left(\theta \right)\)</span>. Therefore, we can let <span class="math inline">\(f(\theta) = \ell^\prime(\theta)\)</span> and use the same algorithm to maximize <span class="math inline">\(\ell\)</span>. The update rule is then: <span class="math display">\[
+\theta \gets \theta - \frac{\ell^\prime(\theta)}{\ell^{\prime\prime}(\theta)}
+\]</span></p>
+<p>Newton’s method generalized to the multidimensional setting, aka the <strong><em>Newton-Raphson method</em></strong>: <span class="math display">\[
+\theta \gets \theta - H^{-1} \nabla_\theta \ell(\theta)
+\]</span> , where <span class="math inline">\(H\)</span> is the <strong><em>Hessian</em></strong>.</p>
+<p>Newton’s method typically converges faster than batch gradient descent and requires fewer iterations to get close to the minimum (because it takes curvature into account). One iteration of Newton’s can, however, be more expensive than one iteration of gradient descent since it requires finding and inverting an <span class="math inline">\(n by n\)</span> Hessian; but so long as <span class="math inline">\(n\)</span> is not too large, it is usually much faster overall. Newton’s method applied to maximizing the logistic regression log likelihood function <span class="math inline">\(\ell(\theta)\)</span> is called <strong><em>Fisher scoring</em></strong>.</p>
+</div>
+</div>
+<div id="generalized-linear-models" class="section level1">
+<h1><strong>Generalized Linear Models</strong></h1>
+<p>The regression example with <span class="math inline">\(y \mid x; \theta \sim \mathcal{N}(\mu, \sigma^2)\)</span>, and the classification example with <span class="math inline">\(y \mid x ; \theta \sim \text{Bernoulli}(\phi)\)</span> are special cases of <strong><em>Genearlized Linear Models (GLMs)</em></strong>. Other models in the GLM family can be applied to classification and regression.</p>
+<div id="the-exponential-family" class="section level2">
+<h2><strong>The exponential family</strong></h2>
+<p>A class of distributions is in the exponential family if it can be witten in the form <span class="math display">\[
+p(y;\eta) = b(y) \exp(\eta^TT(y)-a(\eta))
+\]</span></p>
+<ul>
+<li><span class="math inline">\(\eta \rightarrow\)</span> the <strong><em>natural parameter</em></strong>, aka the <strong><em>canonical parameter</em></strong></li>
+<li><span class="math inline">\(T(y) \rightarrow\)</span> the <strong><em>sufficient statistic</em></strong> (often, <span class="math inline">\(T(y)=y\)</span>)</li>
+<li><span class="math inline">\(a(\eta) \rightarrow\)</span> the <strong><em>log partition function</em></strong>. The <span class="math inline">\(e^{-a(\eta)}\)</span> term normalizes the distribution such that it sums/integrates to <span class="math inline">\(1\)</span>.</li>
+</ul>
+<p>A fixed choice of <span class="math inline">\(T\)</span>, <span class="math inline">\(a\)</span>, and <span class="math inline">\(b\)</span> defines <em>family</em> (set) of distributions parameterized by <span class="math inline">\(\eta\)</span>.</p>
+<p>The Bernoulli and Gaussian distributions are exponential family distributions.</p>
+<p>The Bernoulli distribution: <span class="math display">\[
+\begin{align} 
+p(y; \phi)  &amp; = \phi^y \left(1-\phi \right)^{1-y} \\
+            &amp; = \exp \left(y \log \theta + (1-y) \log (1-\phi) \right) \\
+            &amp; = \exp \left(\left(\log\left(\frac{\phi}{1-\phi}\right) \right) y + \log (1-\phi) \right)
+\end{align}
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+\begin{align}
+\eta  &amp; = \log\left(\frac{\phi}{1-\phi}\right)  &amp; \overset{\text{invert}}{\longrightarrow} \phi &amp; = \frac{1}{1+e^{-\eta}}\\
+T(y)  &amp; = y \\
+a(\eta) &amp; = -\log(1-\phi) \\
+        &amp; = \log\left(1+e^\eta \right) \\
+b(y)    &amp; = 1
+\end{align}
+\]</span></p>
+<p>The Gaussian distribution. The value of <span class="math inline">\(\sigma^2\)</span> has no effect on the choice of <span class="math inline">\(\theta\)</span> and <span class="math inline">\(h_\theta(x)\)</span>. Thus, we can set <span class="math inline">\(\sigma^2=1\)</span> to simplify the derivation: <span class="math display">\[
+\begin{align}
+p(y;\mu)  &amp; = \frac{1}{\sqrt{2\pi}} \exp \left(- \frac{1}{2} \left(y-\mu \right)^2 \right) \\
+          &amp; = \frac{1}{\sqrt{2\pi}} \exp \left(-\frac{1}{2} y^2 + \mu y - \frac{1}{2}\mu^2 \right) \\
+          &amp; = \frac{1}{\sqrt{2\pi}} \exp \left(-\frac{1}{2} y^2 \right) \cdot \exp\left(\mu y - \frac{1}{2} \mu^2 \right)
+\end{align}
+\]</span> Therefore, <span class="math display">\[
+\begin{align}
+\eta &amp; = \mu  \\
+T(y) &amp; = y    \\
+a(\eta) &amp; = \frac{\mu^2}{2} \\
+        &amp; = \frac{\eta^2}{2} \\
+b(y)  &amp; = \frac{1}{\sqrt{2\pi}}\exp\left(\frac{-y^2}{2}\right)
+\end{align}
+\]</span> Other members of the exponential family:</p>
+<ul>
+<li>multinomial</li>
+<li>Poisson (for count data)</li>
+<li>gamma and exponential (for continuous, non-negative random variables, e.g. time-intervals)</li>
+<li>beta and Dirichlet (for distributions over probabilities)</li>
+</ul>
+</div>
+<div id="constructing-glms" class="section level2">
+<h2><strong>Constructing GLMs</strong></h2>
+<p>Consider a classification or regression problem with the goal of predicting the value of a random variable <span class="math inline">\(y\)</span> as a function of <span class="math inline">\(x\)</span>. To derive a GLM for this problem, make three assumptions about <span class="math inline">\(P(y \mid x)\)</span> and the model:</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(y \mid x; \theta \sim \text{ExponentialFamily}(\eta)\)</span></li>
+<li>Goal: predict <span class="math inline">\(\text{E}\left[T(y)\right]\)</span> given <span class="math inline">\(x\)</span>.
+<ul>
+<li>In most examples, <span class="math inline">\(T(y) = y\)</span>, so we want the prediction <span class="math inline">\(h(x)= \text{E}\left[y \mid x \right]\)</span></li>
+</ul></li>
+<li>The natural parameter <span class="math inline">\(\eta\)</span> and the inputs <span class="math inline">\(x\)</span> are linearly related: <span class="math inline">\(\eta = \theta^Tx\)</span> (<span class="math inline">\(\eta_i = \theta_i^T x\)</span>)</li>
+</ol>
+<div id="ordinary-least-squares-as-a-glm" class="section level3">
+<h3><strong>Ordinary Least Squares as a GLM</strong></h3>
+<ul>
+<li>target variable (aka <strong><em>response variable</em></strong>) <span class="math inline">\(y\)</span> is continuous</li>
+<li>model <span class="math inline">\(P(y\mid x) \sim \mathcal{N}(\mu,sigma^2)\)</span></li>
+</ul>
+<p>Then, <span class="math display">\[
+\begin{align}
+h_\theta(x) &amp; = \text{E}\left[y \mid x; \theta \right]  &amp; \text{assumption 2} \\
+            &amp; = \mu                                     &amp; \text{expected value of } \mathcal{N}(\mu, \sigma^2)\\
+            &amp; = \eta                                    &amp; \mu = \eta \text{ from Gaussian as exp. family dist.}\\
+            &amp; = \theta^T x                              &amp; \text{assumption 3}
+\end{align}
+\]</span></p>
+</div>
+<div id="logistic-regression-as-a-glm" class="section level3">
+<h3><strong>Logistic Regression as a GLM</strong></h3>
+<ul>
+<li>target variable <span class="math inline">\(y\)</span> is binary valued (<span class="math inline">\(y \in \left\{0,1\right\}\)</span>)</li>
+</ul>
+</div>
 </div>
 </div>
 
