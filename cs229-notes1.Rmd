@@ -6,7 +6,7 @@ output:
     css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
 ---
 
-My notes on Andrew Ng's CS229 lecture 1 notes.
+My notes on Andrew Ng's [CS229 lecture 1 notes](http://cs229.stanford.edu/materials.html).
 
 # **Supervised learning**
 Notation:

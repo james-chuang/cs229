@@ -1,0 +1,52 @@
+---
+output:
+  html_document:
+    toc: TRUE
+    fig_width: 4.5
+    css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
+---
+
+My notes on Andrew Ng's [CS229 lecture 2 notes](http://cs229.stanford.edu/materials.html).
+
+# **Generative Learning algorithms**
+
+***discriminative*** learning algorithms
+
+  - learn $p(y \mid x)$ directly
+      - e.g. logistic regression
+  - or, learn mapping from the space of inputs, $\mathcal{X}$ to the labels
+      - e.g. perceptron algorithm
+      
+***generative*** learning algorithms
+
+  - model $p(x \mid y)$ (and $p(y)$, the ***class priors***)
+      - e.g. if 0 = dog and 1 = elephant, $p(x \mid y=0)$ models the distribution of dogs' features, and $p(x \mid y = 1)$ models the distribution of elephants' features
+  - then use Bayes rule to derive the posterior distribution on $y$ given $x$:
+  
+    $$
+    p(y \mid x) = \frac{p(x \mid y) p (y)}{p(x)}
+    $$
+    
+      - to use $p(y \mid x)$ to make a prediction, the denominator $p(x)$ does not need to be calculated:
+      
+      $$
+      \begin{align}
+      \arg \max_y p(y \mid x) & = \arg \max_y \frac{p(x \mid y) p(y)}{p(x)} \\
+                              & = \arg \max_y p(x \mid y)p(y)
+      \end{align}
+      $$
+
+## **Gaussian discriminant analysis***
+Assume that $p(x \mid y)$ is distributed according to a multivariabe normal distribution.
+
+### ***The multivariate normal distribution***
+
+parameters
+
+  - ***mean vector*** $\mu \in \mathbb{R}^n$
+  - ***covariance matrix*** $\Sigma \in \mathbb{R}^{n \times n}$
+    - $\Sigma \geq 0$ is symmetric and positive semi-definite
+    
+  $$
+  p(x; \mu, \Sigma) = \frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{2}}} \exp \left(-\frac{1}{2} \left(x-\mu \right)^T \Sigma^{-1} \left(x-\mu \right) \right)
+  $$
