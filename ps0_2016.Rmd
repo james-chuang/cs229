@@ -5,3 +5,58 @@ output:
     fig_width: 4.5
     css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
 ---
+
+# **CS229 Autumn 2016 Problem Set #0**
+
+### **1. Gradients and Hessians**
+Recall that a matrix $A \in \mathbb{R}^{n \times n}$ is *symmetric* if $A^T = A$, i.e. $A_{ij} = A_{ji} \hspace{.2em} \forall \hspace{.2em} i,j$. Also recall the gradient $\nabla f(x)$ of a function $f: \mathbb{R}^n \mapsto \mathbb{R}$, which is the $n$-vector of partial derivatives
+
+$$
+\nabla f(x) = \begin{bmatrix}
+              \frac{\partial}{\partial x_1} f(x) \\
+              \vdots  \\
+              \frac{\partial}{\partial x_n} f(x)
+              \end{bmatrix}
+              \quad
+              \text{where }
+              x= \begin{bmatrix}
+              x_1 \\
+              \vdots \\
+              x_n
+              \end{bmatrix}.
+$$
+
+The Hessian $\nabla^2 f(x)$ of a function $f : \mathbb{R} \mapsto \mathbb{R}$ is the $n \times n$ symmetric matrix of second partial derivatives,
+
+$$
+\nabla^2 f(x) = \begin{bmatrix}
+                \frac{\partial^2}{\partial x_1^2} f(x) & \frac{\partial^2}{\partial x_1 \partial x_2} f(x) & \cdots  & \frac{\partial^2}{\partial x_1 \partial x_n} f(x) \\
+                \frac{\partial}{\partial x_2 \partial x_1} f(x) & \frac{\partial^2}{\partial x_2^2} f(x) & \cdots  & \frac{\partial^2}{\partial x_2 \partial x_n} f(x) \\
+                \vdots  & \vdots  & \ddots  & \vdots \\
+                \frac{\partial^2}{\partial x_n \partial x_1} f(x) & \frac{\partial^2}{\partial x_n \partial x_2} f(x) & \cdots  & \frac{\partial^2}{\partial x_n^2} f(x) \\
+                \end{bmatrix}.
+$$
+
+**a**. Let $f(x) = \frac{1}{2}x^TAx + b^Tx$, where $A$ is a symmetric matrix and $b \in \mathbb{R}^n$ is a vector. What is $\nabla f(x)$?
+
+**b**. Let $f(x) = g(h(x))$, where $g: \mathbb{R} \mapsto \mathbb{R}$ is differentiable and $h: \mathbb{R}^n \mapsto \mathbb{R}$ is differentiable. What is $\nabla f(x)$?
+
+**c**. Let $f(x) = \frac{1}{2}x^TAx+b^Tx$, where $A$ is symmetric and $b \in \mathbb{R}^n$ is a vector. What is $\nabla^2 f(x)$?
+
+**d**. Let $f(x) = g(a^Tx)$, where $g : \mathbb{R} \mapsto \mathbb{R}$ is continuously differentiable and $a \in \mathbb{R}^n$ is a vector. What are $\nabla f(x)$ and $\nabla^2 f(x)$? (*Hint*: your expression for $\nabla^2f(x)$ may have as few as 11 symbols, including $^\prime$ and parentheses.)
+
+### **2. Positive definite matrices**
+
+**a**.
+
+**b**.
+
+**c**.
+
+### **3. Eigenvectors, eigenvalues, and the spectral theorem**
+
+**a**.
+
+**b**.
+
+**c**.
