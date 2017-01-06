@@ -125,7 +125,6 @@ $(document).ready(function () {
 <li><a href="#gradients-and-hessians"><strong>1. Gradients and Hessians</strong></a></li>
 <li><a href="#positive-definite-matrices"><strong>2. Positive definite matrices</strong></a></li>
 <li><a href="#eigenvectors-eigenvalues-and-the-spectral-theorem"><strong>3. Eigenvectors, eigenvalues, and the spectral theorem</strong></a></li>
-<li><a href="#section"></a></li>
 </ul></li>
 </ul>
 </div>
@@ -134,9 +133,9 @@ $(document).ready(function () {
 <h1><strong>CS229 Autumn 2016 Problem Set #0</strong></h1>
 <div id="gradients-and-hessians" class="section level3">
 <h3><strong>1. Gradients and Hessians</strong></h3>
-<p>Recall that a matrix <span class="math inline">\(A \in \mathbb{R}^{n \times n}\)</span> is <em>symmetric</em> if <span class="math inline">\(A^T = A\)</span>, i.e. <span class="math inline">\(A_{ij} = A_{ji} \hspace{.2em} \forall \hspace{.2em} i,j\)</span>. Also recall the gradient <span class="math inline">\(\nabla f(x)\)</span> of a function <span class="math inline">\(f: \mathbb{R}^n \mapsto \mathbb{R}\)</span>, which is the <span class="math inline">\(n\)</span>-vector of partial derivatives</p>
+<p>Recall that a matrix <span class="math inline">\(A \in \mathbb{R}^{n \times n}\)</span> is <em>symmetric</em> if <span class="math inline">\(A^T = A\)</span>, i.e. <span class="math inline">\(A_{ij} = A_{ji} \hspace{.2em} \forall \hspace{.2em} i,j\)</span>. Also recall the gradient <span class="math inline">\(\nabla_x f(x)\)</span> of a function <span class="math inline">\(f: \mathbb{R}^n \mapsto \mathbb{R}\)</span>, which is the <span class="math inline">\(n\)</span>-vector of partial derivatives</p>
 <p><span class="math display">\[
-\nabla f(x) = \begin{bmatrix}
+\nabla_x f(x) = \begin{bmatrix}
               \frac{\partial}{\partial x_1} f(x) \\
               \vdots  \\
               \frac{\partial}{\partial x_n} f(x)
@@ -158,25 +157,145 @@ $(document).ready(function () {
                 \frac{\partial^2}{\partial x_n \partial x_1} f(x) &amp; \frac{\partial^2}{\partial x_n \partial x_2} f(x) &amp; \cdots  &amp; \frac{\partial^2}{\partial x_n^2} f(x) \\
                 \end{bmatrix}.
 \]</span></p>
-<p><strong>a</strong>. Let <span class="math inline">\(f(x) = \frac{1}{2}x^TAx + b^Tx\)</span>, where <span class="math inline">\(A\)</span> is a symmetric matrix and <span class="math inline">\(b \in \mathbb{R}^n\)</span> is a vector. What is <span class="math inline">\(\nabla f(x)\)</span>?</p>
-<p><strong>b</strong>. Let <span class="math inline">\(f(x) = g(h(x))\)</span>, where <span class="math inline">\(g: \mathbb{R} \mapsto \mathbb{R}\)</span> is differentiable and <span class="math inline">\(h: \mathbb{R}^n \mapsto \mathbb{R}\)</span> is differentiable. What is <span class="math inline">\(\nabla f(x)\)</span>?</p>
-<p><strong>c</strong>. Let <span class="math inline">\(f(x) = \frac{1}{2}x^TAx+b^Tx\)</span>, where <span class="math inline">\(A\)</span> is symmetric and <span class="math inline">\(b \in \mathbb{R}^n\)</span> is a vector. What is <span class="math inline">\(\nabla^2 f(x)\)</span>?</p>
-<p><strong>d</strong>. Let <span class="math inline">\(f(x) = g(a^Tx)\)</span>, where <span class="math inline">\(g : \mathbb{R} \mapsto \mathbb{R}\)</span> is continuously differentiable and <span class="math inline">\(a \in \mathbb{R}^n\)</span> is a vector. What are <span class="math inline">\(\nabla f(x)\)</span> and <span class="math inline">\(\nabla^2 f(x)\)</span>? (<em>Hint</em>: your expression for <span class="math inline">\(\nabla^2f(x)\)</span> may have as few as 11 symbols, including <span class="math inline">\(^\prime\)</span> and parentheses.)</p>
+<p><strong>a</strong>. Let <span class="math inline">\(f(x) = \frac{1}{2}x^TAx + b^Tx\)</span>, where <span class="math inline">\(A\)</span> is a symmetric matrix and <span class="math inline">\(b \in \mathbb{R}^n\)</span> is a vector. What is <span class="math inline">\(\nabla_x f(x)\)</span>? <span class="math display">\[
+\begin{align}
+f(x)          &amp; = \frac{1}{2}x^TAx + b^Tx \\
+\nabla_x f(x) &amp; = \frac{1}{2}2Ax + b &amp; \text{see linalg review 4.3} \\
+\nabla_x f(x) &amp; = Ax+b
+\end{align}
+\]</span></p>
+<p><strong>b</strong>. Let <span class="math inline">\(f(x) = g(h(x))\)</span>, where <span class="math inline">\(g: \mathbb{R} \mapsto \mathbb{R}\)</span> is differentiable and <span class="math inline">\(h: \mathbb{R}^n \mapsto \mathbb{R}\)</span> is differentiable. What is <span class="math inline">\(\nabla_x f(x)\)</span>? <span class="math display">\[
+\begin{align}
+f(x)          &amp; = g(h(x)) \\
+\nabla_x f(x) &amp; = g^{\prime}(h(x)) \nabla_x f(x) &amp; \text{by the chain rule}
+\end{align}
+\]</span></p>
+<p><strong>c</strong>. Let <span class="math inline">\(f(x) = \frac{1}{2}x^TAx+b^Tx\)</span>, where <span class="math inline">\(A\)</span> is symmetric and <span class="math inline">\(b \in \mathbb{R}^n\)</span> is a vector. What is <span class="math inline">\(\nabla^2_x f(x)\)</span>? <span class="math display">\[
+\begin{align}
+f(x)            &amp; = \frac{1}{2}x^TAx + b^Tx \\
+\nabla_x^2 f(x) &amp; = \frac{1}{2}2A &amp; \text{see linalg review 4.3} \\
+\nabla_x^2 f(x) &amp; = A
+\end{align}
+\]</span></p>
+<p><strong>d</strong>. Let <span class="math inline">\(f(x) = g(a^Tx)\)</span>, where <span class="math inline">\(g : \mathbb{R} \mapsto \mathbb{R}\)</span> is continuously differentiable and <span class="math inline">\(a \in \mathbb{R}^n\)</span> is a vector. What are <span class="math inline">\(\nabla f(x)\)</span> and <span class="math inline">\(\nabla^2 f(x)\)</span>? (<em>Hint</em>: your expression for <span class="math inline">\(\nabla^2f(x)\)</span> may have as few as 11 symbols, including <span class="math inline">\(^\prime\)</span> and parentheses.) <span class="math display">\[
+\begin{align}
+f(x)            &amp; = g(a^Tx) \\
+\nabla_xf(x)    &amp; = g^\prime(a^Tx)a &amp; \text{chain rule} \\
+\nabla_x^2f(x)  &amp; = g^{\prime\prime}(a^Tx)aa^T &amp;\text{chain rule again}
+\end{align}
+\]</span></p>
 </div>
 <div id="positive-definite-matrices" class="section level3">
 <h3><strong>2. Positive definite matrices</strong></h3>
-<p><strong>a</strong>.</p>
-<p><strong>b</strong>.</p>
-<p><strong>c</strong>.</p>
+<p>A matrix <span class="math inline">\(A \in \mathbb{R}^{n \times n}\)</span> is <em>positive semi-definite</em> (PSD), denoted <span class="math inline">\(A \succeq 0\)</span>, if <span class="math inline">\(A = A^T\)</span> and <span class="math inline">\(x^TAx \geq 0\)</span>, <span class="math inline">\(\forall x \in \mathbb{R}^n\)</span>. A matrix <span class="math inline">\(A\)</span> is <em>positive definite</em> (PD), denoted <span class="math inline">\(A \succ 0\)</span>, if <span class="math inline">\(A = A^T\)</span> and <span class="math inline">\(x^TAX &gt; 0\)</span>, <span class="math inline">\(\forall x \neq 0\)</span>, i.e., all non-zero vectors <span class="math inline">\(x\)</span>. The simplest example of a positive definite matrix is the identity matrix <span class="math inline">\(I\)</span>, which satisfies <span class="math inline">\(x^TIx = \lVert x \rVert^2_2 = \sum_{i=1}^n x_i^2\)</span>.</p>
+<p><strong>a</strong>. Let <span class="math inline">\(z \in \mathbb{R}^n\)</span> be an <span class="math inline">\(n\)</span>-vector. Show that <span class="math inline">\(A = zz^T\)</span> is positive semidefinite. <span class="math display">\[
+\begin{align}
+x^TAx &amp; = x^Tzz^Tx \\
+      &amp; = (x^Tz)^2 \geq 0 &amp; \text{by commutativity of dot product}
+\end{align}
+\]</span></p>
+<p><strong>b</strong>. Let <span class="math inline">\(z \in \mathbb{R}^n\)</span> be a <em>non-zero</em> <span class="math inline">\(n\)</span>-vector. Let <span class="math inline">\(A = zz^T\)</span>. What is the null-space of <span class="math inline">\(A\)</span>? What is the rank of <span class="math inline">\(A\)</span>?</p>
+<p>?????????????????????</p>
+<p><strong>c</strong>. Let <span class="math inline">\(A \in \mathbb{R}^n\)</span> be positive semidefinite and <span class="math inline">\(B \in \mathbb{R}^{m \times n}\)</span> be arbitrary, where <span class="math inline">\(m,n \in \mathbb{N}\)</span>. Is <span class="math inline">\(BAB^T\)</span> PSD? If so, prove it. If note, give a counterexample wtih explicit <span class="math inline">\(A,B\)</span>.</p>
+<p><span class="math inline">\(BAB^T\)</span> is PSD if <span class="math inline">\(x^TBAB^Tx \geq 0 \hspace{.3em}\forall \hspace{.3em} x \in \mathbb{R}^m\)</span>: <span class="math display">\[
+\begin{align}
+&amp; \qquad x^TBAB^Tx \\
+&amp; = \left(x^TB \right) A \left(B^Tx \right) \\
+&amp; = \left(B^Tx \right)^T A \left(B^T x \right) \\
+&amp; = z^T Az \geq 0  &amp; \text{where }z = B^Tx \in \mathbb{R}^n \text{, and since A is PSD} \\
+\end{align}
+\]</span></p>
 </div>
 <div id="eigenvectors-eigenvalues-and-the-spectral-theorem" class="section level3">
 <h3><strong>3. Eigenvectors, eigenvalues, and the spectral theorem</strong></h3>
-<p><strong>a</strong>.</p>
-<p><strong>b</strong>.</p>
-<p><strong>c</strong>.</p>
-</div>
-<div id="section" class="section level3">
-<h3></h3>
+<p>The eigenvalues of an <span class="math inline">\(n \times n\)</span> matrix <span class="math inline">\(A \in \mathbb{R}^{n \times n}\)</span> are the roots of the characteristic polynomial <span class="math inline">\(p_A(\lambda) = \det(\lambda I-A)\)</span>, which may (in general) be complex. They are also defined as the values <span class="math inline">\(\lambda \in \mathbb{C}\)</span> for which there exists a vector <span class="math inline">\(x \in \mathbb{C}^n\)</span> such that <span class="math inline">\(Ax = \lambda x\)</span>. We call such a pair <span class="math inline">\((x, \lambda)\)</span> an <em>eigenvector, eigenvalue</em> pair. In this question, we use the notation <span class="math inline">\(\text{diag}(\lambda_1, \dots, \lambda_n)\)</span> to denote the diagonal matrix with diagonal entries <span class="math inline">\(\lambda_1, \dots, \lambda_n\)</span>, i.e., <span class="math display">\[
+\text{diag}(\lambda_1, \dots, \lambda_n) =  \begin{bmatrix}
+                                            \lambda_1 &amp; 0         &amp; \cdots  &amp; 0       \\
+                                            0         &amp; \lambda_2 &amp; \cdots  &amp; 0       \\
+                                            \vdots    &amp; \vdots    &amp; \ddots  &amp; \vdots  \\
+                                            0         &amp; 0         &amp; \cdots  &amp; \lambda_n 
+                                            \end{bmatrix}
+\]</span> <strong>a</strong>. Suppose that the matrix <span class="math inline">\(A \in \mathbb{R}^{n \times n}\)</span> is diagonalizable, i.e. <span class="math inline">\(A = T\Lambda T^{-1}\)</span> for an invertible matrix <span class="math inline">\(T \in \mathbb{R}^{n \times n}\)</span>, where <span class="math inline">\(\Lambda = \text{diag}(\lambda_1, \dots, \lambda_n)\)</span>. Use the notation <span class="math inline">\(t^{(i)}\)</span> for the columns of <span class="math inline">\(T\)</span>, so that <span class="math inline">\(T = \begin{bmatrix}t^{(1)} &amp; \dots &amp; t^{(n)} \end{bmatrix}\)</span>, where <span class="math inline">\(t^{(i)} \in \mathbb{R}^n\)</span>. Show that <span class="math inline">\(At^{(i)} = \lambda_it^{(i)}\)</span>, so that the eigenvalue/eigenvector pairs of <span class="math inline">\(A\)</span> are <span class="math inline">\((t^{(i)}, \lambda_i)\)</span>.</p>
+<p><span class="math display">\[
+\begin{align}
+A   &amp; = T \Lambda T^{-1} \\
+AT  &amp; = T \Lambda \\
+A
+\begin{bmatrix}
+\mid    &amp; \mid    &amp;         &amp; \mid    \\
+t^{(1)} &amp; t^{(2)} &amp; \cdots  &amp; t^{(n)} \\
+\mid    &amp; \mid    &amp;         &amp; \mid
+\end{bmatrix}
+      &amp; = \begin{bmatrix}
+          \mid    &amp; \mid    &amp;         &amp; \mid    \\
+          t^{(1)} &amp; t^{(2)} &amp; \cdots  &amp; t^{(n)} \\
+          \mid    &amp; \mid    &amp;         &amp; \mid
+          \end{bmatrix}
+          \begin{bmatrix}
+          \lambda_1 &amp; 0         &amp; \cdots  &amp; 0       \\
+          0         &amp; \lambda_2 &amp; \cdots  &amp; 0       \\
+          \vdots    &amp; \vdots    &amp; \ddots  &amp; \vdots  \\
+          0         &amp; 0         &amp; \cdots  &amp; \lambda_n
+          \end{bmatrix} \\
+\begin{bmatrix}
+\mid      &amp; \mid      &amp;         &amp; \mid      \\
+At^{(1)}  &amp; At^{(2)}  &amp; \cdots  &amp; At^{(n)}  \\
+\mid      &amp; \mid      &amp;         &amp; \mid
+\end{bmatrix}
+      &amp; = \begin{bmatrix}
+          \mid              &amp; \mid              &amp;         &amp; \mid              \\
+          \lambda_1 t^{(1)} &amp; \lambda_2 t^{(2)} &amp; \cdots  &amp; \lambda_n t^{(n)} \\
+          \mid              &amp; \mid              &amp;         &amp; \mid
+          \end{bmatrix} \\
+      \therefore At^{(i)} &amp; = \lambda_it^{(i)}, \quad i \in \{1, 2, \dots, n\}
+\end{align}
+\]</span> A matrix <span class="math inline">\(U \in \mathbb{R}^{n \times n}\)</span> is orthogonal if <span class="math inline">\(U^TU = I\)</span>. The spectral theorem, perhaps one of the most important theorems in linear algebra, states that if <span class="math inline">\(A \in \mathbb{R}^{n \times n}\)</span> is symmetric, i.e. <span class="math inline">\(A = A^T\)</span>, then <span class="math inline">\(A\)</span> is <em>diagonalizable by a real orthogonal matrix</em>. I.e., there are a diagonal matrix <span class="math inline">\(\Lambda \in \mathbb{R}^{n \times n}\)</span> and orthogonal matrix <span class="math inline">\(U \in \mathbb{R}^{n \times n}\)</span> such that <span class="math inline">\(U^TAU = \Lambda\)</span>, or, equivalently, <span class="math display">\[
+A = U\Lambda U^T
+\]</span> Let <span class="math inline">\(\lambda_i = \lambda_i(A)\)</span> denote the <span class="math inline">\(i\)</span>th eigenvalue of <span class="math inline">\(A\)</span>.</p>
+<p><strong>b</strong>. Let <span class="math inline">\(A\)</span> be symmetric. Show that if <span class="math inline">\(U = \begin{bmatrix}u^{(1)} &amp; \cdots &amp; u^{(n)}\end{bmatrix}\)</span> is orthogonal, where <span class="math inline">\(u^{(i)} \in \mathbb{R}^n\)</span> and <span class="math inline">\(A = U \Lambda U^T\)</span>, then <span class="math inline">\(u^{(i)}\)</span> is an eigenvector of <span class="math inline">\(A\)</span> and <span class="math inline">\(Au^{(i)} = \lambda_i u^{(i)}\)</span>, where <span class="math inline">\(\Lambda = \text{diag}(\lambda_1, \dots, \lambda_n)\)</span>.</p>
+<p><span class="math display">\[
+\begin{align}
+A   &amp; = U \Lambda U^T \\
+AU  &amp; = U \Lambda     \\
+A
+\begin{bmatrix}
+\mid    &amp; \mid    &amp;         &amp; \mid    \\
+u^{(1)} &amp; u^{(2)} &amp; \cdots  &amp; u^{(n)} \\
+\mid    &amp; \mid    &amp;         &amp; \mid
+\end{bmatrix}
+    &amp; = \begin{bmatrix}
+        \mid    &amp; \mid    &amp;         &amp; \mid    \\
+        u^{(1)} &amp; u^{(2)} &amp; \cdots  &amp; u^{(n)} \\
+        \mid    &amp; \mid    &amp;         &amp; \mid
+        \end{bmatrix}
+        \begin{bmatrix}
+        \lambda_1 &amp; 0         &amp; \cdots  &amp; 0       \\
+        0         &amp; \lambda_2 &amp; \cdots  &amp; 0       \\
+        \vdots    &amp; \vdots    &amp; \ddots  &amp; \vdots  \\
+        0         &amp; 0         &amp; \cdots  &amp; \lambda_n
+        \end{bmatrix} \\
+\begin{bmatrix}
+\mid      &amp; \mid      &amp;         &amp; \mid      \\
+Au^{(1)}  &amp; Au^{(2)}  &amp; \cdots  &amp; Au^{(n)}  \\
+\mid      &amp; \mid      &amp;         &amp; \mid
+\end{bmatrix}
+    &amp; = \begin{bmatrix}
+        \mid              &amp; \mid              &amp;         &amp; \mid    \\
+        \lambda_1u^{(1)}  &amp; \lambda_2u^{(2)}  &amp; \cdots  &amp; \lambda_nu^{(n)} \\
+        \mid              &amp; \mid              &amp;         &amp; \mid
+        \end{bmatrix} \\
+\therefore Au^{(i)} &amp; = \lambda_i u^{(i)} \quad i \in \{1, 2, \dots, n\}
+\end{align}
+\]</span></p>
+<p><strong>c</strong>. Show that if <span class="math inline">\(A\)</span> is PSD, then <span class="math inline">\(\lambda_i(A) \geq 0\)</span> for each <span class="math inline">\(i\)</span>. <span class="math display">\[
+\begin{align}
+At^{(i)}              &amp; = \lambda_i t^{(i)} \\
+{t^{(i)}}^T At^{(i)}  &amp; = {t^{(i)}}^T \lambda_i t^{(i)} \\
+                      &amp; = \lambda_i {t^{(i)}}^T t^{(i)} \geq 0 &amp; A\text{ is PSD} \\
+                      &amp; \qquad \lambda_i \geq \frac{0}{{t^{(i)}}^T t^{(i)}} \\
+                      &amp; \qquad \lambda_i \geq 0
+\end{align}
+\]</span></p>
 </div>
 </div>
 

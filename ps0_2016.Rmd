@@ -9,10 +9,10 @@ output:
 # **CS229 Autumn 2016 Problem Set #0**
 
 ### **1. Gradients and Hessians**
-Recall that a matrix $A \in \mathbb{R}^{n \times n}$ is *symmetric* if $A^T = A$, i.e. $A_{ij} = A_{ji} \hspace{.2em} \forall \hspace{.2em} i,j$. Also recall the gradient $\nabla f(x)$ of a function $f: \mathbb{R}^n \mapsto \mathbb{R}$, which is the $n$-vector of partial derivatives
+Recall that a matrix $A \in \mathbb{R}^{n \times n}$ is *symmetric* if $A^T = A$, i.e. $A_{ij} = A_{ji} \hspace{.2em} \forall \hspace{.2em} i,j$. Also recall the gradient $\nabla_x f(x)$ of a function $f: \mathbb{R}^n \mapsto \mathbb{R}$, which is the $n$-vector of partial derivatives
 
 $$
-\nabla f(x) = \begin{bmatrix}
+\nabla_x f(x) = \begin{bmatrix}
               \frac{\partial}{\partial x_1} f(x) \\
               \vdots  \\
               \frac{\partial}{\partial x_n} f(x)
@@ -37,26 +37,164 @@ $$
                 \end{bmatrix}.
 $$
 
-**a**. Let $f(x) = \frac{1}{2}x^TAx + b^Tx$, where $A$ is a symmetric matrix and $b \in \mathbb{R}^n$ is a vector. What is $\nabla f(x)$?
+**a**. Let $f(x) = \frac{1}{2}x^TAx + b^Tx$, where $A$ is a symmetric matrix and $b \in \mathbb{R}^n$ is a vector. What is $\nabla_x f(x)$?
+$$
+\begin{align}
+f(x)          & = \frac{1}{2}x^TAx + b^Tx \\
+\nabla_x f(x) & = \frac{1}{2}2Ax + b & \text{see linalg review 4.3} \\
+\nabla_x f(x) & = Ax+b
+\end{align}
+$$
 
-**b**. Let $f(x) = g(h(x))$, where $g: \mathbb{R} \mapsto \mathbb{R}$ is differentiable and $h: \mathbb{R}^n \mapsto \mathbb{R}$ is differentiable. What is $\nabla f(x)$?
+**b**. Let $f(x) = g(h(x))$, where $g: \mathbb{R} \mapsto \mathbb{R}$ is differentiable and $h: \mathbb{R}^n \mapsto \mathbb{R}$ is differentiable. What is $\nabla_x f(x)$?
+$$
+\begin{align}
+f(x)          & = g(h(x)) \\
+\nabla_x f(x) & = g^{\prime}(h(x)) \nabla_x f(x) & \text{by the chain rule}
+\end{align}
+$$
 
-**c**. Let $f(x) = \frac{1}{2}x^TAx+b^Tx$, where $A$ is symmetric and $b \in \mathbb{R}^n$ is a vector. What is $\nabla^2 f(x)$?
+**c**. Let $f(x) = \frac{1}{2}x^TAx+b^Tx$, where $A$ is symmetric and $b \in \mathbb{R}^n$ is a vector. What is $\nabla^2_x f(x)$?
+$$
+\begin{align}
+f(x)            & = \frac{1}{2}x^TAx + b^Tx \\
+\nabla_x^2 f(x) & = \frac{1}{2}2A & \text{see linalg review 4.3} \\
+\nabla_x^2 f(x) & = A
+\end{align}
+$$
 
 **d**. Let $f(x) = g(a^Tx)$, where $g : \mathbb{R} \mapsto \mathbb{R}$ is continuously differentiable and $a \in \mathbb{R}^n$ is a vector. What are $\nabla f(x)$ and $\nabla^2 f(x)$? (*Hint*: your expression for $\nabla^2f(x)$ may have as few as 11 symbols, including $^\prime$ and parentheses.)
+$$
+\begin{align}
+f(x)            & = g(a^Tx) \\
+\nabla_xf(x)    & = g^\prime(a^Tx)a & \text{chain rule} \\
+\nabla_x^2f(x)  & = g^{\prime\prime}(a^Tx)aa^T &\text{chain rule again}
+\end{align}
+$$
 
 ### **2. Positive definite matrices**
+A matrix $A \in \mathbb{R}^{n \times n}$ is *positive semi-definite* (PSD), denoted $A \succeq 0$, if $A = A^T$ and $x^TAx \geq 0$, $\forall x \in \mathbb{R}^n$. A matrix $A$ is *positive definite* (PD), denoted $A \succ 0$, if $A = A^T$ and $x^TAX > 0$, $\forall x \neq 0$, i.e., all non-zero vectors $x$. The simplest example of a positive definite matrix is the identity matrix $I$, which satisfies $x^TIx = \lVert x \rVert^2_2 = \sum_{i=1}^n x_i^2$.
 
-**a**.
+**a**. Let $z \in \mathbb{R}^n$ be an $n$-vector. Show that $A = zz^T$ is positive semidefinite.
+$$
+\begin{align}
+x^TAx & = x^Tzz^Tx \\
+      & = (x^Tz)^2 \geq 0 & \text{by commutativity of dot product}
+\end{align}
+$$
 
-**b**.
+**b**. Let $z \in \mathbb{R}^n$ be a *non-zero* $n$-vector. Let $A = zz^T$. What is the null-space of $A$? What is the rank of $A$?
 
-**c**.
+?????????????????????
+
+**c**. Let $A \in \mathbb{R}^n$ be positive semidefinite and $B \in \mathbb{R}^{m \times n}$ be arbitrary, where $m,n \in \mathbb{N}$. Is $BAB^T$ PSD? If so, prove it. If note, give a counterexample wtih explicit $A,B$.
+
+$BAB^T$ is PSD if $x^TBAB^Tx \geq 0 \hspace{.3em}\forall \hspace{.3em} x \in \mathbb{R}^m$:
+$$
+\begin{align}
+& \qquad x^TBAB^Tx \\
+& = \left(x^TB \right) A \left(B^Tx \right) \\
+& = \left(B^Tx \right)^T A \left(B^T x \right) \\
+& = z^T Az \geq 0  & \text{where }z = B^Tx \in \mathbb{R}^n \text{, and since A is PSD} \\
+\end{align}
+$$
 
 ### **3. Eigenvectors, eigenvalues, and the spectral theorem**
+The eigenvalues of an $n \times n$ matrix $A \in \mathbb{R}^{n \times n}$ are the roots of the characteristic polynomial $p_A(\lambda) = \det(\lambda I-A)$, which may (in general) be complex. They are also defined as the values $\lambda \in \mathbb{C}$ for which there exists a vector $x \in \mathbb{C}^n$ such that $Ax = \lambda x$. We call such a pair $(x, \lambda)$ an *eigenvector, eigenvalue* pair. In this question, we use the notation $\text{diag}(\lambda_1, \dots, \lambda_n)$ to denote the diagonal matrix with diagonal entries $\lambda_1, \dots, \lambda_n$, i.e.,
+$$
+\text{diag}(\lambda_1, \dots, \lambda_n) =  \begin{bmatrix}
+                                            \lambda_1 & 0         & \cdots  & 0       \\
+                                            0         & \lambda_2 & \cdots  & 0       \\
+                                            \vdots    & \vdots    & \ddots  & \vdots  \\
+                                            0         & 0         & \cdots  & \lambda_n 
+                                            \end{bmatrix}
+$$
+**a**. Suppose that the matrix $A \in \mathbb{R}^{n \times n}$ is diagonalizable, i.e. $A = T\Lambda T^{-1}$ for an invertible matrix $T \in \mathbb{R}^{n \times n}$, where $\Lambda = \text{diag}(\lambda_1, \dots, \lambda_n)$. Use the notation $t^{(i)}$ for the columns of $T$, so that $T = \begin{bmatrix}t^{(1)} & \dots & t^{(n)} \end{bmatrix}$, where $t^{(i)} \in \mathbb{R}^n$. Show that $At^{(i)} = \lambda_it^{(i)}$, so that the eigenvalue/eigenvector pairs of $A$ are $(t^{(i)}, \lambda_i)$.
 
-**a**.
+$$
+\begin{align}
+A   & = T \Lambda T^{-1} \\
+AT  & = T \Lambda \\
+A
+\begin{bmatrix}
+\mid    & \mid    &         & \mid    \\
+t^{(1)} & t^{(2)} & \cdots  & t^{(n)} \\
+\mid    & \mid    &         & \mid
+\end{bmatrix}
+      & = \begin{bmatrix}
+          \mid    & \mid    &         & \mid    \\
+          t^{(1)} & t^{(2)} & \cdots  & t^{(n)} \\
+          \mid    & \mid    &         & \mid
+          \end{bmatrix}
+          \begin{bmatrix}
+          \lambda_1 & 0         & \cdots  & 0       \\
+          0         & \lambda_2 & \cdots  & 0       \\
+          \vdots    & \vdots    & \ddots  & \vdots  \\
+          0         & 0         & \cdots  & \lambda_n
+          \end{bmatrix} \\
+\begin{bmatrix}
+\mid      & \mid      &         & \mid      \\
+At^{(1)}  & At^{(2)}  & \cdots  & At^{(n)}  \\
+\mid      & \mid      &         & \mid
+\end{bmatrix}
+      & = \begin{bmatrix}
+          \mid              & \mid              &         & \mid              \\
+          \lambda_1 t^{(1)} & \lambda_2 t^{(2)} & \cdots  & \lambda_n t^{(n)} \\
+          \mid              & \mid              &         & \mid
+          \end{bmatrix} \\
+      \therefore At^{(i)} & = \lambda_it^{(i)}, \quad i \in \{1, 2, \dots, n\}
+\end{align}
+$$
+A matrix $U \in \mathbb{R}^{n \times n}$ is orthogonal if $U^TU = I$. The spectral theorem, perhaps one of the most important theorems in linear algebra, states that if $A \in \mathbb{R}^{n \times n}$ is symmetric, i.e. $A = A^T$, then $A$ is *diagonalizable by a real orthogonal matrix*. I.e., there are a diagonal matrix $\Lambda \in \mathbb{R}^{n \times n}$ and orthogonal matrix $U \in \mathbb{R}^{n \times n}$ such that $U^TAU = \Lambda$, or, equivalently,
+$$
+A = U\Lambda U^T
+$$
+Let $\lambda_i = \lambda_i(A)$ denote the $i$th eigenvalue of $A$.
 
-**b**.
+**b**. Let $A$ be symmetric. Show that if $U = \begin{bmatrix}u^{(1)} & \cdots & u^{(n)}\end{bmatrix}$ is orthogonal, where $u^{(i)} \in \mathbb{R}^n$ and $A = U \Lambda U^T$, then $u^{(i)}$ is an eigenvector of $A$ and $Au^{(i)} = \lambda_i u^{(i)}$, where $\Lambda = \text{diag}(\lambda_1, \dots, \lambda_n)$.
 
-**c**.
+$$
+\begin{align}
+A   & = U \Lambda U^T \\
+AU  & = U \Lambda     \\
+A
+\begin{bmatrix}
+\mid    & \mid    &         & \mid    \\
+u^{(1)} & u^{(2)} & \cdots  & u^{(n)} \\
+\mid    & \mid    &         & \mid
+\end{bmatrix}
+    & = \begin{bmatrix}
+        \mid    & \mid    &         & \mid    \\
+        u^{(1)} & u^{(2)} & \cdots  & u^{(n)} \\
+        \mid    & \mid    &         & \mid
+        \end{bmatrix}
+        \begin{bmatrix}
+        \lambda_1 & 0         & \cdots  & 0       \\
+        0         & \lambda_2 & \cdots  & 0       \\
+        \vdots    & \vdots    & \ddots  & \vdots  \\
+        0         & 0         & \cdots  & \lambda_n
+        \end{bmatrix} \\
+\begin{bmatrix}
+\mid      & \mid      &         & \mid      \\
+Au^{(1)}  & Au^{(2)}  & \cdots  & Au^{(n)}  \\
+\mid      & \mid      &         & \mid
+\end{bmatrix}
+    & = \begin{bmatrix}
+        \mid              & \mid              &         & \mid    \\
+        \lambda_1u^{(1)}  & \lambda_2u^{(2)}  & \cdots  & \lambda_nu^{(n)} \\
+        \mid              & \mid              &         & \mid
+        \end{bmatrix} \\
+\therefore Au^{(i)} & = \lambda_i u^{(i)} \quad i \in \{1, 2, \dots, n\}
+\end{align}
+$$
+
+**c**. Show that if $A$ is PSD, then $\lambda_i(A) \geq 0$ for each $i$.
+$$
+\begin{align}
+At^{(i)}              & = \lambda_i t^{(i)} \\
+{t^{(i)}}^T At^{(i)}  & = {t^{(i)}}^T \lambda_i t^{(i)} \\
+                      & = \lambda_i {t^{(i)}}^T t^{(i)} \geq 0 & A\text{ is PSD} \\
+                      & \qquad \lambda_i \geq \frac{0}{{t^{(i)}}^T t^{(i)}} \\
+                      & \qquad \lambda_i \geq 0
+\end{align}
+$$
