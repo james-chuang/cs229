@@ -1,0 +1,43 @@
+---
+output:
+  html_document:
+    toc: TRUE
+    fig_width: 4.5
+    css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# **CS229 Autumn 2016 Problem Set #1**
+
+### **1. Logistic Regression**
+
+**a.** Consider the average empirical loss (the risk) for logistic regression:
+$$
+\begin{align}
+J(\theta) & = \frac{1}{m} \sum_{i=1}^m \log \left(1+e^{-y^{(i)}\theta^Tx^{(i)}} \right) \\
+          & = - \frac{1}{m} \sum_{i=1}^m \log \left(h_\theta \left(y^{(i)} x^{(i)} \right) \right) \\
+          & &h_\theta(x) & = g(\theta^Tx), \\
+          & &g(z) & = \frac{1}{1+e^{-z}}
+\end{align}
+$$
+Find the Hessian $H$ of this function, and show that for any vector $z$, it holds true that
+$$
+z^THz \geq 0.
+$$
+*Hint:* You might want to start by showing the fact that $\sum_i \sum_j z_i x_i x_j z_j = \left(x^Tz \right)^2 \geq 0$.
+
+**Remark:** This is one of the standard ways of showing that the matrix $H$ is positive semidefinite, written "$H \succeq 0$." This implies that $J$ is convex, and has no local minima other than the global one. If you have some other way of showing $H \succeq 0$, you're also welcome to use your method instead of the one above.
+
+$$
+\begin{align}
+J(\theta)                                     & = - \frac{1}{m} \sum_{i=1}^m \log \left(h_\theta\left(y^{(i)}x^{(i)} \right)\right) \\
+\frac{\partial J(\theta)}{\partial \theta_k}  & = - \frac{1}{m} \sum_{i=1}^m \frac{1}{h_\theta\left(y^{(i)}x^{(i)} \right)}y^{(i)}x_k^{(i)} \\
+\frac{\partial^2J(\theta)}{\partial\theta_\ell \partial \theta_k}  & = - \frac{1}{m} \sum_{i=1}^m \\
+
+
+\frac{\partial}{\partial \theta_k} \log(1+e^{-yx^T\theta}) & = \frac{1}{1+e^{-yx^T\theta}}yx
+\end{align}
+$$

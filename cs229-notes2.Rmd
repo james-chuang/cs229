@@ -36,8 +36,9 @@ My notes on Andrew Ng's [CS229 lecture 2 notes](http://cs229.stanford.edu/materi
       \end{align}
       $$
 
-## **Gaussian discriminant analysis***
-Assume that $p(x \mid y)$ is distributed according to a multivariabe normal distribution.
+## **Gaussian discriminant analysis**
+
+Assume that $p(x \mid y)$ is distributed according to a multivariable normal distribution.
 
 ### ***The multivariate normal distribution***
 
@@ -50,3 +51,109 @@ parameters
   $$
   p(x; \mu, \Sigma) = \frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{2}}} \exp \left(-\frac{1}{2} \left(x-\mu \right)^T \Sigma^{-1} \left(x-\mu \right) \right)
   $$
+For $X \sim \mathcal{N}(\mu, \Sigma)$:
+
+$$
+\begin{align}
+\text{E}[X] & = \int_x x p(x;\mu,\Sigma) dx = \mu
+\end{align}
+$$
+For a vector-valued random variable $Z$, $\text{Cov}(Z) = \text{E} \left[(Z-\text{E}[Z]) (Z-\text{E}[Z])^T \right]$, generalizing the variance to multiple dimensions.
+
+$$
+\begin{align}
+\text{Cov}(Z) & = \text{E} \left[(Z-\text{E}[Z]) (Z-\text{E}[Z])^T \right] \\
+              & = \text{E} \left[(Z-\text{E}[Z]) \left(Z^T-\left(\text{E}[Z]\right)^T\right) \right] & \text{transpose respects addition}                                   \\
+              & = \text{E} \left[\left(Z-\text{E}[Z]\right) \left(Z^T-\text{E}[Z] \right) \right] & \text{transpose of a scalar: }\text{E}[Z] = \left(\text{E}[Z]\right)^T \\
+              & = \text{E} \left[ZZ^T- Z \text{E}[Z] - \text{E}[Z]Z^T + \text{E}^2[Z] \right] \\
+              & = \text{E} \left[ZZ^T \right] - \text{E}[Z\text{E}[Z]] - \text{E}[\text{E}[Z]Z^T] + \text{E}[\text{E}^2[Z]] \\
+              & = \text{E} \left[ZZ^T \right] - \text{E}^2[Z] - \text{E}[Z]\text{E}\left[Z^T\right] + \text{E}^2[Z] & \text{expectation of a scalar: }\text{E}[\text{E}[Z]] = \text{E}[Z] \\
+              & = \text{E} \left[ZZ^T \right] - \text{E}[Z]\text{E}\left[Z^T \right] \\
+              & = \text{E} \left[ZZ^T \right] - \left(\text{E}[Z]\right)\left(\text{E}\left[Z \right]\right)^T \\
+              \\
+          \therefore  \text{Cov}(Z) & = \text{E} \left[(Z-\text{E}[Z]) (Z-\text{E}[Z])^T \right] \\
+                                    & = \text{E} \left[ZZ^T \right] - \left(\text{E}[Z]\right)\left(\text{E}\left[Z \right]\right)^T
+\end{align}
+$$
+If $X \sim \mathcal{N}(\mu, \Sigma)$, then
+$$
+\text{Cov}(X) = \Sigma
+$$
+  
+$X \sim \mathcal{N}(\mu = \mathbf{0}, \Sigma = I)$ is the ***standard normal distribution***.
+  
+The diagonal of the covariance matrix is the variance of each variable. The off-diagonal elements $\Sigma_{ij}, i \neq j$ are the covariance of variable $i$ with variable $j$.
+
+## **The Gaussian Discriminant Analysis model**
+Classification with continuous-valued input features $x$, modelling $p(x \mid y)$ using a multivariate normal distribution:
+
+$$
+\begin{align}
+y             & \sim \text{Bernoulli}(\phi)   \\
+x \mid y = 0  & \sim \mathcal{N}(\mu_0, \Sigma)  \\
+x \mid y = 1  & \sim \mathcal{N}(\mu_1, \Sigma)
+\end{align}
+$$
+, i.e.
+$$
+\begin{align}
+p(y)            & = \phi^y (1-\phi)^{1-y} \\
+p(x \mid y = 0) & = \frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{2}}} \exp \left(- \frac{1}{2} (x-\mu_0)^T \Sigma^{-1}(x-\mu_0) \right) \\
+p(x \mid y = 1) & = \frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{2}}} \exp \left(- \frac{1}{2} (x-\mu_1)^T \Sigma^{-1}(x-\mu_1) \right) \\
+\end{align}
+$$
+Parameters of the model: $\phi, \Sigma, \mu_0, \mu_1$. Note the assumption of equal covariance matrices between the classes. Relaxing this assumption leads to quadratic discriminant analysis (QDA).
+
+The log-likelihood of the data:
+$$
+\begin{align}
+\ell(\phi, \mu_0, \mu_1, \Sigma) & = \log \prod_{i=1}^m p \left(x^{(i)}, y^{(i)}; \phi, \mu_0, \mu_1, \Sigma \right) \\
+                                & = \log \prod_{i=1}^m p \left(x^{(i)} \mid y^{(i)}; \mu_0, \mu_1, \Sigma \right)p\left(y^{(i)}; \phi\right) & \text{chain rule of conditional prob.}\\
+\end{align}
+$$
+
+## **GDA and logistic regression**
+The GDA model can be thought of as the generative analog to the discriminative logistic regression algorithm:
+$$
+\begin{align}
+p(y=1 \mid x; \phi, \mu_0, \mu_1, \Sigma) & = \frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{2}}} \exp \left(- \frac{1}{2} (x-\mu_1)^T \Sigma^{-1}(x-\mu_1) \right) \\
+                                          & = \frac{1}{1+ \exp(-\theta^Tx)}, \qquad\text{where } \theta = f\left(\phi, \Sigma, \mu_0, \mu_1 \right)
+\end{align}
+$$
+
+, which is the form of logistic regression. The above argument says that if $p(x \mid y)$ is multivariate gaussian (with shared $\Sigma$), then $p(y \mid x)$ follows a logistic function. However, the converse is not true: $p(y \mid x)$ being a logistic function does not imply $p(x \mid y)$ is multivariate Gaussian. So, GDA makes *stronger* modeling assumptions about the data than logistic regression. When these assumptions are correct, then GDA will better fit to the data, and is a better model. Specifically, when $p(x \mid y)$ is Gaussian (with shared $\Sigma$), then GDA is ***asymptotically efficient***- in the limit of large training sets, there is no algorithm that is strictly better than GDA. In constrast, logistic regression makes weaker assumptions about the data and is thus more *robust* to incorrect modelling assumptions. When the data is non-Gaussian, then in the limit of large datasets, logistic regression will usually outperform GDA.
+
+## **Naive Bayes**
+- Consider $x_i$'s which are discrete-valued, e.g. vectors where each element represents the $i$-th word of a dictionary.
+  - $x_i = 1$ if the word is included, otherwise $x_i =0$.
+  - set of words encoded in the feature vector $\rightarrow$ **vocabulary**.
+    - dimension of $x$ = size of vocabulary
+  - to build a generative model, have to model $p(x \mid y)$
+    - consider vocabulary of 50,000 words
+      - then, $x \in \{0,1\}^{50000}$
+        - modelling $x$ with a multinomial distribution over the $2^{50000}$ possible outcomes results in a $(2^{50000}-1)$-dimensional parameter vector (way too many.).
+        - to make $p(x \mid y)$ tractable, make a strong assumption- the ***Naive Bayes (NB) assumption***, which assumes that the $x_i$'s are conditionally independent given $y$. The resulting algorithm is called the ***Naive Bayes classifier***. Then,
+        
+        $$
+        \begin{align}
+        p(& x_1, \dots, x_{50000} \mid y) \\
+        & = p(x_1 \mid y)p(x_2 \mid y, x_1)p(x_3 \mid y, x_1, x_2) \cdots p(x_{50000} \mid y, x_1, \dots, x_{49999}) & \text{chain rule of probabilities} \\
+        & = p(x_1 \mid y)p(x_2 \mid y)p(x_3 \mid y) \cdots p(x_{50000} \mid y) & \text{NB assumption} \\
+        & = \prod_{i=1}^n p(x_i \mid y)
+        \end{align}
+        $$
+        
+        - the Naive Bayes assumption is an extremely strong assumption, but the resulting algorithm works well on many problems
+- model parameters:
+  $$
+  \begin{align}
+  \phi_{i | y = 1}  & = p(x_i = 1 \mid y=1), \\
+  \phi_{i | y = 0}  & = p(x_i = 1 \mid y=0), \\
+  \phi_{y}          & = p(y=1)
+  \end{align}
+  $$
+  
+- joint likelihood:
+$$
+\mathcal{L}(\phi_{y}, \phi_{i | y = 0}, \phi_{i | y = 1}) = \prod_{i=1}^m p\left(x^{(i)}, y^{(i)} \right)
+$$
