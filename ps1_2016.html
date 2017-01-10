@@ -123,6 +123,10 @@ $(document).ready(function () {
 <ul>
 <li><a href="#cs229-autumn-2016-problem-set-1"><strong>CS229 Autumn 2016 Problem Set #1</strong></a><ul>
 <li><a href="#logistic-regression"><strong>1. Logistic Regression</strong></a></li>
+<li><a href="#poisson-regression-and-the-exponential-family"><strong>2. Poisson regression and the exponential family</strong></a></li>
+<li><a href="#gaussian-discriminant-analysis"><strong>3. Gaussian discriminant analysis</strong></a></li>
+<li><a href="#linear-invariance-of-optimization-algorithms"><strong>4. Linear invariance of optimization algorithms</strong></a></li>
+<li><a href="#regression-for-denoising-quasar-spectra"><strong>5. Regression for denoising quasar spectra</strong></a></li>
 </ul></li>
 </ul>
 </div>
@@ -142,25 +146,140 @@ J(\theta) &amp; = \frac{1}{m} \sum_{i=1}^m \log \left(1+e^{-y^{(i)}\theta^Tx^{(i
 z^THz \geq 0.
 \]</span> <em>Hint:</em> You might want to start by showing the fact that <span class="math inline">\(\sum_i \sum_j z_i x_i x_j z_j = \left(x^Tz \right)^2 \geq 0\)</span>.</p>
 <p><strong>Remark:</strong> This is one of the standard ways of showing that the matrix <span class="math inline">\(H\)</span> is positive semidefinite, written “<span class="math inline">\(H \succeq 0\)</span>.” This implies that <span class="math inline">\(J\)</span> is convex, and has no local minima other than the global one. If you have some other way of showing <span class="math inline">\(H \succeq 0\)</span>, you’re also welcome to use your method instead of the one above.</p>
-$$
-<span class="math display">\[\begin{align}
+<p><span class="math display">\[
+\begin{align}
 J(\theta)                                     &amp; = \frac{1}{m} \sum_{i=1}^m \log \left(1+e^{-y^{(i)}\theta^Tx^{(i)}} \right) \\
 \frac{\partial J(\theta)}{\partial \theta_k}  &amp; = \frac{1}{m} \sum_{i=1}^m \frac{e^{-y^{(i)}\theta^Tx^{(i)}}}{1+e^{-y^{(i)}\theta^Tx^{(i)}}} \left(-y^{(i)} x_k^{(i)} \right) \\
 \frac{\partial J(\theta)}{\partial \theta_k}  &amp; = \frac{1}{m} \sum_{i=1}^m \frac{1}{1 + e^{y^{(i)}\theta^Tx^{(i)}}} \left(-y^{(i)} x_k^{(i)} \right) \\
 \frac{\partial J(\theta)}{\partial \theta_k}  &amp; = - \frac{1}{m} \sum_{i=1}^m h_\theta \left(-y^{(i)}x^{(i)} \right) \left(y^{(i)} x_k^{(i)} \right) \\
 \frac{\partial^2 J(\theta)}{\partial \theta_\ell \partial \theta_k} &amp; = - \frac{1}{m} \sum_{i=1}^m \frac{\partial}{\partial \theta_\ell} h_\theta \left(-y^{(i)}x^{(i)} \right) \left(y^{(i)} x_k^{(i)} \right) \\
 \frac{\partial^2 J(\theta)}{\partial \theta_\ell \partial \theta_k} &amp; = - \frac{1}{m} \sum_{i=1}^m h_\theta \left(-y^{(i)} x^{(i)} \right) \left(1-h_\theta \left(-y^{(i)}x^{(i)} \right) \right) \left(-y^{(i)}x_k^{(i)} \right) \left(-y^{(i)}x_\ell^{(i)} \right) \\
-
 &amp; = -\frac{1}{m} \sum_{i=1}^m h_\theta \left(x^{(i)} \right) \left(1- h_\theta \left(x^{(i)} \right) \right) x_\ell^{(i)} x_k^{(i)}  ????????????????
-\end{align}\]</span>
-<p>$$</p>
-<p><strong>b.</strong> We have provided two data files: - <a href="http://cs229.stanford.edu/ps/ps1/logistic_x.txt" class="uri">http://cs229.stanford.edu/ps/ps1/logistic_x.txt</a> - <a href="http://cs229.stanford.edu/ps/ps1/logistic_y.txt" class="uri">http://cs229.stanford.edu/ps/ps1/logistic_y.txt</a></p>
+\end{align}
+\]</span></p>
+<p><strong>b.</strong> We have provided two data files:</p>
+<ul>
+<li><a href="http://cs229.stanford.edu/ps/ps1/logistic_x.txt" class="uri">http://cs229.stanford.edu/ps/ps1/logistic_x.txt</a></li>
+<li><a href="http://cs229.stanford.edu/ps/ps1/logistic_y.txt" class="uri">http://cs229.stanford.edu/ps/ps1/logistic_y.txt</a></li>
+</ul>
 <p>These files contain the inputs <span class="math inline">\(\left(x^{(i)} \in \mathbb{R}^2 \right)\)</span> and outputs <span class="math inline">\(\left(y^{(i)} \in \left\{-1,1 \right\} \right)\)</span>, respectively, for a binary classification problem, with one training example per row. Implement Newton’s method for optimizing <span class="math inline">\(J(\theta)\)</span>, and apply it to fit a logistic regression model to the data. Initialize Newton’s method with <span class="math inline">\(\theta = \vec{0}\)</span> (the vector of all zeros). What are the coefficients <span class="math inline">\(\theta\)</span> resulting from your fit? (Remember to include the intercept term.)</p>
-<pre class="python"><code>import numpy as np
-
-a = np.array([1,2,3])
-print(a)</code></pre>
-<pre><code>## [1 2 3]</code></pre>
+<pre class="python"><code></code></pre>
+<p><strong>c.</strong> Plot the training data (your axes should be <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span>, corresponding to the two coordinates of the inputs, and you should use a different symbol for each point plotted to indicate whether that example has label <span class="math inline">\(1\)</span> or <span class="math inline">\(-1\)</span>). Also plot on the same figure the decision boundary fit by logistic regression. (This should be a straight line showing the boundary separating the region where <span class="math inline">\(h_\theta(x) &gt; 0.5\)</span> from where <span class="math inline">\(h_\theta(x) \leq 0.5\)</span>.)</p>
+</div>
+<div id="poisson-regression-and-the-exponential-family" class="section level3">
+<h3><strong>2. Poisson regression and the exponential family</strong></h3>
+<p><strong>a.</strong> Consider the Poisson distribution parameterized by <span class="math inline">\(\lambda\)</span>: <span class="math display">\[
+p(y; \lambda) = \frac{e^{-\lambda}\lambda^y}{y!}
+\]</span> Show that the Poisson distribution is in the exponential family, and clearly state what <span class="math inline">\(b(y)\)</span>, <span class="math inline">\(\eta\)</span>, <span class="math inline">\(T(y)\)</span>, and <span class="math inline">\(a(\eta)\)</span> are.</p>
+<p><span class="math display">\[
+\begin{align}
+p(y; \lambda) &amp; = \frac{e^{-\lambda}\lambda^y}{y!} \\
+              &amp; = \frac{1}{y!} e^{-\lambda} e^{y \log \lambda} \\
+              &amp; = \frac{1}{y!} \exp{\left(y \log \lambda - \lambda\right)} &amp; \text{exp. form:}\quad b(y) \exp \left(\eta^T T(y) - a(\eta) \right) \\
+              \\
+          b(y) &amp; = \frac{1}{y!} \\
+          T(y) &amp; = y \\
+          \eta &amp; = \log \lambda \\
+          a(\eta) &amp; = e^\eta
+\end{align}
+\]</span> <strong>b.</strong> Consider performing regression using a GLM model with a Poisson response variable. What is the canonical response function for the family? (You may use the fact that a Poisson random variable with parameter <span class="math inline">\(\lambda\)</span> has mean <span class="math inline">\(\lambda\)</span>.)</p>
+<p><span class="math display">\[
+\begin{align}
+g(\eta) &amp; = \text{E}\left[y; \eta\right] \\
+        &amp; = \lambda \\
+        &amp; = e^\eta
+\end{align}
+\]</span></p>
+<p><strong>c.</strong> For a training set <span class="math inline">\(\left\{x^{(i)}, y^{(i)}; i = 1, \dots, m \right\}\)</span>, let the log-likelihood of an example be <span class="math inline">\(\log p \left(y^{(i)} | x^{(i)}; \theta \right)\)</span>. By taking the derivative of the log-likelihood w.r.t. <span class="math inline">\(\theta_j\)</span>, derive the stochastic gradient ascent rule for learning using a GLM model with Poisson reponses <span class="math inline">\(y\)</span> and the canonical response function.</p>
+<p><span class="math display">\[
+\begin{align}
+p\left(y^{(i)} \mid x^{(i)}; \theta \right) &amp; = \frac{1}{y^{(i)}!} \exp \left(\eta^T y^{(i)}-e^{\eta} \right) \\
+                                            &amp; = \frac{1}{y^{(i)}!} \exp \left(\left(\theta^Tx \right)^T y^{(i)}-e^{\theta^Tx} \right) \\
+                              \ell(\theta)  &amp; = \log \left[\frac{1}{y^{(i)}!} \exp \left({x^{(i)}}^T\theta y^{(i)}-e^{{x^{(i)}}^T\theta} \right) \right] \\
+                                            &amp; = -\log \left(y^{(i)}! \right) + {x^{(i)}}^T\theta y^{(i)}-e^{{x^{(i)}}^T\theta} \\
+                \nabla_\theta \ell(\theta)  &amp; = {x^{(i)}}^T y^{(i)} - {x^{(i)}}^Te^{{x^{(i)}}^T\theta} \\
+                                            &amp; =  \left(y^{(i)}-e^{\theta^Tx^{(i)}} \right) x_j^{(i)} \\
+                                            \\
+                          \therefore \frac{\partial \ell(\theta)}{\partial \theta_j} &amp; = \left(y^{(i)}-e^{\theta^Tx^{(i)}} \right) x_j^{(i)} \\
+\end{align}
+\]</span></p>
+<p>The stochastic gradient ascent update rule: <span class="math display">\[
+\begin{align}
+\theta &amp; \gets \theta + \alpha \frac{\partial \ell (\theta)}{\partial \theta_j} \\
+\theta &amp; \gets \theta + \alpha \left(y^{(i)}-e^{\theta^Tx^{(i)}} \right) x_j^{(i)}
+\end{align}
+\]</span></p>
+<p><strong>d.</strong> Consider using a GLM with a reponse variable from any member of the exponential family in which <span class="math inline">\(T(y) = y\)</span>, and the canonical response functino <span class="math inline">\(h(x)\)</span> for the family. Show that stochastic gradient ascent on the log-likelihood <span class="math inline">\(\log p(\vec{y} |X; \theta)\)</span> results in the update rule <span class="math inline">\(\theta_i \gets \theta_i - \alpha(h(x)-y)x_i\)</span>.</p>
+</div>
+<div id="gaussian-discriminant-analysis" class="section level3">
+<h3><strong>3. Gaussian discriminant analysis</strong></h3>
+<p>Suppose we are given a dataset <span class="math inline">\(\left\{\left(x^{(i)}, y^{(i)} \right); i = 1, \dots, m \right\}\)</span> consisting of <span class="math inline">\(m\)</span> independent examples, where <span class="math inline">\(x^{(i)} \in \mathbb{R}^n\)</span> are <span class="math inline">\(n\)</span>-dimensional vectors, and <span class="math inline">\(y^{(i)} \in \{-1,1\}\)</span>. we will model the joint distribution of <span class="math inline">\((x,y)\)</span> according to: <span class="math display">\[
+\begin{align}
+p(y) &amp; = \begin{cases}
+          \phi &amp; \text{if } y = 1 \\
+          1-\phi &amp; \text{if } y = -1
+          \end{cases} \\
+p(x \mid y=-1) &amp; = \frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{2}}} \exp \left(-\frac{1}{2} \left(x-\mu_{-1} \right)^T\Sigma^{-1} \left(x-\mu_{-1} \right) \right) \\
+p(x \mid y=1)  &amp; = \frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{2}}} \exp \left(-\frac{1}{2} \left(x-\mu_{1} \right)^T\Sigma^{-1} \left(x-\mu_{1} \right) \right)
+\end{align}
+\]</span> Here, the parameters of our model are <span class="math inline">\(\phi\)</span>, <span class="math inline">\(\Sigma\)</span>, <span class="math inline">\(\mu_{-1}\)</span>, <span class="math inline">\(\mu_1\)</span>. (Note that while there’re two different mean vectors <span class="math inline">\(\mu_{-1}\)</span> and <span class="math inline">\(\mu_1\)</span>, there’s only one covariance matrix <span class="math inline">\(\Sigma\)</span>.)</p>
+<p><strong>a.</strong> Suppose we have already fit <span class="math inline">\(\phi\)</span>, <span class="math inline">\(\Sigma\)</span>, <span class="math inline">\(\mu_{-1}\)</span>, <span class="math inline">\(\mu_1\)</span>, and now want to make a prediction at some new query point <span class="math inline">\(x\)</span>. Show that the posterior distribution of the label at <span class="math inline">\(x\)</span> takes the form of a logistic function, and can be written <span class="math display">\[
+p(y \mid x; \phi, \Sigma, \mu_{-1}, \mu_{1}) = \frac{1}{1+\exp \left(-y(\theta^Tx + \theta_0) \right)},
+\]</span> where <span class="math inline">\(\theta \in \mathbb{R}^n\)</span> and the bias term <span class="math inline">\(\theta_0 \in \mathbb{R}\)</span> are some appropriate functions of <span class="math inline">\(\phi\)</span>, <span class="math inline">\(\Sigma\)</span>, <span class="math inline">\(\mu_{-1}\)</span>, <span class="math inline">\(\mu_1\)</span>. (Note: the term <span class="math inline">\(\theta_0\)</span> corresponds to introducing an extra coordinate <span class="math inline">\(x_0^{(i)}=1\)</span>.)</p>
+<p><span class="math display">\[
+\begin{align}
+p(y=1 \mid x) &amp; = \frac{p(x \mid y=1)p(y=1)}{p(x)} \\
+              &amp; = \frac{p(x \mid y=1)p(y=1)}{p(x \mid y=1)p(y=1)+ p(x \mid y=-1)p(y=-1)} \\
+              &amp; = \frac{\frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{2}}} \exp \left(-\frac{1}{2} \left(x-\mu_{1} \right)^T\Sigma^{-1} \left(x-\mu_{1} \right) \right) \left(\phi \right)  }{ \frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{2}}} \exp \left(-\frac{1}{2} \left(x-\mu_{1} \right)^T\Sigma^{-1} \left(x-\mu_{1} \right) \right) \left(\phi \right) + \frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{2}}} \exp \left(-\frac{1}{2} \left(x-\mu_{-1} \right)^T\Sigma^{-1} \left(x-\mu_{-1} \right) \right)\left(1-\phi \right)} \\
+              &amp; = \frac{\phi \exp \left(-\frac{1}{2} \left(x-\mu_{1} \right)^T\Sigma^{-1} \left(x-\mu_{1} \right) \right) }{\phi \exp \left(-\frac{1}{2} \left(x-\mu_{1} \right)^T\Sigma^{-1} \left(x-\mu_{1} \right) \right)  +  \left(1-\phi \right) \exp \left(-\frac{1}{2} \left(x-\mu_{-1} \right)^T\Sigma^{-1} \left(x-\mu_{-1} \right) \right)} \\
+              &amp; = \frac{1}{1+\frac{\left(1-\phi \right)\exp \left(-\frac{1}{2} \left(x-\mu_{-1} \right)^T\Sigma^{-1} \left(x-\mu_{-1} \right) \right)}{\phi \exp \left(-\frac{1}{2} \left(x-\mu_{1} \right)^T\Sigma^{-1} \left(x-\mu_{1} \right) \right)}} \\
+              &amp; = \frac{1}{1+ \exp \left(\log\left(\frac{\left(1-\phi \right)}{\phi}\right) -\frac{1}{2} \left(x-\mu_{-1} \right)^T\Sigma^{-1} \left(x-\mu_{-1} \right) + \frac{1}{2} \left(x-\mu_{1} \right)^T\Sigma^{-1} \left(x-\mu_{1} \right) \right)} \\
+              &amp; = \frac{1}{1+\exp \left(\log \left(\frac{1-\phi}{\phi}\right) -\frac{1}{2} \left(x^T \Sigma^{-1}x -2x^T \Sigma^{-1}\mu_{-1}+ \mu_{-1}^T \Sigma^{-1} \mu_{-1}\right) + \frac{1}{2} \left(x^T \Sigma^{-1}x -2x^T \Sigma^{-1}\mu_{1}+ \mu_{1}^T \Sigma^{-1} \mu_{1} \right)\right)} \\
+              &amp; = \frac{1}{1+\exp \left(\log \left(\frac{1-\phi}{\phi}\right) + x^T \Sigma^{-1} \mu_{-1} - x^T \Sigma^{-1} \mu_1 - \frac{1}{2} \mu_{-1}^T \Sigma^{-1} \mu_{-1} + \frac{1}{2} \mu_1^T\Sigma^{-1}\mu_1 \right)} \\
+              &amp; = \frac{1}{1+ \exp\left(\log\left(\frac{1-\phi}{\phi}\right) + x^T \Sigma^{-1} \left(\mu_{-1}-\mu_1 \right) - \frac{1}{2}\mu_{-1}^T\Sigma^{-1}\mu_{-1} + \mu_1^T \Sigma^{-1} \mu_1 \right)} \\
+              \\
+              \text{Let } \theta = \Sigma^{-1}\left(\mu_{1}-\mu_{-1} \right) &amp;, \qquad \theta_0 = \frac{1}{2}\left(\mu_{-1}^T \Sigma^{-1} \mu_{-1}- \mu_1^T \Sigma^{-1}\mu_1 \right). \text{ Then,} \\
+        p(y=1 \mid x) &amp; = \frac{1}{1+\exp \left(-y(\theta^Tx + \theta_0) \right)}
+\end{align}
+\]</span></p>
+<p><strong>b.</strong> For this part of the problem only, you may assume <span class="math inline">\(n\)</span> (the dimension of <span class="math inline">\(x\)</span>) is <span class="math inline">\(1\)</span>, so that <span class="math inline">\(\Sigma = [\sigma^2]\)</span> is just a real number, and likewise the determinant of <span class="math inline">\(\Sigma\)</span> is given by <span class="math inline">\(\lvert \Sigma\rvert = \sigma^2\)</span>. Given the dataset, we claim that the maximum likelihood estimates of the parameters are given by <span class="math display">\[
+\begin{align}
+\phi      &amp; = \frac{1}{m} \sum_{i=1}^m 1 \left\{y^{(i)}=1 \right\} \\
+\mu_{-1}  &amp; = \frac{\sum_{i=1}^m 1\left\{y^{(i)}=-1 \right\}x^{(i)}}{\sum_{i=1}^m 1\left\{y^{(i)}=-1\right\}} \\
+\mu_{1}   &amp; = \frac{\sum_{i=1}^m 1\left\{y^{(i)}=1 \right\}x^{(i)}}{\sum_{i=1}^m 1\left\{y^{(i)}=1\right\}} \\
+\Sigma    &amp; = \frac{1}{m} \sum_{i=1}^m \left(x^{(i)}-\mu_{y^{(i)}} \right) \left(x^{(i)}-\mu_{y^{(i)}} \right)^T
+\end{align}
+\]</span></p>
+<p>The log-likelihood of the data is <span class="math display">\[
+\begin{align}
+\ell \left(\phi, \mu_{-1}, \mu_1, \Sigma \right)  &amp; = \log \prod_{i=1}^m p(x^{(i)}, y^{(i)}; \phi, \mu_{-1}, \mu_1, \Sigma) \\
+                                                  &amp; = \log \prod_{i=1}^m p(x^{(i)}\mid y^{(i)}; \phi, \mu_{-1}, \mu_1, \Sigma)p(y^{(i)};\phi).
+\end{align}
+\]</span></p>
+<p>By maximizing <span class="math inline">\(\ell\)</span> w.r.t. the four parameters, prove that the maximum likelihood estimates of <span class="math inline">\(\phi\)</span>, <span class="math inline">\(\mu_{-1}\)</span>, <span class="math inline">\(\mu_1\)</span>, and <span class="math inline">\(\Sigma\)</span> are indeed as given in the formulas above. (You may assume that there is at least one positive and one negative example, so that the denominators in the definition of <span class="math inline">\(\mu_{-1}\)</span> and <span class="math inline">\(\mu_1\)</span> above are non-zero.)</p>
+<p><strong>c.</strong> Without assuming that <span class="math inline">\(n=1\)</span>, show that the maximum likelihood estimates of <span class="math inline">\(\phi\)</span>, <span class="math inline">\(\mu_{-1}\)</span>, <span class="math inline">\(\mu_1\)</span>, and <span class="math inline">\(\Sigma\)</span> are as given in the formulas in part (b). [Note: If you’re fairly sure that you have the answer to this part right, you don’t have to do part (b), since that’s just a special case.]</p>
+</div>
+<div id="linear-invariance-of-optimization-algorithms" class="section level3">
+<h3><strong>4. Linear invariance of optimization algorithms</strong></h3>
+<p>Consider using an iterative optimization algorithm (such as Newton’s method, or gradient descent) to minimize some continuously differentiable function <span class="math inline">\(f(x)\)</span>. Suppose we intialize the algorithm at <span class="math inline">\(x^{(0)} = \vec{0}\)</span>. when the algorithm is run, it will produce a value of <span class="math inline">\(x \in \mathbb{R}^n\)</span> for each iteration: <span class="math inline">\(x^{(1)}, x^{(2)}, \dots\)</span>.</p>
+<p>Now, let some non-singular square matrix <span class="math inline">\(A \in \mathbb{R}^{n \times n}\)</span> be given, and define a new function <span class="math inline">\(g(z) = f(Az)\)</span>. Consider using the same iterative optimization algorithm to optimize <span class="math inline">\(g\)</span> (with initialization <span class="math inline">\(z^{(0)} = \vec{0}\)</span>). If the values <span class="math inline">\(z^{(1)}, z^{(2)}, \dots\)</span> produced by this method necessarily satisfy <span class="math inline">\(z^{(i)} = A^{-1}x^{(i)}\)</span> for all <span class="math inline">\(i\)</span>, we say this optimization algorithm is <strong><em>invariant to linear reparameterizations</em></strong>.</p>
+<p><strong>a.</strong> Show that Newton’s method (applied to find the minimum of a function) is invariant to linear reparameterizations. Note that since <span class="math inline">\(z^{(0)} = \vec{0} = A^{-1}x^{(0)}\)</span>, it is sufficient to show that if Newton’s method applied to <span class="math inline">\(f(x)\)</span> updates <span class="math inline">\(x^{(i)}\)</span> to <span class="math inline">\(x^{(i+1)}\)</span>, then Newton’s method applied to <span class="math inline">\(g(z)\)</span> will update <span class="math inline">\(z^{(i)} = A^{-1}x^{(i)}\)</span> to <span class="math inline">\(z^{(i+1)} = A^{-1}x^{(i+1)}\)</span>.</p>
+<p><strong>b.</strong> Is gradient descent invariant to linear reparameterizations? Justify your answer.</p>
+</div>
+<div id="regression-for-denoising-quasar-spectra" class="section level3">
+<h3><strong>5. Regression for denoising quasar spectra</strong></h3>
+<p><strong>a.</strong></p>
+<p><strong>i.</strong></p>
+<p><strong>ii.</strong></p>
+<p><strong>iii.</strong></p>
+<p><strong>b.</strong></p>
+<p><strong>i.</strong></p>
+<p><strong>ii.</strong></p>
+<p><strong>iii.</strong></p>
+<p><strong>c.</strong></p>
+<p><strong>i.</strong></p>
+<p><strong>ii.</strong></p>
+<p><strong>iii.</strong></p>
 </div>
 </div>
 

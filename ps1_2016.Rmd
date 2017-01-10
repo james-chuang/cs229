@@ -39,12 +39,12 @@ J(\theta)                                     & = \frac{1}{m} \sum_{i=1}^m \log 
 \frac{\partial J(\theta)}{\partial \theta_k}  & = - \frac{1}{m} \sum_{i=1}^m h_\theta \left(-y^{(i)}x^{(i)} \right) \left(y^{(i)} x_k^{(i)} \right) \\
 \frac{\partial^2 J(\theta)}{\partial \theta_\ell \partial \theta_k} & = - \frac{1}{m} \sum_{i=1}^m \frac{\partial}{\partial \theta_\ell} h_\theta \left(-y^{(i)}x^{(i)} \right) \left(y^{(i)} x_k^{(i)} \right) \\
 \frac{\partial^2 J(\theta)}{\partial \theta_\ell \partial \theta_k} & = - \frac{1}{m} \sum_{i=1}^m h_\theta \left(-y^{(i)} x^{(i)} \right) \left(1-h_\theta \left(-y^{(i)}x^{(i)} \right) \right) \left(-y^{(i)}x_k^{(i)} \right) \left(-y^{(i)}x_\ell^{(i)} \right) \\
-
 & = -\frac{1}{m} \sum_{i=1}^m h_\theta \left(x^{(i)} \right) \left(1- h_\theta \left(x^{(i)} \right) \right) x_\ell^{(i)} x_k^{(i)}  ????????????????
 \end{align}
 $$
 
 **b.** We have provided two data files:
+
   - http://cs229.stanford.edu/ps/ps1/logistic_x.txt
   - http://cs229.stanford.edu/ps/ps1/logistic_y.txt
   
@@ -55,4 +55,152 @@ These files contain the inputs $\left(x^{(i)} \in \mathbb{R}^2 \right)$ and outp
 
 **c.** Plot the training data (your axes should be $x_1$ and $x_2$, corresponding to the two coordinates of the inputs, and you should use a different symbol for each point plotted to indicate whether that example has label $1$ or $-1$). Also plot on the same figure the decision boundary fit by logistic regression. (This should be a straight line showing the boundary separating the region where $h_\theta(x) > 0.5$ from where $h_\theta(x) \leq 0.5$.)
 
+### **2. Poisson regression and the exponential family**
 
+**a.** Consider the Poisson distribution parameterized by $\lambda$:
+$$
+p(y; \lambda) = \frac{e^{-\lambda}\lambda^y}{y!}
+$$
+Show that the Poisson distribution is in the exponential family, and clearly state what $b(y)$, $\eta$, $T(y)$, and $a(\eta)$ are.
+
+$$
+\begin{align}
+p(y; \lambda) & = \frac{e^{-\lambda}\lambda^y}{y!} \\
+              & = \frac{1}{y!} e^{-\lambda} e^{y \log \lambda} \\
+              & = \frac{1}{y!} \exp{\left(y \log \lambda - \lambda\right)} & \text{exp. form:}\quad b(y) \exp \left(\eta^T T(y) - a(\eta) \right) \\
+              \\
+          b(y) & = \frac{1}{y!} \\
+          T(y) & = y \\
+          \eta & = \log \lambda \\
+          a(\eta) & = e^\eta
+\end{align}
+$$
+**b.** Consider performing regression using a GLM model with a Poisson response variable. What is the canonical response function for the family? (You may use the fact that a Poisson random variable with parameter $\lambda$ has mean $\lambda$.)
+
+$$
+\begin{align}
+g(\eta) & = \text{E}\left[y; \eta\right] \\
+        & = \lambda \\
+        & = e^\eta
+\end{align}
+$$
+
+**c.** For a training set $\left\{x^{(i)}, y^{(i)}; i = 1, \dots, m \right\}$, let the log-likelihood of an example be $\log p \left(y^{(i)} | x^{(i)}; \theta \right)$. By taking the derivative of the log-likelihood w.r.t. $\theta_j$, derive the stochastic gradient ascent rule for learning using a GLM model with Poisson reponses $y$ and the canonical response function.
+
+$$
+\begin{align}
+p\left(y^{(i)} \mid x^{(i)}; \theta \right) & = \frac{1}{y^{(i)}!} \exp \left(\eta^T y^{(i)}-e^{\eta} \right) \\
+                                            & = \frac{1}{y^{(i)}!} \exp \left(\left(\theta^Tx \right)^T y^{(i)}-e^{\theta^Tx} \right) \\
+                              \ell(\theta)  & = \log \left[\frac{1}{y^{(i)}!} \exp \left({x^{(i)}}^T\theta y^{(i)}-e^{{x^{(i)}}^T\theta} \right) \right] \\
+                                            & = -\log \left(y^{(i)}! \right) + {x^{(i)}}^T\theta y^{(i)}-e^{{x^{(i)}}^T\theta} \\
+                \nabla_\theta \ell(\theta)  & = {x^{(i)}}^T y^{(i)} - {x^{(i)}}^Te^{{x^{(i)}}^T\theta} \\
+                                            & =  \left(y^{(i)}-e^{\theta^Tx^{(i)}} \right) x_j^{(i)} \\
+                                            \\
+                          \therefore \frac{\partial \ell(\theta)}{\partial \theta_j} & = \left(y^{(i)}-e^{\theta^Tx^{(i)}} \right) x_j^{(i)} \\
+\end{align}
+$$
+
+The stochastic gradient ascent update rule:
+$$
+\begin{align}
+\theta & \gets \theta + \alpha \frac{\partial \ell (\theta)}{\partial \theta_j} \\
+\theta & \gets \theta + \alpha \left(y^{(i)}-e^{\theta^Tx^{(i)}} \right) x_j^{(i)}
+\end{align}
+$$
+
+**d.** Consider using a GLM with a reponse variable from any member of the exponential family in which $T(y) = y$, and the canonical response functino $h(x)$ for the family. Show that stochastic gradient ascent on the log-likelihood $\log p(\vec{y} |X; \theta)$ results in the update rule $\theta_i \gets \theta_i - \alpha(h(x)-y)x_i$.
+
+### **3. Gaussian discriminant analysis**
+Suppose we are given a dataset $\left\{\left(x^{(i)}, y^{(i)} \right); i = 1, \dots, m \right\}$ consisting of $m$ independent examples, where $x^{(i)} \in \mathbb{R}^n$ are $n$-dimensional vectors, and $y^{(i)} \in \{-1,1\}$. we will model the joint distribution of $(x,y)$ according to:
+$$
+\begin{align}
+p(y) & = \begin{cases}
+          \phi & \text{if } y = 1 \\
+          1-\phi & \text{if } y = -1
+          \end{cases} \\
+p(x \mid y=-1) & = \frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{2}}} \exp \left(-\frac{1}{2} \left(x-\mu_{-1} \right)^T\Sigma^{-1} \left(x-\mu_{-1} \right) \right) \\
+p(x \mid y=1)  & = \frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{2}}} \exp \left(-\frac{1}{2} \left(x-\mu_{1} \right)^T\Sigma^{-1} \left(x-\mu_{1} \right) \right)
+\end{align}
+$$
+Here, the parameters of our model are $\phi$, $\Sigma$, $\mu_{-1}$, $\mu_1$. (Note that while there're two different mean vectors $\mu_{-1}$ and $\mu_1$, there's only one covariance matrix $\Sigma$.)
+
+**a.** Suppose we have already fit $\phi$, $\Sigma$, $\mu_{-1}$, $\mu_1$, and now want to make a prediction at some new query point $x$. Show that the posterior distribution of the label at $x$ takes the form of a logistic function, and can be written
+$$
+p(y \mid x; \phi, \Sigma, \mu_{-1}, \mu_{1}) = \frac{1}{1+\exp \left(-y(\theta^Tx + \theta_0) \right)},
+$$
+where $\theta \in \mathbb{R}^n$ and the bias term $\theta_0 \in \mathbb{R}$ are some appropriate functions of $\phi$, $\Sigma$, $\mu_{-1}$, $\mu_1$. (Note: the term $\theta_0$ corresponds to introducing an extra coordinate $x_0^{(i)}=1$.)
+
+$$
+\begin{align}
+p(y=1 \mid x) & = \frac{p(x \mid y=1)p(y=1)}{p(x)} \\
+              & = \frac{p(x \mid y=1)p(y=1)}{p(x \mid y=1)p(y=1)+ p(x \mid y=-1)p(y=-1)} \\
+              & = \frac{\frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{2}}} \exp \left(-\frac{1}{2} \left(x-\mu_{1} \right)^T\Sigma^{-1} \left(x-\mu_{1} \right) \right) \left(\phi \right)  }{ \frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{2}}} \exp \left(-\frac{1}{2} \left(x-\mu_{1} \right)^T\Sigma^{-1} \left(x-\mu_{1} \right) \right) \left(\phi \right) + \frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{2}}} \exp \left(-\frac{1}{2} \left(x-\mu_{-1} \right)^T\Sigma^{-1} \left(x-\mu_{-1} \right) \right)\left(1-\phi \right)} \\
+              & = \frac{\phi \exp \left(-\frac{1}{2} \left(x-\mu_{1} \right)^T\Sigma^{-1} \left(x-\mu_{1} \right) \right) }{\phi \exp \left(-\frac{1}{2} \left(x-\mu_{1} \right)^T\Sigma^{-1} \left(x-\mu_{1} \right) \right)  +  \left(1-\phi \right) \exp \left(-\frac{1}{2} \left(x-\mu_{-1} \right)^T\Sigma^{-1} \left(x-\mu_{-1} \right) \right)} \\
+              & = \frac{1}{1+\frac{\left(1-\phi \right)\exp \left(-\frac{1}{2} \left(x-\mu_{-1} \right)^T\Sigma^{-1} \left(x-\mu_{-1} \right) \right)}{\phi \exp \left(-\frac{1}{2} \left(x-\mu_{1} \right)^T\Sigma^{-1} \left(x-\mu_{1} \right) \right)}} \\
+              & = \frac{1}{1+ \exp \left(\log\left(\frac{\left(1-\phi \right)}{\phi}\right) -\frac{1}{2} \left(x-\mu_{-1} \right)^T\Sigma^{-1} \left(x-\mu_{-1} \right) + \frac{1}{2} \left(x-\mu_{1} \right)^T\Sigma^{-1} \left(x-\mu_{1} \right) \right)} \\
+              & = \frac{1}{1+\exp \left(\log \left(\frac{1-\phi}{\phi}\right) -\frac{1}{2} \left(x^T \Sigma^{-1}x -2x^T \Sigma^{-1}\mu_{-1}+ \mu_{-1}^T \Sigma^{-1} \mu_{-1}\right) + \frac{1}{2} \left(x^T \Sigma^{-1}x -2x^T \Sigma^{-1}\mu_{1}+ \mu_{1}^T \Sigma^{-1} \mu_{1} \right)\right)} \\
+              & = \frac{1}{1+\exp \left(\log \left(\frac{1-\phi}{\phi}\right) + x^T \Sigma^{-1} \mu_{-1} - x^T \Sigma^{-1} \mu_1 - \frac{1}{2} \mu_{-1}^T \Sigma^{-1} \mu_{-1} + \frac{1}{2} \mu_1^T\Sigma^{-1}\mu_1 \right)} \\
+              & = \frac{1}{1+ \exp\left(\log\left(\frac{1-\phi}{\phi}\right) + x^T \Sigma^{-1} \left(\mu_{-1}-\mu_1 \right) - \frac{1}{2}\mu_{-1}^T\Sigma^{-1}\mu_{-1} + \mu_1^T \Sigma^{-1} \mu_1 \right)} \\
+              \\
+              \text{Let } \theta = \Sigma^{-1}\left(\mu_{1}-\mu_{-1} \right) &, \qquad \theta_0 = \frac{1}{2}\left(\mu_{-1}^T \Sigma^{-1} \mu_{-1}- \mu_1^T \Sigma^{-1}\mu_1 \right). \text{ Then,} \\
+        p(y=1 \mid x) & = \frac{1}{1+\exp \left(-y(\theta^Tx + \theta_0) \right)}
+\end{align}
+$$
+
+**b.** For this part of the problem only, you may assume $n$ (the dimension of $x$) is $1$, so that $\Sigma = [\sigma^2]$ is just a real number, and likewise the determinant of $\Sigma$ is given by $\lvert \Sigma\rvert = \sigma^2$. Given the dataset, we claim that the maximum likelihood estimates of the parameters are given by
+$$
+\begin{align}
+\phi      & = \frac{1}{m} \sum_{i=1}^m 1 \left\{y^{(i)}=1 \right\} \\
+\mu_{-1}  & = \frac{\sum_{i=1}^m 1\left\{y^{(i)}=-1 \right\}x^{(i)}}{\sum_{i=1}^m 1\left\{y^{(i)}=-1\right\}} \\
+\mu_{1}   & = \frac{\sum_{i=1}^m 1\left\{y^{(i)}=1 \right\}x^{(i)}}{\sum_{i=1}^m 1\left\{y^{(i)}=1\right\}} \\
+\Sigma    & = \frac{1}{m} \sum_{i=1}^m \left(x^{(i)}-\mu_{y^{(i)}} \right) \left(x^{(i)}-\mu_{y^{(i)}} \right)^T
+\end{align}
+$$
+
+The log-likelihood of the data is
+$$
+\begin{align}
+\ell \left(\phi, \mu_{-1}, \mu_1, \Sigma \right)  & = \log \prod_{i=1}^m p(x^{(i)}, y^{(i)}; \phi, \mu_{-1}, \mu_1, \Sigma) \\
+                                                  & = \log \prod_{i=1}^m p(x^{(i)}\mid y^{(i)}; \phi, \mu_{-1}, \mu_1, \Sigma)p(y^{(i)};\phi).
+\end{align}
+$$
+
+By maximizing $\ell$ w.r.t. the four parameters, prove that the maximum likelihood estimates of $\phi$, $\mu_{-1}$, $\mu_1$, and $\Sigma$ are indeed as given in the formulas above. (You may assume that there is at least one positive and one negative example, so that the denominators in the definition of $\mu_{-1}$ and $\mu_1$ above are non-zero.)
+
+**c.** Without assuming that $n=1$, show that the maximum likelihood estimates of $\phi$, $\mu_{-1}$, $\mu_1$, and $\Sigma$ are as given in the formulas in part (b). [Note: If you're fairly sure that you have the answer to this part right, you don't have to do part (b), since that's just a special case.]
+
+### **4. Linear invariance of optimization algorithms**
+Consider using an iterative optimization algorithm (such as Newton's method, or gradient descent) to minimize some continuously differentiable function $f(x)$. Suppose we intialize the algorithm at $x^{(0)} = \vec{0}$. when the algorithm is run, it will produce a value of $x \in \mathbb{R}^n$ for each iteration: $x^{(1)}, x^{(2)}, \dots$.
+
+Now, let some non-singular square matrix $A \in \mathbb{R}^{n \times n}$ be given, and define a new function $g(z) = f(Az)$. Consider using the same iterative optimization algorithm to optimize $g$ (with initialization $z^{(0)} = \vec{0}$). If the values $z^{(1)}, z^{(2)}, \dots$ produced by this method necessarily satisfy $z^{(i)} = A^{-1}x^{(i)}$ for all $i$, we say this optimization algorithm is ***invariant to linear reparameterizations***.
+
+**a.** Show that Newton's method (applied to find the minimum of a function) is invariant to linear reparameterizations. Note that since $z^{(0)} = \vec{0} = A^{-1}x^{(0)}$, it is sufficient to show that if Newton's method applied to $f(x)$ updates $x^{(i)}$ to $x^{(i+1)}$, then Newton's method applied to $g(z)$ will update $z^{(i)} = A^{-1}x^{(i)}$ to $z^{(i+1)} = A^{-1}x^{(i+1)}$.
+
+**b.** Is gradient descent invariant to linear reparameterizations? Justify your answer.
+
+
+### **5. Regression for denoising quasar spectra**
+
+**a.**
+
+  **i.**
+  
+  **ii.**
+  
+  **iii.**
+  
+**b.**
+
+  **i.**
+  
+  **ii.**
+  
+  **iii.**
+  
+**c.**
+
+  **i.**
+  
+  **ii.**
+  
+  **iii.**
