@@ -51,8 +51,8 @@ $$
 These files contain the inputs $\left(x^{(i)} \in \mathbb{R}^2 \right)$ and outputs $\left(y^{(i)} \in \left\{-1,1 \right\} \right)$, respectively, for a binary classification problem, with one training example per row. Implement Newton's method for optimizing $J(\theta)$, and apply it to fit a logistic regression model to the data. Initialize Newton's method with $\theta = \vec{0}$ (the vector of all zeros). What are the coefficients $\theta$ resulting from your fit? (Remember to include the intercept term.)
 
 ```{python}
-import numpy as np
-
-a = np.array([1,2,3])
-print(a)
 ```
+
+**c.** Plot the training data (your axes should be $x_1$ and $x_2$, corresponding to the two coordinates of the inputs, and you should use a different symbol for each point plotted to indicate whether that example has label $1$ or $-1$). Also plot on the same figure the decision boundary fit by logistic regression. (This should be a straight line showing the boundary separating the region where $h_\theta(x) > 0.5$ from where $h_\theta(x) \leq 0.5$.)
+
+
