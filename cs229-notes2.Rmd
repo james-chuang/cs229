@@ -157,3 +157,83 @@ $$
 $$
 \mathcal{L}(\phi_{y}, \phi_{i | y = 0}, \phi_{i | y = 1}) = \prod_{i=1}^m p\left(x^{(i)}, y^{(i)} \right)
 $$
+
+Maximize joint likelihood w.r.t. $\phi_y$, $\phi_{i \mid y=0}$ and $\phi_{i \mid y=1}$ to get maximum likelihood estimates:
+$$
+\begin{align}
+\phi_{j \mid y=1} & = \frac{\sum_{i=1}^m 1 \left\{x_j^{(i)}=1 \hspace{.2em} \wedge \hspace{.2em} y^{(i)} = 1 \right\}}{\sum_{i=1}^m 1 \left\{y^{(i)}=1 \right\}} \\
+\phi_{j \mid y=0} & = \frac{\sum_{i=1}^m 1 \left\{x_j^{(i)}=1 \hspace{.2em} \wedge \hspace{.2em} y^{(i)} = 0 \right\}}{\sum_{i=1}^m 1 \left\{y^{(i)}=0 \right\}} \\
+\phi_y            & = \frac{\sum_{i=1}^m 1 \left\{y^{(i)}=1 \right\}}{m}
+\end{align}
+$$
+
+Where the $\wedge$ symbol means "and". The parameters have very natural interpretations:
+
+  - $\phi_{j \mid y =1}$: the fraction of examples of class 1 in which feature $j$ appears
+  - $\phi_{j \mid y =0}$: the fraction of examples of class 0 in which feature $j$ appears
+  - $\phi_y$: the fraction of examples which are of class 1
+  
+To make a prediction on a new example with features $x$, calculate:
+$$
+\begin{align}
+p(y=1 \mid x) & = \frac{p(x \mid y=1) p(y=1)}{p(x)} \\
+              & = \frac{\left(\prod_{i=1}^n  p(x_i \mid y =1) \right)p(y=1)}{ \left(\prod_{i=1}^n p(x_i \mid y = 1) \right)p(y=1) + \left(\prod_{i=1}^n p(x_i \mid y = 0) \right) p(y=0)}
+\end{align}
+$$
+
+and classify to whichever class has the higher posterior probability.
+
+Naive Bayes can be generalized to the case where $x_i \in \left\{1, 2, \dots, k \right\}$ by modelling $p(x_i \mid y)$ as multinomial instead of Bernoulli.
+
+Continuous input variables can be adapted for Naive Bayes by ***discretizing***, i.e. splitting the continuous value into bins. When continuous input variables are not well-modeled by a multivariate normal distribution, discretizing and using Naive Bayes often results in a better classifier than GDA.
+
+## **Laplace smoothing**
+The Naive Bayes algorithm runs into a problem when it encounters examples with features that were not seen in the training set. For such a feature $f$, maximum likelihood picks the following parameters:
+$$
+\begin{align}
+\phi_{f \mid y=1} & = 0 \\
+\phi_{f \mid y=0} & = 0
+\end{align}
+$$
+
+If the feature is present in an example to be classified, then the class posterior probability is as follows:
+$$
+\begin{align}
+p(y=1 \mid x) & = \frac{\left(\prod_{i=1}^n  p(x_i \mid y =1) \right)p(y=1)}{ \left(\prod_{i=1}^n p(x_i \mid y = 1) \right)p(y=1) + \left(\prod_{i=1}^n p(x_i \mid y = 0) \right) p(y=0)} \\
+              & = \frac{0}{0} \qquad \text{, since each } \prod_{i=1}^n p(x_i \mid y) \text{ contains } p(x_f \mid y) = 0 
+\end{align}
+$$
+
+The problem is that the prior probability for features that are not seen in the finite training set is set to zero, when it is unlikely to be exactly zero. This can be addressed by ***Laplace smoothing***, which replaces the estimates for $\phi_j$ with 
+$$
+\phi_j = \frac{\sum_{i=1}^m 1 \left\{z^{(i)} = j \right\} + 1}{m + k} 
+$$
+
+The maximum likelihood estimates of the parameters for Naive Bayes with Laplace smoothing:
+$$
+\begin{align}
+\phi_{j \mid y=1} & = \frac{\sum_{i=1}^m 1 \left\{x_j^{(i)}=1 \hspace{.2em} \wedge \hspace{.2em} y^{(i)} = 1 \right\} + 1}{\sum_{i=1}^m 1 \left\{y^{(i)}=1 \right\} +2} \\
+\phi_{j \mid y=0} & = \frac{\sum_{i=1}^m 1 \left\{x_j^{(i)}=1 \hspace{.2em} \wedge \hspace{.2em} y^{(i)} = 0 \right\} + 1}{\sum_{i=1}^m 1 \left\{y^{(i)}=0 \right\} +2}
+\end{align}
+$$
+
+## **Event models for text classification**
+Naive Bayes as presented above uses the ***multi-variate Bernoulli event model***. This model assumes that the class priors first determine which class an example comes $(p(y))$. Then, the class-conditional probabilities $p(x_i=1 \mid y) = \phi_{i \mid y}$ are used to decide whether each word in the dictionary is added to the email, independently of the other words. The probability of a message is $p(y) \prod_{i=1}^n p(x_i \mid y)$.
+
+A different model is the ***multinomial event model***.
+
+  - Let $x_i$ denote the identity of the $i$-th word
+    - $x_i \in  \left\{1, \dots, \lvert V \rvert \right\}$
+      - $\lvert V \rvert$ is the size of the vocabulary (dictionary)
+  - an email of $n$ words is represented by a vector $(x_1, x_2, \dots, x_n)$ of length $n$, where $n$ can vary for different documents
+  
+To generate a document. Use class priors to choose which class (same as Naive Bayes). Generate $x_1$ from a multinomial distribution over words $(p(x_1 \mid y))$, then generate $x_2$ independently but from the same distribution and so on until $x_n$. The probability of a message is $p(y) \prod_{i=1}^n p(x_i \mid y)$, which looks like the probability under Naive Bayes, but differs since $x_i \mid y$ is multinomial rather than Bernoulli.
+
+Parameters for the multinomial event model:
+$$
+\begin{align}
+\phi_y & = p(y) \\
+\phi_{k \mid y=1} & = p(x_j = k \mid y=1) & \text{(for any j)} \\
+\phi_{i \mid y=0} & = p(x_j = k \mid y=0)
+\end{align}
+$$

@@ -128,6 +128,8 @@ $(document).ready(function () {
 <li><a href="#the-gaussian-discriminant-analysis-model"><strong>The Gaussian Discriminant Analysis model</strong></a></li>
 <li><a href="#gda-and-logistic-regression"><strong>GDA and logistic regression</strong></a></li>
 <li><a href="#naive-bayes"><strong>Naive Bayes</strong></a></li>
+<li><a href="#laplace-smoothing"><strong>Laplace smoothing</strong></a></li>
+<li><a href="#event-models-for-text-classification"><strong>Event models for text classification</strong></a></li>
 </ul></li>
 </ul>
 </div>
@@ -280,6 +282,65 @@ p(&amp; x_1, \dots, x_{50000} \mid y) \\
 <li><p>joint likelihood: <span class="math display">\[
 \mathcal{L}(\phi_{y}, \phi_{i | y = 0}, \phi_{i | y = 1}) = \prod_{i=1}^m p\left(x^{(i)}, y^{(i)} \right)
 \]</span></p></li>
+</ul>
+<p>Maximize joint likelihood w.r.t. <span class="math inline">\(\phi_y\)</span>, <span class="math inline">\(\phi_{i \mid y=0}\)</span> and <span class="math inline">\(\phi_{i \mid y=1}\)</span> to get maximum likelihood estimates: <span class="math display">\[
+\begin{align}
+\phi_{j \mid y=1} &amp; = \frac{\sum_{i=1}^m 1 \left\{x_j^{(i)}=1 \hspace{.2em} \wedge \hspace{.2em} y^{(i)} = 1 \right\}}{\sum_{i=1}^m 1 \left\{y^{(i)}=1 \right\}} \\
+\phi_{j \mid y=0} &amp; = \frac{\sum_{i=1}^m 1 \left\{x_j^{(i)}=1 \hspace{.2em} \wedge \hspace{.2em} y^{(i)} = 0 \right\}}{\sum_{i=1}^m 1 \left\{y^{(i)}=0 \right\}} \\
+\phi_y            &amp; = \frac{\sum_{i=1}^m 1 \left\{y^{(i)}=1 \right\}}{m}
+\end{align}
+\]</span></p>
+<p>Where the <span class="math inline">\(\wedge\)</span> symbol means “and”. The parameters have very natural interpretations:</p>
+<ul>
+<li><span class="math inline">\(\phi_{j \mid y =1}\)</span>: the fraction of examples of class 1 in which feature <span class="math inline">\(j\)</span> appears</li>
+<li><span class="math inline">\(\phi_{j \mid y =0}\)</span>: the fraction of examples of class 0 in which feature <span class="math inline">\(j\)</span> appears</li>
+<li><span class="math inline">\(\phi_y\)</span>: the fraction of examples which are of class 1</li>
+</ul>
+<p>To make a prediction on a new example with features <span class="math inline">\(x\)</span>, calculate: <span class="math display">\[
+\begin{align}
+p(y=1 \mid x) &amp; = \frac{p(x \mid y=1) p(y=1)}{p(x)} \\
+              &amp; = \frac{\left(\prod_{i=1}^n  p(x_i \mid y =1) \right)p(y=1)}{ \left(\prod_{i=1}^n p(x_i \mid y = 1) \right)p(y=1) + \left(\prod_{i=1}^n p(x_i \mid y = 0) \right) p(y=0)}
+\end{align}
+\]</span></p>
+<p>and classify to whichever class has the higher posterior probability.</p>
+<p>Naive Bayes can be generalized to the case where <span class="math inline">\(x_i \in \left\{1, 2, \dots, k \right\}\)</span> by modelling <span class="math inline">\(p(x_i \mid y)\)</span> as multinomial instead of Bernoulli.</p>
+<p>Continuous input variables can be adapted for Naive Bayes by <strong><em>discretizing</em></strong>, i.e. splitting the continuous value into bins. When continuous input variables are not well-modeled by a multivariate normal distribution, discretizing and using Naive Bayes often results in a better classifier than GDA.</p>
+</div>
+<div id="laplace-smoothing" class="section level2">
+<h2><strong>Laplace smoothing</strong></h2>
+<p>The Naive Bayes algorithm runs into a problem when it encounters examples with features that were not seen in the training set. For such a feature <span class="math inline">\(f\)</span>, maximum likelihood picks the following parameters: <span class="math display">\[
+\begin{align}
+\phi_{f \mid y=1} &amp; = 0 \\
+\phi_{f \mid y=0} &amp; = 0
+\end{align}
+\]</span></p>
+<p>If the feature is present in an example to be classified, then the class posterior probability is as follows: <span class="math display">\[
+\begin{align}
+p(y=1 \mid x) &amp; = \frac{\left(\prod_{i=1}^n  p(x_i \mid y =1) \right)p(y=1)}{ \left(\prod_{i=1}^n p(x_i \mid y = 1) \right)p(y=1) + \left(\prod_{i=1}^n p(x_i \mid y = 0) \right) p(y=0)} \\
+              &amp; = \frac{0}{0} \qquad \text{, since each } \prod_{i=1}^n p(x_i \mid y) \text{ contains } p(x_f \mid y) = 0 
+\end{align}
+\]</span></p>
+<p>The problem is that the prior probability for features that are not seen in the finite training set is set to zero, when it is unlikely to be exactly zero. This can be addressed by <strong><em>Laplace smoothing</em></strong>, which replaces the estimates for <span class="math inline">\(\phi_j\)</span> with <span class="math display">\[
+\phi_j = \frac{\sum_{i=1}^m 1 \left\{z^{(i)} = j \right\} + 1}{m + k} 
+\]</span></p>
+<p>The maximum likelihood estimates of the parameters for Naive Bayes with Laplace smoothing: <span class="math display">\[
+\begin{align}
+\phi_{j \mid y=1} &amp; = \frac{\sum_{i=1}^m 1 \left\{x_j^{(i)}=1 \hspace{.2em} \wedge \hspace{.2em} y^{(i)} = 1 \right\} + 1}{\sum_{i=1}^m 1 \left\{y^{(i)}=1 \right\} +2} \\
+\phi_{j \mid y=0} &amp; = \frac{\sum_{i=1}^m 1 \left\{x_j^{(i)}=1 \hspace{.2em} \wedge \hspace{.2em} y^{(i)} = 0 \right\} + 1}{\sum_{i=1}^m 1 \left\{y^{(i)}=0 \right\} +2}
+\end{align}
+\]</span></p>
+</div>
+<div id="event-models-for-text-classification" class="section level2">
+<h2><strong>Event models for text classification</strong></h2>
+<p>Naive Bayes as presented above uses the <strong><em>multi-variate Bernoulli event model</em></strong>. This model assumes that the class priors first determine which class an example comes <span class="math inline">\((p(y))\)</span>. Then, the class-conditional probabilities <span class="math inline">\(p(x_i=1 \mid y) = \phi_{i \mid y}\)</span> are used to decide whether each word in the dictionary is added to the email, independently of the other words.</p>
+<p>A different model is the <strong><em>multinomial event model</em></strong>.</p>
+<ul>
+<li>Let <span class="math inline">\(x_i\)</span> denote the identity of the <span class="math inline">\(i\)</span>-th word
+<ul>
+<li><span class="math inline">\(x_i \in \left\{1, \dots, \lvert V \rvert \right\}\)</span></li>
+<li><span class="math inline">\(\lvert V \rVert\)</span> is the size of the vocabulary (dictionary)</li>
+</ul></li>
+<li>an email of <span class="math inline">\(n\)</span> words is represented by a vector <span class="math inline">\((x_1, x_2, \dots, x_n)\)</span> of length <span class="math inline">\(n\)</span>, where <span class="math inline">\(n\)</span> can vary for different documents</li>
 </ul>
 </div>
 </div>
