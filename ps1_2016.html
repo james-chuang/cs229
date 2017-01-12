@@ -268,9 +268,28 @@ p(y=1 \mid x) &amp; = \frac{p(x \mid y=1)p(y=1)}{p(x)} \\
 </div>
 <div id="regression-for-denoising-quasar-spectra" class="section level3">
 <h3><strong>5. Regression for denoising quasar spectra</strong></h3>
-<p><strong>a.</strong></p>
-<p><strong>i.</strong></p>
-<p><strong>ii.</strong></p>
+<p><strong>Introduction</strong>. In this problem, we will apply a supervised learning technique to estimate the light spectrum of <em>quasars</em>. Quasars are luminous distant galactic nuclei that are so bright, their light overwhelms that of stars in their galaxies. Understanding properties of the spectrum of light emitted by a quasar is useful for a number of tasks: first, a number of quasar properties can be estimated from the spectra, and second, properties of the regions of the universe through which the light passes can also be evaluated (for example, we can estimate the density of neutral and ionized particles in the universe, which helps cosmologists understand the evolution and fundamental laws governing its structure). The <em>light spectrum</em> is a curve that relates the light’s intensity (formally, lumens per square meter), or luminous flux, to its wavelength. Figure 1 shows an example of a quasar light spectrum, where the wavelengths are measured in Angstroms (<span class="math inline">\(\overset{\circ}{A}\)</span>), where <span class="math inline">\(1 \overset{\circ}{A} = 10^{-10}\)</span> meters.</p>
+<p>The Lyman-<span class="math inline">\(\alpha\)</span> wavelength is a wavelength beyond which intervening particles at most negligibly interfere with light emitted from the quasar. (Interference generally occurs when a photon is absorbed by a neutral hydrogen atom, which only occurs for certain wavelengths of light.) For wavelengths greater than this Lyman-<span class="math inline">\(\alpha\)</span> wavelength, the observed light spectrum <span class="math inline">\(f_{\text{obs}}\)</span> can be modeled as a smooth spectrum <span class="math inline">\(f\)</span> plus noise: <span class="math display">\[
+f_{\text{obs}}(\lambda) = f(\lambda) = \text{noise}(\lambda)
+\]</span> For wavelengths below the Lyman-<span class="math inline">\(\alpha\)</span> wavelength, a region of the spectrum known as the Lyman-<span class="math inline">\(\alpha\)</span> forest, intervening matter causes attenuation of the observed signal. As light emitted by the quasar travels through regions of the universe richer in neutral hydrogen, some of it is absorbed, which we model as <span class="math display">\[
+f_{\text{obs}}(\lambda) = \text{absorption}(\lambda) \cdot f(\lambda) + \text{noise}(\lambda)
+\]</span> Astrophysicists and cosmologists wish to understand the absorption function, which gives information about the Lyman-<span class="math inline">\(\alpha\)</span> forest, and hence the distribution of neutral hydrogen in otherwise unreachable regions of the universe. This gives clues toward the formation and evolution of the universe. Thus, it is our goal to estimate the spectrum <span class="math inline">\(f\)</span> of an observed quasar.</p>
+<p><strong>Getting the data</strong>. We will be using data generated from the Hubble Space Telescope Faint Object Spectrograph (HST-FOS), Spectra of Active Galactic Nuclei and Quasars. We have provided two comma-separated data files located at:</p>
+<ul>
+<li>Training set: <code>http://cs229.stanford.edu/ps/ps1/quasar_train.csv</code></li>
+<li>Test set: <code>http://cs229.stanford.edu/ps/ps1/quasar_test.csv</code></li>
+</ul>
+<p>Each file contains a single header row containing 450 numbers corresponding integral wavelengths in the interval <span class="math inline">\([1150; 1600] \overset{\circ}{A}\)</span>. The remaining lines contain relative flux measurements for each wavelength. Specifically, <code>quasar_train.csv</code> contains 200 examples and <code>quasar_test.csv</code> contains 50 examples. You may use the helper file <code>load_quasar_data.m</code> to load the data in Matlab: <code>http://cs229.stanford.edu/ps/ps1/load_quasar_data.m</code></p>
+<p><strong>a.</strong> Locally weighted linear regression</p>
+<p>Consider a linear regression problem in which we want to “weight” different training examples differently. Specifically, suppose we want to minimize <span class="math display">\[
+  J(\theta) = \frac{1}{2} \sum_{i=1}^m w^{(i)} \left(\theta^Tx^{(i)}-y^{(i)} \right)^2
+  \]</span> In class, we worked out what happens for the case where all the weights <span class="math inline">\(w^{(i)}\)</span> are the same. In this problem, we will generalize some of those ideas to the weighted setting.</p>
+<p><strong>i.</strong> Show that <span class="math inline">\(J(\theta)\)</span> can also be written <span class="math display">\[
+  J(\theta) = \left(X \theta - \vec{y} \right)^T W \left(X \theta - \vec{y} \right)
+  \]</span> for an appropriate diagonal matrix <span class="math inline">\(W\)</span>, and where <span class="math inline">\(X\)</span> and <span class="math inline">\(\vec{y}\)</span> are as defined in class. State clearly what <span class="math inline">\(W\)</span> is.</p>
+<p><strong>ii.</strong> If all the <span class="math inline">\(w^{(i)}\)</span>’s equal <span class="math inline">\(1\)</span>, then we saw in class that the normal equation is <span class="math display">\[
+  X^TX\theta = X^T \vec{y},
+  \]</span> and that the value of <span class="math inline">\(\theta\)</span> that minimizes <span class="math inline">\(J(\theta)\)</span> is given by <span class="math inline">\(\left(X^T X \right)^{-1}X^T \vec{y}\)</span>. By finding the derivative <span class="math inline">\(\nabla_\theta J(\theta)\)</span> and setting that to zero, generalize the normal equation to this weighted setting, and give the new value of <span class="math inline">\(\theta\)</span> that minimizes <span class="math inline">\(J(\theta)\)</span> in closed form as a function of <span class="math inline">\(X\)</span>, <span class="math inline">\(W\)</span>, and <span class="math inline">\(\vec{y}\)</span>.</p>
 <p><strong>iii.</strong></p>
 <p><strong>b.</strong></p>
 <p><strong>i.</strong></p>
