@@ -39,9 +39,26 @@ J(\theta)                                     & = \frac{1}{m} \sum_{i=1}^m \log 
 \frac{\partial J(\theta)}{\partial \theta_k}  & = - \frac{1}{m} \sum_{i=1}^m h_\theta \left(-y^{(i)}x^{(i)} \right) \left(y^{(i)} x_k^{(i)} \right) \\
 \frac{\partial^2 J(\theta)}{\partial \theta_\ell \partial \theta_k} & = - \frac{1}{m} \sum_{i=1}^m \frac{\partial}{\partial \theta_\ell} h_\theta \left(-y^{(i)}x^{(i)} \right) \left(y^{(i)} x_k^{(i)} \right) \\
 \frac{\partial^2 J(\theta)}{\partial \theta_\ell \partial \theta_k} & = - \frac{1}{m} \sum_{i=1}^m h_\theta \left(-y^{(i)} x^{(i)} \right) \left(1-h_\theta \left(-y^{(i)}x^{(i)} \right) \right) \left(-y^{(i)}x_k^{(i)} \right) \left(-y^{(i)}x_\ell^{(i)} \right) \\
-& = -\frac{1}{m} \sum_{i=1}^m h_\theta \left(x^{(i)} \right) \left(1- h_\theta \left(x^{(i)} \right) \right) x_\ell^{(i)} x_k^{(i)}  ????????????????
+H_{kl} & = -\frac{1}{m} \sum_{i=1}^m h_\theta \left(x^{(i)} \right) \left(1- h_\theta \left(x^{(i)} \right) \right) x_\ell^{(i)} x_k^{(i)}  & \text{where did the }y^{(i)} \text{go?} \\
+&& \text{recall that }y^{(i)} \in \{-1,1\} \\
+&& f(x) = h_\theta(x) (1-h_\theta(x)) \text{ is an even function } (f(x) = f(-x))
 \end{align}
 $$
+So, the full Hessian $H$:
+$$
+H = \frac{1}{m} \sum_{i=1}^m h\left(x^{(i)} \right) \left(1-h\left(x^{(i)}\right) \right) x^{(i)} x^{(i)T}
+$$
+To show that $H$ is positive semidefinite:
+$$
+\begin{align}
+& \qquad z^T Hz \\
+& = z^T \left( \frac{1}{m} \sum_{i=1}^m h\left(x^{(i)} \right) \left(1-h\left(x^{(i)}\right) \right) x^{(i)} x^{(i)T} \right) z \\
+& = \frac{1}{m} \sum_{i=1}^m h\left(x^{(i)} \right) \left(1-h\left(x^{(i)}\right) \right) z^T x^{(i)}x^{(i)T}z \\
+& = \frac{1}{m} \sum_{i=1}^m h\left(x^{(i)} \right) \left(1-h\left(x^{(i)}\right) \right) \left(z^T x^{(i)}\right)^2 \geq 0, & \text{ since } h\left(x^{(i)} \right) \left(1-h\left(x^{(i)}\right) \right) \in [0,1] \\
+&& \text{and } \left(z^T x^{(i)}\right)^2 \geq 0
+\end{align}
+$$
+
 
 **b.** We have provided two data files:
 
