@@ -221,7 +221,30 @@ p\left(y^{(i)} \mid x^{(i)}; \theta \right) &amp; = \frac{1}{y^{(i)}!} \exp \lef
 \theta &amp; \gets \theta + \alpha \left(y^{(i)}-e^{\theta^Tx^{(i)}} \right) x_j^{(i)}
 \end{align}
 \]</span></p>
-<p><strong>d.</strong> Consider using a GLM with a reponse variable from any member of the exponential family in which <span class="math inline">\(T(y) = y\)</span>, and the canonical response functino <span class="math inline">\(h(x)\)</span> for the family. Show that stochastic gradient ascent on the log-likelihood <span class="math inline">\(\log p(\vec{y} |X; \theta)\)</span> results in the update rule <span class="math inline">\(\theta_i \gets \theta_i - \alpha(h(x)-y)x_i\)</span>.</p>
+<p><strong>d.</strong> Consider using a GLM with a reponse variable from any member of the exponential family in which <span class="math inline">\(T(y) = y\)</span>, and the canonical response function <span class="math inline">\(h(x)\)</span> for the family. Show that stochastic gradient ascent on the log-likelihood <span class="math inline">\(\log p(\vec{y} |X; \theta)\)</span> results in the update rule <span class="math inline">\(\theta_i \gets \theta_i - \alpha(h(x)-y)x_i\)</span>. <span class="math display">\[
+\begin{align}
+\ell (\theta) &amp; = \log p(y \mid x ; \theta) \\
+              &amp; = \log \left[b(y) \exp \left(\eta^T T(y) - a(\eta) \right) \right] &amp; \text{response variable in exponential family} \\
+              &amp; = \log \left[b(y) \exp \left(x \theta^Ty - a(\eta) \right) \right] &amp; \eta = \theta^Tx,\hspace{.5em} T(y) = y \\
+              &amp; = \log \left[b(y) \right] + x \theta^T y - a(\eta) \\
+\frac{\partial \ell (\theta)}{\partial \theta_j}  &amp; = x_jy - \frac{\partial a(\eta)}{\partial \eta} \frac{\partial \eta}{\partial \theta_j} &amp; \text{just the chain rule} \\
+                                                  &amp; = x_jy - \frac{\partial a(\eta)}{\partial \eta} \frac{\partial}{\partial \theta_j}\left(\theta^Tx \right) \\
+                                                  &amp; = x_jy - \frac{\partial a(\eta)}{\partial \eta} x_j \\
+\frac{\partial \ell (\theta)}{\partial \theta_j}  &amp; = \left(y- \frac{\partial a(\eta)}{\partial \eta} \right) x_j
+\end{align}
+\]</span></p>
+<p>The stochastic gradient ascent update rule is then: <span class="math display">\[
+\begin{align}
+\theta_i &amp; \gets \theta_i + \alpha \frac{\partial \ell (\theta)}{\partial \theta_j} \\
+\theta_i &amp; \gets \theta_i + \alpha \left(y- \frac{\partial a(\eta)}{\partial \eta} \right) x_j \\
+\theta_i &amp; \gets \theta_i - \alpha \left(\frac{\partial a(\eta)}{\partial \eta} -y \right) x_j &amp; \text{versus } \theta_i &amp; \gets \theta_i - \alpha \left(h(x)-y \right)
+\end{align}
+\]</span> Therefore, the two statements are true if <span class="math inline">\(\frac{\partial a(\eta)}{\partial \eta} = h(x)\)</span>. <span class="math display">\[
+\begin{align}
+\int_\eta p(y \mid x; \theta) d \eta &amp; = 1 \\
+\int_\eta b(y) \exp \left(\eta^Ty-a(\eta) \right) d \eta &amp; = 1
+\end{align}
+\]</span></p>
 </div>
 <div id="gaussian-discriminant-analysis" class="section level3">
 <h3><strong>3. Gaussian discriminant analysis</strong></h3>

@@ -68,6 +68,7 @@ $$
 These files contain the inputs $\left(x^{(i)} \in \mathbb{R}^2 \right)$ and outputs $\left(y^{(i)} \in \left\{-1,1 \right\} \right)$, respectively, for a binary classification problem, with one training example per row. Implement Newton's method for optimizing $J(\theta)$, and apply it to fit a logistic regression model to the data. Initialize Newton's method with $\theta = \vec{0}$ (the vector of all zeros). What are the coefficients $\theta$ resulting from your fit? (Remember to include the intercept term.)
 
 ```{python}
+
 ```
 
 **c.** Plot the training data (your axes should be $x_1$ and $x_2$, corresponding to the two coordinates of the inputs, and you should use a different symbol for each point plotted to indicate whether that example has label $1$ or $-1$). Also plot on the same figure the decision boundary fit by logistic regression. (This should be a straight line showing the boundary separating the region where $h_\theta(x) > 0.5$ from where $h_\theta(x) \leq 0.5$.)
@@ -125,7 +126,48 @@ $$
 \end{align}
 $$
 
-**d.** Consider using a GLM with a reponse variable from any member of the exponential family in which $T(y) = y$, and the canonical response functino $h(x)$ for the family. Show that stochastic gradient ascent on the log-likelihood $\log p(\vec{y} |X; \theta)$ results in the update rule $\theta_i \gets \theta_i - \alpha(h(x)-y)x_i$.
+**d.** Consider using a GLM with a reponse variable from any member of the exponential family in which $T(y) = y$, and the canonical response function $h(x)$ for the family. Show that stochastic gradient ascent on the log-likelihood $\log p(\vec{y} |X; \theta)$ results in the update rule $\theta_i \gets \theta_i - \alpha(h(x)-y)x_i$.
+$$
+\begin{align}
+\ell (\theta) & = \log p(y \mid x ; \theta) \\
+              & = \log \left[b(y) \exp \left(\eta^T T(y) - a(\eta) \right) \right] & \text{response variable in exponential family} \\
+              & = \log \left[b(y) \exp \left(x \theta^Ty - a(\eta) \right) \right] & \eta = \theta^Tx,\hspace{.5em} T(y) = y \\
+              & = \log \left[b(y) \right] + x \theta^T y - a(\eta) \\
+\frac{\partial \ell (\theta)}{\partial \theta_j}  & = x_jy - \frac{\partial a(\eta)}{\partial \eta} \frac{\partial \eta}{\partial \theta_j} & \text{just the chain rule} \\
+                                                  & = x_jy - \frac{\partial a(\eta)}{\partial \eta} \frac{\partial}{\partial \theta_j}\left(\theta^Tx \right) \\
+                                                  & = x_jy - \frac{\partial a(\eta)}{\partial \eta} x_j \\
+\frac{\partial \ell (\theta)}{\partial \theta_j}  & = \left(y- \frac{\partial a(\eta)}{\partial \eta} \right) x_j
+\end{align}
+$$
+
+The stochastic gradient ascent update rule is then:
+$$
+\begin{align}
+\theta_i & \gets \theta_i + \alpha \frac{\partial \ell (\theta)}{\partial \theta_j} \\
+\theta_i & \gets \theta_i + \alpha \left(y- \frac{\partial a(\eta)}{\partial \eta} \right) x_j \\
+\theta_i & \gets \theta_i - \alpha \left(\frac{\partial a(\eta)}{\partial \eta} -y \right) x_j & \text{versus } \theta_i & \gets \theta_i - \alpha \left(h(x)-y \right)
+\end{align}
+$$
+The two update rules are  if $\frac{\partial a(\eta)}{\partial \eta} = h(x)$.
+$$
+\begin{align}
+\int_y p(y \mid x; \theta) dy & = 1 \\
+\int_y b(y) \exp \left(\eta^Ty-a(\eta) \right) dy & = 1 \\
+\int_y b(y) \exp \left(\eta^Ty \right) dy & = \exp \left(a(\eta) \right) \\
+\frac{\partial}{\partial \eta} \int_y b(y) \exp \left(\eta^Ty \right) dy & = \frac{\partial}{\partial \eta} \exp \left(a(\eta) \right) \\
+\int_y yb(y) \exp \left(\eta^Ty \right) dy & = \exp \left(a(\eta) \right) \frac{\partial a(\eta)}{\partial \eta} \\
+\int_y yb(y) \exp \left(\eta^Ty - a(\eta)\right) dy & = \frac{\partial a(\eta)}{\partial \eta} \\
+\int_y y \cdot p(y \mid x; \theta) dy & = \frac{\partial a(\eta)}{\partial \eta} \\
+\text{E} \left[ \right]& = \frac{\partial a(\eta)}{\partial \eta} \\
+h(x) = \frac{\partial a(\eta)}{\partial \eta}
+
+
+
+
+
+\end{align}
+$$
+
 
 ### **3. Gaussian discriminant analysis**
 Suppose we are given a dataset $\left\{\left(x^{(i)}, y^{(i)} \right); i = 1, \dots, m \right\}$ consisting of $m$ independent examples, where $x^{(i)} \in \mathbb{R}^n$ are $n$-dimensional vectors, and $y^{(i)} \in \{-1,1\}$. we will model the joint distribution of $(x,y)$ according to:

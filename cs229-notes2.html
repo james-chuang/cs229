@@ -332,16 +332,24 @@ p(y=1 \mid x) &amp; = \frac{\left(\prod_{i=1}^n  p(x_i \mid y =1) \right)p(y=1)}
 </div>
 <div id="event-models-for-text-classification" class="section level2">
 <h2><strong>Event models for text classification</strong></h2>
-<p>Naive Bayes as presented above uses the <strong><em>multi-variate Bernoulli event model</em></strong>. This model assumes that the class priors first determine which class an example comes <span class="math inline">\((p(y))\)</span>. Then, the class-conditional probabilities <span class="math inline">\(p(x_i=1 \mid y) = \phi_{i \mid y}\)</span> are used to decide whether each word in the dictionary is added to the email, independently of the other words.</p>
+<p>Naive Bayes as presented above uses the <strong><em>multi-variate Bernoulli event model</em></strong>. This model assumes that the class priors first determine which class an example comes <span class="math inline">\((p(y))\)</span>. Then, the class-conditional probabilities <span class="math inline">\(p(x_i=1 \mid y) = \phi_{i \mid y}\)</span> are used to decide whether each word in the dictionary is added to the email, independently of the other words. The probability of a message is <span class="math inline">\(p(y) \prod_{i=1}^n p(x_i \mid y)\)</span>.</p>
 <p>A different model is the <strong><em>multinomial event model</em></strong>.</p>
 <ul>
 <li>Let <span class="math inline">\(x_i\)</span> denote the identity of the <span class="math inline">\(i\)</span>-th word
 <ul>
 <li><span class="math inline">\(x_i \in \left\{1, \dots, \lvert V \rvert \right\}\)</span></li>
-<li><span class="math inline">\(\lvert V \rVert\)</span> is the size of the vocabulary (dictionary)</li>
+<li><span class="math inline">\(\lvert V \rvert\)</span> is the size of the vocabulary (dictionary)</li>
 </ul></li>
 <li>an email of <span class="math inline">\(n\)</span> words is represented by a vector <span class="math inline">\((x_1, x_2, \dots, x_n)\)</span> of length <span class="math inline">\(n\)</span>, where <span class="math inline">\(n\)</span> can vary for different documents</li>
 </ul>
+<p>To generate a document. Use class priors to choose which class (same as Naive Bayes). Generate <span class="math inline">\(x_1\)</span> from a multinomial distribution over words <span class="math inline">\((p(x_1 \mid y))\)</span>, then generate <span class="math inline">\(x_2\)</span> independently but from the same distribution and so on until <span class="math inline">\(x_n\)</span>. The probability of a message is <span class="math inline">\(p(y) \prod_{i=1}^n p(x_i \mid y)\)</span>, which looks like the probability under Naive Bayes, but differs since <span class="math inline">\(x_i \mid y\)</span> is multinomial rather than Bernoulli.</p>
+<p>Parameters for the multinomial event model: <span class="math display">\[
+\begin{align}
+\phi_y &amp; = p(y) \\
+\phi_{k \mid y=1} &amp; = p(x_j = k \mid y=1) &amp; \text{(for any j)} \\
+\phi_{i \mid y=0} &amp; = p(x_j = k \mid y=0)
+\end{align}
+\]</span></p>
 </div>
 </div>
 
