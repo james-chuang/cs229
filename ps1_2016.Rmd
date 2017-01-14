@@ -148,7 +148,7 @@ $$
 \theta_i & \gets \theta_i - \alpha \left(\frac{\partial a(\eta)}{\partial \eta} -y \right) x_j & \text{versus } \theta_i & \gets \theta_i - \alpha \left(h(x)-y \right)
 \end{align}
 $$
-The two update rules are  if $\frac{\partial a(\eta)}{\partial \eta} = h(x)$.
+The two update rules are equivalent if $\frac{\partial a(\eta)}{\partial \eta} = h(x)$. Start with the fact that  $\int_yp(y \mid x; \theta)dy = 1$, since it is a probability distribution.
 $$
 \begin{align}
 \int_y p(y \mid x; \theta) dy & = 1 \\
@@ -158,16 +158,12 @@ $$
 \int_y yb(y) \exp \left(\eta^Ty \right) dy & = \exp \left(a(\eta) \right) \frac{\partial a(\eta)}{\partial \eta} \\
 \int_y yb(y) \exp \left(\eta^Ty - a(\eta)\right) dy & = \frac{\partial a(\eta)}{\partial \eta} \\
 \int_y y \cdot p(y \mid x; \theta) dy & = \frac{\partial a(\eta)}{\partial \eta} \\
-\text{E} \left[ \right]& = \frac{\partial a(\eta)}{\partial \eta} \\
-h(x) = \frac{\partial a(\eta)}{\partial \eta}
-
-
-
-
-
+\text{E} \left[y \mid x; \theta \right]& = \frac{\partial a(\eta)}{\partial \eta} \\
+h(x) & = \frac{\partial a(\eta)}{\partial \eta} \\
+\\
+\therefore \hspace{.5em} &  \theta_i \gets \theta_i - \alpha \left(h(x)-y \right)
 \end{align}
 $$
-
 
 ### **3. Gaussian discriminant analysis**
 Suppose we are given a dataset $\left\{\left(x^{(i)}, y^{(i)} \right); i = 1, \dots, m \right\}$ consisting of $m$ independent examples, where $x^{(i)} \in \mathbb{R}^n$ are $n$-dimensional vectors, and $y^{(i)} \in \{-1,1\}$. we will model the joint distribution of $(x,y)$ according to:
@@ -278,17 +274,48 @@ Each file contains a single header row containing 450 numbers corresponding inte
   $$
   and that the value of $\theta$ that minimizes $J(\theta)$ is given by $\left(X^T X \right)^{-1}X^T \vec{y}$. By finding the derivative $\nabla_\theta J(\theta)$ and setting that to zero, generalize the normal equation to this weighted setting, and give the new value of $\theta$ that minimizes $J(\theta)$ in closed form as a function of $X$, $W$, and $\vec{y}$.
   
-  **iii.**
+  **iii.** Suppose we have a training set $\left\{x^{(i)}, y^{(i)}; i=1, \dots, m \right\}$ of $m$ independent examples, but in which the $y^{(i)}$'s were observed with differing variances. Specifically, suppose that
+$$
+p\left(y^{(i)} \mid x^{(i)}; \theta \right) = \frac{1}{\sqrt{2\pi}\sigma^{(i)}} \exp \left(- \frac{\left(y^{(i)}-\theta^Tx^{(i)} \right)^2}{2 \left(\sigma^{(i)} \right)^2} \right)
+$$
+I.e., $y^{(i)}$ has mean $\theta^T x^{(i)}$ and variance $\left(\sigma^{(i)} \right)^2$ (where the $\sigma^{(i)}$'s are fixed, known, constants). Show that findng the maximum likelihood estimate of $\theta$ reduces to solving a weighted linear regression problem. State claerly what the $w^{(i)}$'s are in terms of the $\sigma^{(i)}$'s.
   
-**b.**
+**b.** Visualizing the data
 
-  **i.**
+  **i.** Use the normal equations to implement (unweighted) linear regression ($y = \theta^Tx$) on the *first* training example (i.e. first non-header row). On one figure, plot both the raw data and the straight line resulting from your fit. State the optimal $\theta$ resulting from the linear regression.
   
-  **ii.**
+  **ii.** Implement locally weighted linear regression on the *first* training example. Use the normal equations you derived in part (a)(ii). On a diferent figure, plot both the raw data and the smooth curve resulting from your fit. When evaluating $h(\cdot)$ at a query point $x$, use weights
+  $$
+  w^{(i)} = \exp \left(- \frac{\left(x-x^{(i)} \right)^2}{2 \tau^2} \right),
+  $$
   
-  **iii.**
+  with bandwidth parameter $\tau = 5$.
   
-**c.**
+  **iii.** Repeat (b)(ii) four more times with $\tau = 1, 10, 100$ and $1000$. Plot the resulting curves. You can submit one plot with all four $\tau$ values or submit four separate plots. If you submit one plot, make sure all curves are visible. Additionally, in **2-3 sentences**, comment on what happens to the locally weighted linear regression line as $\tau$ varies.
+  
+**c.** Predicting quasar spectra with functional regression
+
+We now go a step beyond what we have covered explicitly in class, and we wish to predict an entire part of a spectrum|a curve|from noisy observed data. We begin by supposing
+that we observe a random sample of $m$ absorption-free spectra, which is possible for quasars very close (in a sense relative to the size of the universe!) to Earth. For a given spectrum $f$, define $f_{\text{right}}$ to be the spectrum to the right of the Lyman-$\alpha$ line. Let $f_{\text{left}}$ be the spectrum within the Lyman-$\alpha$ forest region, that is, for lower wavelengths. To make the results cleaner, we define:
+$$
+f(\lambda) = 
+\begin{cases}
+f_{\text{left}}(\lambda) & \text{if } \lambda < 1200 \\
+f_{\text{right}}(\lambda) & \text{if } \lambda \geq 1300
+\end{cases}
+$$
+We will learn a function $r$ (for regression) that maps an observed $f_{\text{right}}$ to an unobserved target $f_{\text{left}}$. This is useful in practice because we observe $f_{\text{right}}$ with *only* random noise: there is no systematic absorption, which we cannot observe directly, because hydrogen does not absorb photons with higher wavelengths. By predicting $f_{\text{left}}$ from a noisy version of $f_{\text{right}}$, we can estimate the unobservable spectrum of a quasar as well as the absorption
+function. Imaging systems collect data of the form
+$$
+f_{\text{obs}} = \text{absorption}(\lambda) \cdot f(\lambda) + \text{noise}(\lambda)
+$$
+for $\lambda \in \left\{\lambda_1, \dots, \lambda_n \right\}$, a *finite* number of points $\lambda$, because they must quantize the information. That is, even in the quasars-close-to-Earth training data, our observations of $f_{\text{left}}$ and $f_{\text{right}}$ consist of noisy evaluations of the true spectrum $f$ at multiple wavelengths. In our case, we have $n=450$ and $\lambda_1 = 1150, \dots, \lambda_n = 1599$.
+
+We formulate the functional regression task as the goal of learning the function $r$ mapping $f_{\text{left}}$ to $f_{\text{right}}$:
+$$
+r(f_{\text{right}})(\lambda) = \text{E} \left(f_{\text{left}} \mid f_{\text{right}} \right)(\lambda)
+$$
+for $\lambda$ in the Lyman-$\alpha$ forest.
 
   **i.**
   

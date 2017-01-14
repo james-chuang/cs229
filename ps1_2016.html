@@ -239,10 +239,19 @@ p\left(y^{(i)} \mid x^{(i)}; \theta \right) &amp; = \frac{1}{y^{(i)}!} \exp \lef
 \theta_i &amp; \gets \theta_i + \alpha \left(y- \frac{\partial a(\eta)}{\partial \eta} \right) x_j \\
 \theta_i &amp; \gets \theta_i - \alpha \left(\frac{\partial a(\eta)}{\partial \eta} -y \right) x_j &amp; \text{versus } \theta_i &amp; \gets \theta_i - \alpha \left(h(x)-y \right)
 \end{align}
-\]</span> Therefore, the two statements are true if <span class="math inline">\(\frac{\partial a(\eta)}{\partial \eta} = h(x)\)</span>. <span class="math display">\[
+\]</span> The two update rules are equivalent if <span class="math inline">\(\frac{\partial a(\eta)}{\partial \eta} = h(x)\)</span>. Start with the fact that <span class="math inline">\(\int_yp(y \mid x; \theta)dy = 1\)</span>, since it is a probability distribution. <span class="math display">\[
 \begin{align}
-\int_\eta p(y \mid x; \theta) d \eta &amp; = 1 \\
-\int_\eta b(y) \exp \left(\eta^Ty-a(\eta) \right) d \eta &amp; = 1
+\int_y p(y \mid x; \theta) dy &amp; = 1 \\
+\int_y b(y) \exp \left(\eta^Ty-a(\eta) \right) dy &amp; = 1 \\
+\int_y b(y) \exp \left(\eta^Ty \right) dy &amp; = \exp \left(a(\eta) \right) \\
+\frac{\partial}{\partial \eta} \int_y b(y) \exp \left(\eta^Ty \right) dy &amp; = \frac{\partial}{\partial \eta} \exp \left(a(\eta) \right) \\
+\int_y yb(y) \exp \left(\eta^Ty \right) dy &amp; = \exp \left(a(\eta) \right) \frac{\partial a(\eta)}{\partial \eta} \\
+\int_y yb(y) \exp \left(\eta^Ty - a(\eta)\right) dy &amp; = \frac{\partial a(\eta)}{\partial \eta} \\
+\int_y y \cdot p(y \mid x; \theta) dy &amp; = \frac{\partial a(\eta)}{\partial \eta} \\
+\text{E} \left[y \mid x; \theta \right]&amp; = \frac{\partial a(\eta)}{\partial \eta} \\
+h(x) &amp; = \frac{\partial a(\eta)}{\partial \eta} \\
+\\
+\therefore \hspace{.5em} &amp;  \theta_i \gets \theta_i - \alpha \left(h(x)-y \right)
 \end{align}
 \]</span></p>
 </div>
@@ -325,12 +334,29 @@ f_{\text{obs}}(\lambda) = \text{absorption}(\lambda) \cdot f(\lambda) + \text{no
 <p><strong>ii.</strong> If all the <span class="math inline">\(w^{(i)}\)</span>’s equal <span class="math inline">\(1\)</span>, then we saw in class that the normal equation is <span class="math display">\[
   X^TX\theta = X^T \vec{y},
   \]</span> and that the value of <span class="math inline">\(\theta\)</span> that minimizes <span class="math inline">\(J(\theta)\)</span> is given by <span class="math inline">\(\left(X^T X \right)^{-1}X^T \vec{y}\)</span>. By finding the derivative <span class="math inline">\(\nabla_\theta J(\theta)\)</span> and setting that to zero, generalize the normal equation to this weighted setting, and give the new value of <span class="math inline">\(\theta\)</span> that minimizes <span class="math inline">\(J(\theta)\)</span> in closed form as a function of <span class="math inline">\(X\)</span>, <span class="math inline">\(W\)</span>, and <span class="math inline">\(\vec{y}\)</span>.</p>
-<p><strong>iii.</strong></p>
-<p><strong>b.</strong></p>
-<p><strong>i.</strong></p>
-<p><strong>ii.</strong></p>
-<p><strong>iii.</strong></p>
-<p><strong>c.</strong></p>
+<p><strong>iii.</strong> Suppose we have a training set <span class="math inline">\(\left\{x^{(i)}, y^{(i)}; i=1, \dots, m \right\}\)</span> of <span class="math inline">\(m\)</span> independent examples, but in which the <span class="math inline">\(y^{(i)}\)</span>’s were observed with differing variances. Specifically, suppose that <span class="math display">\[
+p\left(y^{(i)} \mid x^{(i)}; \theta \right) = \frac{1}{\sqrt{2\pi}\sigma^{(i)}} \exp \left(- \frac{\left(y^{(i)}-\theta^Tx^{(i)} \right)^2}{2 \left(\sigma^{(i)} \right)^2} \right)
+\]</span> I.e., <span class="math inline">\(y^{(i)}\)</span> has mean <span class="math inline">\(\theta^T x^{(i)}\)</span> and variance <span class="math inline">\(\left(\sigma^{(i)} \right)^2\)</span> (where the <span class="math inline">\(\sigma^{(i)}\)</span>’s are fixed, known, constants). Show that findng the maximum likelihood estimate of <span class="math inline">\(\theta\)</span> reduces to solving a weighted linear regression problem. State claerly what the <span class="math inline">\(w^{(i)}\)</span>’s are in terms of the <span class="math inline">\(\sigma^{(i)}\)</span>’s.</p>
+<p><strong>b.</strong> Visualizing the data</p>
+<p><strong>i.</strong> Use the normal equations to implement (unweighted) linear regression (<span class="math inline">\(y = \theta^Tx\)</span>) on the <em>first</em> training example (i.e. first non-header row). On one figure, plot both the raw data and the straight line resulting from your fit. State the optimal <span class="math inline">\(\theta\)</span> resulting from the linear regression.</p>
+<p><strong>ii.</strong> Implement locally weighted linear regression on the <em>first</em> training example. Use the normal equations you derived in part (a)(ii). On a diferent figure, plot both the raw data and the smooth curve resulting from your fit. When evaluating <span class="math inline">\(h(\cdot)\)</span> at a query point <span class="math inline">\(x\)</span>, use weights <span class="math display">\[
+  w^{(i)} = \exp \left(- \frac{\left(x-x^{(i)} \right)^2}{2 \tau^2} \right),
+  \]</span></p>
+<p>with bandwidth parameter <span class="math inline">\(\tau = 5\)</span>.</p>
+<p><strong>iii.</strong> Repeat (b)(ii) four more times with <span class="math inline">\(\tau = 1, 10, 100\)</span> and <span class="math inline">\(1000\)</span>. Plot the resulting curves. You can submit one plot with all four <span class="math inline">\(\tau\)</span> values or submit four separate plots. If you submit one plot, make sure all curves are visible. Additionally, in <strong>2-3 sentences</strong>, comment on what happens to the locally weighted linear regression line as <span class="math inline">\(\tau\)</span> varies.</p>
+<p><strong>c.</strong> Predicting quasar spectra with functional regression</p>
+<p>We now go a step beyond what we have covered explicitly in class, and we wish to predict an entire part of a spectrum|a curve|from noisy observed data. We begin by supposing that we observe a random sample of <span class="math inline">\(m\)</span> absorption-free spectra, which is possible for quasars very close (in a sense relative to the size of the universe!) to Earth. For a given spectrum <span class="math inline">\(f\)</span>, define <span class="math inline">\(f_{\text{right}}\)</span> to be the spectrum to the right of the Lyman-<span class="math inline">\(\alpha\)</span> line. Let <span class="math inline">\(f_{\text{left}}\)</span> be the spectrum within the Lyman-<span class="math inline">\(\alpha\)</span> forest region, that is, for lower wavelengths. To make the results cleaner, we define: <span class="math display">\[
+f(\lambda) = 
+\begin{cases}
+f_{\text{left}}(\lambda) &amp; \text{if } \lambda &lt; 1200 \\
+f_{\text{right}}(\lambda) &amp; \text{if } \lambda \geq 1300
+\end{cases}
+\]</span> We will learn a function <span class="math inline">\(r\)</span> (for regression) that maps an observed <span class="math inline">\(f_{\text{right}}\)</span> to an unobserved target <span class="math inline">\(f_{\text{left}}\)</span>. This is useful in practice because we observe <span class="math inline">\(f_{\text{right}}\)</span> with <em>only</em> random noise: there is no systematic absorption, which we cannot observe directly, because hydrogen does not absorb photons with higher wavelengths. By predicting <span class="math inline">\(f_{\text{left}}\)</span> from a noisy version of <span class="math inline">\(f_{\text{right}}\)</span>, we can estimate the unobservable spectrum of a quasar as well as the absorption function. Imaging systems collect data of the form <span class="math display">\[
+f_{\text{obs}} = \text{absorption}(\lambda) \cdot f(\lambda) + \text{noise}(\lambda)
+\]</span> for <span class="math inline">\(\lambda \in \left\{\lambda_1, \dots, \lambda_n \right\}\)</span>, a <em>finite</em> number of points <span class="math inline">\(\lambda\)</span>, because they must quantize the information. That is, even in the quasars-close-to-Earth training data, our observations of <span class="math inline">\(f_{\text{left}}\)</span> and <span class="math inline">\(f_{\text{right}}\)</span> consist of noisy evaluations of the true spectrum <span class="math inline">\(f\)</span> at multiple wavelengths. In our case, we have <span class="math inline">\(n=450\)</span> and <span class="math inline">\(\lambda_1 = 1150, \dots, \lambda_n = 1599\)</span>.</p>
+<p>We formulate the functional regression task as the goal of learning the function <span class="math inline">\(r\)</span> mapping <span class="math inline">\(f_{\text{left}}\)</span> to <span class="math inline">\(f_{\text{right}}\)</span>: <span class="math display">\[
+r(f_{\text{right}})(\lambda) = \text{E} \left(f_{\text{left}} \mid f_{\text{right}} \right)(\lambda)
+\]</span> for <span class="math inline">\(\lambda\)</span> in the Lyman-<span class="math inline">\(\alpha\)</span> forest.</p>
 <p><strong>i.</strong></p>
 <p><strong>ii.</strong></p>
 <p><strong>iii.</strong></p>
