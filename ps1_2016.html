@@ -154,9 +154,10 @@ J(\theta)                                     &amp; = \frac{1}{m} \sum_{i=1}^m \
 \frac{\partial J(\theta)}{\partial \theta_k}  &amp; = - \frac{1}{m} \sum_{i=1}^m h_\theta \left(-y^{(i)}x^{(i)} \right) \left(y^{(i)} x_k^{(i)} \right) \\
 \frac{\partial^2 J(\theta)}{\partial \theta_\ell \partial \theta_k} &amp; = - \frac{1}{m} \sum_{i=1}^m \frac{\partial}{\partial \theta_\ell} h_\theta \left(-y^{(i)}x^{(i)} \right) \left(y^{(i)} x_k^{(i)} \right) \\
 \frac{\partial^2 J(\theta)}{\partial \theta_\ell \partial \theta_k} &amp; = - \frac{1}{m} \sum_{i=1}^m h_\theta \left(-y^{(i)} x^{(i)} \right) \left(1-h_\theta \left(-y^{(i)}x^{(i)} \right) \right) \left(-y^{(i)}x_k^{(i)} \right) \left(-y^{(i)}x_\ell^{(i)} \right) \\
-H_{kl} &amp; = -\frac{1}{m} \sum_{i=1}^m h_\theta \left(x^{(i)} \right) \left(1- h_\theta \left(x^{(i)} \right) \right) x_\ell^{(i)} x_k^{(i)}  &amp; \text{where did the }y^{(i)} \text{go?} \\
-&amp;&amp; \text{recall that }y^{(i)} \in \{-1,1\} \\
-&amp;&amp; f(x) = h_\theta(x) (1-h_\theta(x)) \text{ is an even function } (f(x) = f(-x))
+H_{kl} &amp; = -\frac{1}{m} \sum_{i=1}^m h_\theta \left(x^{(i)} \right) \left(1- h_\theta \left(x^{(i)} \right) \right) x_\ell^{(i)} x_k^{(i)}  \hspace{3em} \text{Where did the }y^{(i)} \text{go?} \\
+&amp; \hspace{14.5em} y^{(i)} \in \{-1,1\} \text{, plus the fact that} \\
+&amp; \hspace{14.5em} f(x) = h_\theta(x) (1-h_\theta(x)) \text{ is an even function } (f(x) = f(-x)), \\
+&amp; \hspace{14.5em} \text{so the Hessian doesn't depend on the training label.}
 \end{align}
 \]</span> So, the full Hessian <span class="math inline">\(H\)</span>: <span class="math display">\[
 H = \frac{1}{m} \sum_{i=1}^m h\left(x^{(i)} \right) \left(1-h\left(x^{(i)}\right) \right) x^{(i)} x^{(i)T}
@@ -202,7 +203,7 @@ g(\eta) &amp; = \text{E}\left[y; \eta\right] \\
         &amp; = e^\eta
 \end{align}
 \]</span></p>
-<p><strong>c.</strong> For a training set <span class="math inline">\(\left\{x^{(i)}, y^{(i)}; i = 1, \dots, m \right\}\)</span>, let the log-likelihood of an example be <span class="math inline">\(\log p \left(y^{(i)} | x^{(i)}; \theta \right)\)</span>. By taking the derivative of the log-likelihood w.r.t. <span class="math inline">\(\theta_j\)</span>, derive the stochastic gradient ascent rule for learning using a GLM model with Poisson reponses <span class="math inline">\(y\)</span> and the canonical response function.</p>
+<p><strong>c.</strong> For a training set <span class="math inline">\(\left\{x^{(i)}, y^{(i)}; i = 1, \dots, m \right\}\)</span>, let the log-likelihood of an example be <span class="math inline">\(\log p \left(y^{(i)} | x^{(i)}; \theta \right)\)</span>. By taking the derivative of the log-likelihood w.r.t. <span class="math inline">\(\theta_j\)</span>, derive the stochastic gradient ascent rule for learning using a GLM model with Poisson responses <span class="math inline">\(y\)</span> and the canonical response function.</p>
 <p><span class="math display">\[
 \begin{align}
 p\left(y^{(i)} \mid x^{(i)}; \theta \right) &amp; = \frac{1}{y^{(i)}!} \exp \left(\eta^T y^{(i)}-e^{\eta} \right) \\
@@ -210,7 +211,7 @@ p\left(y^{(i)} \mid x^{(i)}; \theta \right) &amp; = \frac{1}{y^{(i)}!} \exp \lef
                               \ell(\theta)  &amp; = \log \left[\frac{1}{y^{(i)}!} \exp \left({x^{(i)}}^T\theta y^{(i)}-e^{{x^{(i)}}^T\theta} \right) \right] \\
                                             &amp; = -\log \left(y^{(i)}! \right) + {x^{(i)}}^T\theta y^{(i)}-e^{{x^{(i)}}^T\theta} \\
                 \nabla_\theta \ell(\theta)  &amp; = {x^{(i)}}^T y^{(i)} - {x^{(i)}}^Te^{{x^{(i)}}^T\theta} \\
-                                            &amp; =  \left(y^{(i)}-e^{\theta^Tx^{(i)}} \right) x_j^{(i)} \\
+                                            &amp; =  \left(y^{(i)}-e^{\theta^Tx^{(i)}} \right) x^{(i)} \\
                                             \\
                           \therefore \frac{\partial \ell(\theta)}{\partial \theta_j} &amp; = \left(y^{(i)}-e^{\theta^Tx^{(i)}} \right) x_j^{(i)} \\
 \end{align}
@@ -221,7 +222,7 @@ p\left(y^{(i)} \mid x^{(i)}; \theta \right) &amp; = \frac{1}{y^{(i)}!} \exp \lef
 \theta &amp; \gets \theta + \alpha \left(y^{(i)}-e^{\theta^Tx^{(i)}} \right) x_j^{(i)}
 \end{align}
 \]</span></p>
-<p><strong>d.</strong> Consider using a GLM with a reponse variable from any member of the exponential family in which <span class="math inline">\(T(y) = y\)</span>, and the canonical response function <span class="math inline">\(h(x)\)</span> for the family. Show that stochastic gradient ascent on the log-likelihood <span class="math inline">\(\log p(\vec{y} |X; \theta)\)</span> results in the update rule <span class="math inline">\(\theta_i \gets \theta_i - \alpha(h(x)-y)x_i\)</span>. <span class="math display">\[
+<p><strong>d.</strong> Consider using a GLM with a response variable from any member of the exponential family in which <span class="math inline">\(T(y) = y\)</span>, and the canonical response function <span class="math inline">\(h(x)\)</span> for the family. Show that stochastic gradient ascent on the log-likelihood <span class="math inline">\(\log p(\vec{y} |X; \theta)\)</span> results in the update rule <span class="math inline">\(\theta_i \gets \theta_i - \alpha(h(x)-y)x_i\)</span>. <span class="math display">\[
 \begin{align}
 \ell (\theta) &amp; = \log p(y \mid x ; \theta) \\
               &amp; = \log \left[b(y) \exp \left(\eta^T T(y) - a(\eta) \right) \right] &amp; \text{response variable in exponential family} \\
@@ -257,7 +258,7 @@ h(x) &amp; = \frac{\partial a(\eta)}{\partial \eta} \\
 </div>
 <div id="gaussian-discriminant-analysis" class="section level3">
 <h3><strong>3. Gaussian discriminant analysis</strong></h3>
-<p>Suppose we are given a dataset <span class="math inline">\(\left\{\left(x^{(i)}, y^{(i)} \right); i = 1, \dots, m \right\}\)</span> consisting of <span class="math inline">\(m\)</span> independent examples, where <span class="math inline">\(x^{(i)} \in \mathbb{R}^n\)</span> are <span class="math inline">\(n\)</span>-dimensional vectors, and <span class="math inline">\(y^{(i)} \in \{-1,1\}\)</span>. we will model the joint distribution of <span class="math inline">\((x,y)\)</span> according to: <span class="math display">\[
+<p>Suppose we are given a dataset <span class="math inline">\(\left\{\left(x^{(i)}, y^{(i)} \right); i = 1, \dots, m \right\}\)</span> consisting of <span class="math inline">\(m\)</span> independent examples, where <span class="math inline">\(x^{(i)} \in \mathbb{R}^n\)</span> are <span class="math inline">\(n\)</span>-dimensional vectors, and <span class="math inline">\(y^{(i)} \in \{-1,1\}\)</span>. We will model the joint distribution of <span class="math inline">\((x,y)\)</span> according to: <span class="math display">\[
 \begin{align}
 p(y) &amp; = \begin{cases}
           \phi &amp; \text{if } y = 1 \\
@@ -266,7 +267,7 @@ p(y) &amp; = \begin{cases}
 p(x \mid y=-1) &amp; = \frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{2}}} \exp \left(-\frac{1}{2} \left(x-\mu_{-1} \right)^T\Sigma^{-1} \left(x-\mu_{-1} \right) \right) \\
 p(x \mid y=1)  &amp; = \frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{2}}} \exp \left(-\frac{1}{2} \left(x-\mu_{1} \right)^T\Sigma^{-1} \left(x-\mu_{1} \right) \right)
 \end{align}
-\]</span> Here, the parameters of our model are <span class="math inline">\(\phi\)</span>, <span class="math inline">\(\Sigma\)</span>, <span class="math inline">\(\mu_{-1}\)</span>, <span class="math inline">\(\mu_1\)</span>. (Note that while there’re two different mean vectors <span class="math inline">\(\mu_{-1}\)</span> and <span class="math inline">\(\mu_1\)</span>, there’s only one covariance matrix <span class="math inline">\(\Sigma\)</span>.)</p>
+\]</span> Here, the parameters of our model are <span class="math inline">\(\phi\)</span>, <span class="math inline">\(\Sigma\)</span>, <span class="math inline">\(\mu_{-1}\)</span>, <span class="math inline">\(\mu_1\)</span>. (Note that while there are two different mean vectors <span class="math inline">\(\mu_{-1}\)</span> and <span class="math inline">\(\mu_1\)</span>, there’s only one covariance matrix <span class="math inline">\(\Sigma\)</span>.)</p>
 <p><strong>a.</strong> Suppose we have already fit <span class="math inline">\(\phi\)</span>, <span class="math inline">\(\Sigma\)</span>, <span class="math inline">\(\mu_{-1}\)</span>, <span class="math inline">\(\mu_1\)</span>, and now want to make a prediction at some new query point <span class="math inline">\(x\)</span>. Show that the posterior distribution of the label at <span class="math inline">\(x\)</span> takes the form of a logistic function, and can be written <span class="math display">\[
 p(y \mid x; \phi, \Sigma, \mu_{-1}, \mu_{1}) = \frac{1}{1+\exp \left(-y(\theta^Tx + \theta_0) \right)},
 \]</span> where <span class="math inline">\(\theta \in \mathbb{R}^n\)</span> and the bias term <span class="math inline">\(\theta_0 \in \mathbb{R}\)</span> are some appropriate functions of <span class="math inline">\(\phi\)</span>, <span class="math inline">\(\Sigma\)</span>, <span class="math inline">\(\mu_{-1}\)</span>, <span class="math inline">\(\mu_1\)</span>. (Note: the term <span class="math inline">\(\theta_0\)</span> corresponds to introducing an extra coordinate <span class="math inline">\(x_0^{(i)}=1\)</span>.)</p>
@@ -301,11 +302,54 @@ p(y=1 \mid x) &amp; = \frac{p(x \mid y=1)p(y=1)}{p(x)} \\
 \end{align}
 \]</span></p>
 <p>By maximizing <span class="math inline">\(\ell\)</span> w.r.t. the four parameters, prove that the maximum likelihood estimates of <span class="math inline">\(\phi\)</span>, <span class="math inline">\(\mu_{-1}\)</span>, <span class="math inline">\(\mu_1\)</span>, and <span class="math inline">\(\Sigma\)</span> are indeed as given in the formulas above. (You may assume that there is at least one positive and one negative example, so that the denominators in the definition of <span class="math inline">\(\mu_{-1}\)</span> and <span class="math inline">\(\mu_1\)</span> above are non-zero.)</p>
+<p>See problem 3c.</p>
 <p><strong>c.</strong> Without assuming that <span class="math inline">\(n=1\)</span>, show that the maximum likelihood estimates of <span class="math inline">\(\phi\)</span>, <span class="math inline">\(\mu_{-1}\)</span>, <span class="math inline">\(\mu_1\)</span>, and <span class="math inline">\(\Sigma\)</span> are as given in the formulas in part (b). [Note: If you’re fairly sure that you have the answer to this part right, you don’t have to do part (b), since that’s just a special case.]</p>
+<p><span class="math display">\[
+\begin{align}
+\ell \left(\phi, \mu_{-1}, \mu_1, \Sigma \right)  &amp; = \log \prod_{i=1}^m p(x^{(i)}\mid y^{(i)}; \phi, \mu_{-1}, \mu_1, \Sigma)p(y^{(i)};\phi) \\
+                                                  &amp; = \sum_{i=1}^m \log p(x^{(i)}\mid y^{(i)}; \phi, \mu_{-1}, \mu_1, \Sigma) + \sum_{i=1}^m \log p(y^{(i)};\phi) \\
+                                                  &amp; = \sum_{i=1}^m \left[\log \frac{1}{\left(2 \pi \right)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{2}}} - \frac{1}{2} \left(x^{(i)} - \mu_{y^{(i)}}  \right)^T \Sigma^{-1} \left(x^{(i)} - \mu_{y^{(i)}}  \right) + \log \phi^{y^{(i)}} + \log \left(1- \phi \right)^{\left(1-y^{(i)} \right)} \right] \\
+                                                  &amp; = \sum_{i=1}^m \left[- \frac{n}{2} \log \left(2 \pi \right) - \frac{1}{2} \log \lvert \Sigma \rvert - \frac{1}{2} \left(x^{(i)} - \mu_{y^{(i)}}  \right)^T \Sigma^{-1} \left(x^{(i)} - \mu_{y^{(i)}}  \right) + y^{(i)} \log \phi + \left(1-y^{(i)} \right) \log \left(1- \phi \right) \right] \\
+                                                  &amp; \hspace{7em} - \frac{n}{2} \log \left(2 \pi \right)\text{ is constant w.r.t. the parameters, so can be dropped for finding MLE.} \\
+                                                  &amp; \simeq \sum_{i=1}^m \left[- \frac{1}{2} \log \lvert \Sigma \rvert - \frac{1}{2} \left(x^{(i)} - \mu_{y^{(i)}}  \right)^T \Sigma^{-1} \left(x^{(i)} - \mu_{y^{(i)}}  \right) + y^{(i)} \log \phi + \left(1-y^{(i)} \right) \log \left(1- \phi \right) \right] \\
+\end{align}
+\]</span></p>
+<p><span class="math display">\[
+\begin{align}                                                  \\
+\nabla_\phi \ell \left(\phi, \mu_{-1}, \mu_1, \Sigma \right)  &amp; = \sum_{i=1}^m \left[\frac{y^{(i)}}{\phi} - \frac{1-y^{(i)}}{1-\phi} \right] \\
+                                                              &amp;   \text{Note: why does} \sum_{i=1}^m y^{(i)} = \sum_{i=1}^m 1 \left\{y^{(i)=1} \right\}...?\\
+                                                              &amp; = \frac{\sum_{i=1}^m 1\left\{y^{(i)}=1 \right\}}{\phi} - \frac{m- \sum_{i=1}^m 1\left\{y^{(i)}=1 \right\}}{1-\phi} = 0 \hspace{5em}\text{ let } A = \sum_{i=1}^m 1 \left\{y^{(i)}=1 \right\}  \\
+\frac{A}{\phi}                                                &amp; = \frac{m-A}{1-\phi} \\
+A - \phi A                                                    &amp; = \phi m - \phi A \\
+A                                                             &amp; = \phi m \\
+\phi                                                          &amp; = \frac{A}{m} \\
+\phi                                                          &amp; = \frac{1}{m}\sum_{i=1}^m 1 \left\{y^{(i)}=1 \right\}
+\end{align}                                                              
+\]</span><br />
+<span class="math display">\[
+\begin{align}
+\nabla_{\mu_{-1}} \ell \left(\phi, \mu_{-1}, \mu_1, \Sigma \right)  &amp; = - \frac{1}{2} \sum_{i : y^{(i)}=-1} \nabla_{\mu_{-1}} \left[ -2 \mu_{-1}^T \Sigma^{-1} x^{(i)} + \mu_{-1}^T \Sigma^{-1} \mu_{-1}  \right] \hspace{8em} x^{(i)T} \Sigma x^{(i)} \text{ is dropped as it isn't a function of }\mu_{-1} \\
+                                                                    &amp; = - \frac{1}{2} \sum_{i : y^{(i)}=-1} \left[-2 \Sigma^{-1}x^{(i)} + 2  \Sigma^{-1} \mu_{-1} \right] = 0\\
+                                                                  0 &amp; = \sum_{i:y(i)=-1} \left[\Sigma^{-1}x^{(i)}-\Sigma^{-1} \mu_{-1} \right] \\
+                                                                  0 &amp; = \sum_{i=1}^m 1 \left\{y^{(i)}=-1\right\} \Sigma^{-1} x^{(i)} - \sum_{i=1}^m 1 \left\{y^{(i)}=-1 \right\} \Sigma^{-1} \mu_{-1} \\
+\Sigma^{-1} \mu_{-1} \sum_{i=1}^m 1 \left\{y^{(i)}=-1 \right\}      &amp; = \Sigma^{-1} \sum_{i=1}^m 1 \left\{y^{(i)}=-1\right\}  x^{(i)} \\
+\mu_{-1}                                                            &amp; = \frac{\sum_{i=1}^m 1 \left\{y^{(i)}=-1\right\}  x^{(i)}}{\sum_{i=1}^m 1 \left\{y^{(i)}=-1 \right\}} 
+\hspace{5em}
+\text{similarly, } \mu_{1}                                           = \frac{\sum_{i=1}^m 1 \left\{y^{(i)}=1\right\}  x^{(i)}}{\sum_{i=1}^m 1 \left\{y^{(i)}=1 \right\}}
+\end{align}
+\]</span> Let <span class="math inline">\(S = \Sigma^{-1}\)</span>. The maximum likelihood estimate of <span class="math inline">\(S\)</span> is equivalent to the MLE of <span class="math inline">\(\Sigma\)</span>. <span class="math display">\[
+\begin{align}
+\nabla_{S} \ell \left(\phi, \mu_{-1}, \mu_1, \Sigma \right)  &amp; = - \frac{1}{2}\sum_{i=1}^m \nabla_{\Sigma} \left[-\log \lvert S \rvert + \left(x^{(i)}- \mu_{y^{(i)}} \right)^T S \left(x^{(i)}- \mu_{y^{(i)}} \right) \right] \\
+                                                                  &amp; = - \frac{1}{2}\sum_{i=1}^m \left[-S^{-1} + \left(x^{(i)}- \mu_{y^{(i)}} \right)\left(x^{(i)}- \mu_{y^{(i)}} \right)^T \right] \\
+                                                                  &amp; = \sum_{i=1}^m \frac{1}{2} \Sigma - \frac{1}{2} \sum_{i=1}^m \left(x^{(i)}- \mu_{y^{(i)}} \right)\left(x^{(i)}- \mu_{y^{(i)}} \right)^T = 0 \\
+\frac{1}{2} m \Sigma                                              &amp; = \frac{1}{2} \sum_{i=1}^m \left(x^{(i)}- \mu_{y^{(i)}} \right)\left(x^{(i)}- \mu_{y^{(i)}} \right)^T \\
+\Sigma                                                            &amp; = \frac{1}{m}\sum_{i=1}^m \left(x^{(i)}- \mu_{y^{(i)}} \right)\left(x^{(i)}- \mu_{y^{(i)}} \right)^T
+\end{align}
+\]</span></p>
 </div>
 <div id="linear-invariance-of-optimization-algorithms" class="section level3">
 <h3><strong>4. Linear invariance of optimization algorithms</strong></h3>
-<p>Consider using an iterative optimization algorithm (such as Newton’s method, or gradient descent) to minimize some continuously differentiable function <span class="math inline">\(f(x)\)</span>. Suppose we intialize the algorithm at <span class="math inline">\(x^{(0)} = \vec{0}\)</span>. when the algorithm is run, it will produce a value of <span class="math inline">\(x \in \mathbb{R}^n\)</span> for each iteration: <span class="math inline">\(x^{(1)}, x^{(2)}, \dots\)</span>.</p>
+<p>Consider using an iterative optimization algorithm (such as Newton’s method, or gradient descent) to minimize some continuously differentiable function <span class="math inline">\(f(x)\)</span>. Suppose we initialize the algorithm at <span class="math inline">\(x^{(0)} = \vec{0}\)</span>. when the algorithm is run, it will produce a value of <span class="math inline">\(x \in \mathbb{R}^n\)</span> for each iteration: <span class="math inline">\(x^{(1)}, x^{(2)}, \dots\)</span>.</p>
 <p>Now, let some non-singular square matrix <span class="math inline">\(A \in \mathbb{R}^{n \times n}\)</span> be given, and define a new function <span class="math inline">\(g(z) = f(Az)\)</span>. Consider using the same iterative optimization algorithm to optimize <span class="math inline">\(g\)</span> (with initialization <span class="math inline">\(z^{(0)} = \vec{0}\)</span>). If the values <span class="math inline">\(z^{(1)}, z^{(2)}, \dots\)</span> produced by this method necessarily satisfy <span class="math inline">\(z^{(i)} = A^{-1}x^{(i)}\)</span> for all <span class="math inline">\(i\)</span>, we say this optimization algorithm is <strong><em>invariant to linear reparameterizations</em></strong>.</p>
 <p><strong>a.</strong> Show that Newton’s method (applied to find the minimum of a function) is invariant to linear reparameterizations. Note that since <span class="math inline">\(z^{(0)} = \vec{0} = A^{-1}x^{(0)}\)</span>, it is sufficient to show that if Newton’s method applied to <span class="math inline">\(f(x)\)</span> updates <span class="math inline">\(x^{(i)}\)</span> to <span class="math inline">\(x^{(i+1)}\)</span>, then Newton’s method applied to <span class="math inline">\(g(z)\)</span> will update <span class="math inline">\(z^{(i)} = A^{-1}x^{(i)}\)</span> to <span class="math inline">\(z^{(i+1)} = A^{-1}x^{(i+1)}\)</span>.</p>
 <p><strong>b.</strong> Is gradient descent invariant to linear reparameterizations? Justify your answer.</p>
@@ -331,15 +375,28 @@ f_{\text{obs}}(\lambda) = \text{absorption}(\lambda) \cdot f(\lambda) + \text{no
 <p><strong>i.</strong> Show that <span class="math inline">\(J(\theta)\)</span> can also be written <span class="math display">\[
   J(\theta) = \left(X \theta - \vec{y} \right)^T W \left(X \theta - \vec{y} \right)
   \]</span> for an appropriate diagonal matrix <span class="math inline">\(W\)</span>, and where <span class="math inline">\(X\)</span> and <span class="math inline">\(\vec{y}\)</span> are as defined in class. State clearly what <span class="math inline">\(W\)</span> is.</p>
+<p><span class="math inline">\(W \in \mathbb{R}^{n \times n}\)</span> is a diagonal matrix, with <span class="math inline">\(W_{ii} = \frac{1}{2}w^{(i)}\)</span>.</p>
 <p><strong>ii.</strong> If all the <span class="math inline">\(w^{(i)}\)</span>’s equal <span class="math inline">\(1\)</span>, then we saw in class that the normal equation is <span class="math display">\[
   X^TX\theta = X^T \vec{y},
   \]</span> and that the value of <span class="math inline">\(\theta\)</span> that minimizes <span class="math inline">\(J(\theta)\)</span> is given by <span class="math inline">\(\left(X^T X \right)^{-1}X^T \vec{y}\)</span>. By finding the derivative <span class="math inline">\(\nabla_\theta J(\theta)\)</span> and setting that to zero, generalize the normal equation to this weighted setting, and give the new value of <span class="math inline">\(\theta\)</span> that minimizes <span class="math inline">\(J(\theta)\)</span> in closed form as a function of <span class="math inline">\(X\)</span>, <span class="math inline">\(W\)</span>, and <span class="math inline">\(\vec{y}\)</span>.</p>
+$$
+<span class="math display">\[\begin{align}
+  J(\theta)       &amp; = \left(X \theta -y \right)^T W \left(X \theta -y \right) \\
+  \nabla_\theta   &amp; = \nabla_\theta \left[\left(X \theta \right)^TWX\theta - \left(X \theta \right)^T W y - y^T W X \theta + y^TWy\right] \\
+                  &amp; = \nabla_\theta \left[\theta^T X^T W X \theta -\theta^T X^T W y - y^T W X \theta \right] &amp; \text{right two terms are equal scalars}\\
+                  &amp; = \nabla_\theta \left[\theta^T X^T W X \theta - 2X^T W y \right] \\
+                  &amp; = 2 X^T W X \theta - 2X^TWy =0 &amp; \text{normal equation (weighted)} \\
+  X^T W X \theta  &amp; =  X^TWy \\
+          \theta  &amp; = \left(X^T W X \right)^{-1} X^TWy
+                
+  \end{align}\]</span>
+<p>$$</p>
 <p><strong>iii.</strong> Suppose we have a training set <span class="math inline">\(\left\{x^{(i)}, y^{(i)}; i=1, \dots, m \right\}\)</span> of <span class="math inline">\(m\)</span> independent examples, but in which the <span class="math inline">\(y^{(i)}\)</span>’s were observed with differing variances. Specifically, suppose that <span class="math display">\[
 p\left(y^{(i)} \mid x^{(i)}; \theta \right) = \frac{1}{\sqrt{2\pi}\sigma^{(i)}} \exp \left(- \frac{\left(y^{(i)}-\theta^Tx^{(i)} \right)^2}{2 \left(\sigma^{(i)} \right)^2} \right)
-\]</span> I.e., <span class="math inline">\(y^{(i)}\)</span> has mean <span class="math inline">\(\theta^T x^{(i)}\)</span> and variance <span class="math inline">\(\left(\sigma^{(i)} \right)^2\)</span> (where the <span class="math inline">\(\sigma^{(i)}\)</span>’s are fixed, known, constants). Show that findng the maximum likelihood estimate of <span class="math inline">\(\theta\)</span> reduces to solving a weighted linear regression problem. State claerly what the <span class="math inline">\(w^{(i)}\)</span>’s are in terms of the <span class="math inline">\(\sigma^{(i)}\)</span>’s.</p>
+\]</span> I.e., <span class="math inline">\(y^{(i)}\)</span> has mean <span class="math inline">\(\theta^T x^{(i)}\)</span> and variance <span class="math inline">\(\left(\sigma^{(i)} \right)^2\)</span> (where the <span class="math inline">\(\sigma^{(i)}\)</span>’s are fixed, known, constants). Show that finding the maximum likelihood estimate of <span class="math inline">\(\theta\)</span> reduces to solving a weighted linear regression problem. State clearly what the <span class="math inline">\(w^{(i)}\)</span>’s are in terms of the <span class="math inline">\(\sigma^{(i)}\)</span>’s.</p>
 <p><strong>b.</strong> Visualizing the data</p>
 <p><strong>i.</strong> Use the normal equations to implement (unweighted) linear regression (<span class="math inline">\(y = \theta^Tx\)</span>) on the <em>first</em> training example (i.e. first non-header row). On one figure, plot both the raw data and the straight line resulting from your fit. State the optimal <span class="math inline">\(\theta\)</span> resulting from the linear regression.</p>
-<p><strong>ii.</strong> Implement locally weighted linear regression on the <em>first</em> training example. Use the normal equations you derived in part (a)(ii). On a diferent figure, plot both the raw data and the smooth curve resulting from your fit. When evaluating <span class="math inline">\(h(\cdot)\)</span> at a query point <span class="math inline">\(x\)</span>, use weights <span class="math display">\[
+<p><strong>ii.</strong> Implement locally weighted linear regression on the <em>first</em> training example. Use the normal equations you derived in part (a)(ii). On a different figure, plot both the raw data and the smooth curve resulting from your fit. When evaluating <span class="math inline">\(h(\cdot)\)</span> at a query point <span class="math inline">\(x\)</span>, use weights <span class="math display">\[
   w^{(i)} = \exp \left(- \frac{\left(x-x^{(i)} \right)^2}{2 \tau^2} \right),
   \]</span></p>
 <p>with bandwidth parameter <span class="math inline">\(\tau = 5\)</span>.</p>
