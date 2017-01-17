@@ -379,8 +379,8 @@ f_{\text{obs}}(\lambda) = \text{absorption}(\lambda) \cdot f(\lambda) + \text{no
 <p><strong>ii.</strong> If all the <span class="math inline">\(w^{(i)}\)</span>’s equal <span class="math inline">\(1\)</span>, then we saw in class that the normal equation is <span class="math display">\[
   X^TX\theta = X^T \vec{y},
   \]</span> and that the value of <span class="math inline">\(\theta\)</span> that minimizes <span class="math inline">\(J(\theta)\)</span> is given by <span class="math inline">\(\left(X^T X \right)^{-1}X^T \vec{y}\)</span>. By finding the derivative <span class="math inline">\(\nabla_\theta J(\theta)\)</span> and setting that to zero, generalize the normal equation to this weighted setting, and give the new value of <span class="math inline">\(\theta\)</span> that minimizes <span class="math inline">\(J(\theta)\)</span> in closed form as a function of <span class="math inline">\(X\)</span>, <span class="math inline">\(W\)</span>, and <span class="math inline">\(\vec{y}\)</span>.</p>
-$$
-<span class="math display">\[\begin{align}
+<p><span class="math display">\[
+  \begin{align}
   J(\theta)       &amp; = \left(X \theta -y \right)^T W \left(X \theta -y \right) \\
   \nabla_\theta   &amp; = \nabla_\theta \left[\left(X \theta \right)^TWX\theta - \left(X \theta \right)^T W y - y^T W X \theta + y^TWy\right] \\
                   &amp; = \nabla_\theta \left[\theta^T X^T W X \theta -\theta^T X^T W y - y^T W X \theta \right] &amp; \text{right two terms are equal scalars}\\
@@ -388,12 +388,28 @@ $$
                   &amp; = 2 X^T W X \theta - 2X^TWy =0 &amp; \text{normal equation (weighted)} \\
   X^T W X \theta  &amp; =  X^TWy \\
           \theta  &amp; = \left(X^T W X \right)^{-1} X^TWy
-                
-  \end{align}\]</span>
-<p>$$</p>
+  \end{align}
+  \]</span></p>
 <p><strong>iii.</strong> Suppose we have a training set <span class="math inline">\(\left\{x^{(i)}, y^{(i)}; i=1, \dots, m \right\}\)</span> of <span class="math inline">\(m\)</span> independent examples, but in which the <span class="math inline">\(y^{(i)}\)</span>’s were observed with differing variances. Specifically, suppose that <span class="math display">\[
 p\left(y^{(i)} \mid x^{(i)}; \theta \right) = \frac{1}{\sqrt{2\pi}\sigma^{(i)}} \exp \left(- \frac{\left(y^{(i)}-\theta^Tx^{(i)} \right)^2}{2 \left(\sigma^{(i)} \right)^2} \right)
 \]</span> I.e., <span class="math inline">\(y^{(i)}\)</span> has mean <span class="math inline">\(\theta^T x^{(i)}\)</span> and variance <span class="math inline">\(\left(\sigma^{(i)} \right)^2\)</span> (where the <span class="math inline">\(\sigma^{(i)}\)</span>’s are fixed, known, constants). Show that finding the maximum likelihood estimate of <span class="math inline">\(\theta\)</span> reduces to solving a weighted linear regression problem. State clearly what the <span class="math inline">\(w^{(i)}\)</span>’s are in terms of the <span class="math inline">\(\sigma^{(i)}\)</span>’s.</p>
+<p><span class="math display">\[
+\begin{align}  
+\arg \max_\theta L (\theta) &amp; = \arg \max_\theta \prod_{i=1}^m p \left(y^{(i)} \mid x^{(i)}; \theta \right) \\
+                            &amp; = \arg \max_\theta \prod_{i=1}^m \frac{1}{\sqrt{2 \pi} \sigma^{(i)}} \exp \left(- \frac{ \left(y^{(i)}-\theta^T x^{(i)} \right)^2}{2 \left(\sigma^{(i)} \right)^2} \right) \\
+                            &amp; = \arg \max_\theta- \frac{1}{2}\sum_{i=1}^m \frac{1}{\left(\sigma^{(i)} \right)^2} \left(y^{(i)}-\theta^T x^{(i)} \right)^2 \\
+                            &amp; = \arg \min_\theta \frac{1}{2} \sum_{i=1}^m w^{(i)} \left(y^{(i)}-\theta^T x^{(i)} \right)^2 \\
+\therefore \arg \max_\theta L(\theta) &amp; = \arg \min_\theta J(\theta) \hspace{5em} \text{where } w^{(i)} = \frac{1}{\left(\sigma^{(i)} \right)^2}
+\end{align} 
+\]</span><br />
+Maximizing the log-likelihood <span class="math inline">\(\ell(\theta)\)</span> w.r.t. <span class="math inline">\(\theta\)</span> amounts to minimizing the right term. Comparing this term with the loss function for weighted linear regression: <span class="math display">\[
+\begin{align}
+\text{max likelihood} &amp; \text{ vs. loss function} \\
+\frac{1}{2}\sum_{i=1}^m \frac{1}{\left(\sigma^{(i)} \right)^2} \left(\theta^Tx^{(i)}- y^{(i)}\right)^2 &amp; \text{ vs. } \frac{1}{2} \sum_{i=1}^m w^{(i)} \left(\theta^Tx^{(i)}- y^{(i)} \right)^2 \\
+\therefore \text{finding the MLE estimate of } &amp;\theta \text{ is equivalent to solving weighted linear regression, where} \\
+w^{(i)} &amp; = \frac{1}{\left( \sigma^{(i)}\right)^2}
+\end{align}
+\]</span></p>
 <p><strong>b.</strong> Visualizing the data</p>
 <p><strong>i.</strong> Use the normal equations to implement (unweighted) linear regression (<span class="math inline">\(y = \theta^Tx\)</span>) on the <em>first</em> training example (i.e. first non-header row). On one figure, plot both the raw data and the straight line resulting from your fit. State the optimal <span class="math inline">\(\theta\)</span> resulting from the linear regression.</p>
 <p><strong>ii.</strong> Implement locally weighted linear regression on the <em>first</em> training example. Use the normal equations you derived in part (a)(ii). On a different figure, plot both the raw data and the smooth curve resulting from your fit. When evaluating <span class="math inline">\(h(\cdot)\)</span> at a query point <span class="math inline">\(x\)</span>, use weights <span class="math display">\[
