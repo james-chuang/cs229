@@ -95,7 +95,9 @@ p(y; \lambda) & = \frac{e^{-\lambda}\lambda^y}{y!} \\
           a(\eta) & = e^\eta
 \end{align}
 $$
+
 ####**b.**
+
 Consider performing regression using a GLM model with a Poisson response variable. What is the canonical response function for the family? (You may use the fact that a Poisson random variable with parameter $\lambda$ has mean $\lambda$.)
 
 $$
@@ -395,8 +397,7 @@ Visualizing the data
 ####**c.**
 Predicting quasar spectra with functional regression
 
-We now go a step beyond what we have covered explicitly in class, and we wish to predict an entire part of a spectrum (a curve) from noisy observed data. We begin by supposing
-that we observe a random sample of $m$ absorption-free spectra, which is possible for quasars very close (in a sense relative to the size of the universe!) to Earth. For a given spectrum $f$, define $f_{\text{right}}$ to be the spectrum to the right of the Lyman-$\alpha$ line. Let $f_{\text{left}}$ be the spectrum within the Lyman-$\alpha$ forest region, that is, for lower wavelengths. To make the results cleaner, we define:
+We now go a step beyond what we have covered explicitly in class, and we wish to predict an entire part of a spectrum (a curve) from noisy observed data. We begin by supposing that we observe a random sample of $m$ absorption-free spectra, which is possible for quasars very close (in a sense relative to the size of the universe!) to Earth. For a given spectrum $f$, define $f_{\text{right}}$ to be the spectrum to the right of the Lyman-$\alpha$ line. Let $f_{\text{left}}$ be the spectrum within the Lyman-$\alpha$ forest region, that is, for lower wavelengths. To make the results cleaner, we define:
 $$
 f(\lambda) = 
 \begin{cases}
@@ -427,7 +428,7 @@ for $\lambda$ in the Lyman-$\alpha$ forest.
   $$
   We define a metric $d$ which takes as input, two spectra $f_1$ and $f_2$, and outputs a scalar:
   $$
-  d\left(f_1, f_2 \right) = \sum_i \left(f_1(\lambda_1) - f_2 (\lambda_2) \right)^2.
+  d\left(f_1, f_2 \right) = \sum_i \left(f_1\left(\lambda_i\right) - f_2 \left(\lambda_i\right) \right)^2.
   $$
   The metric $d$ computes squared distance between the new datapoint and previous datapoints. If $f_1$ and $f_2$ are right spectra, then we take the preceding sum only over $\lambda \in \left\{1300, \dots, 1599 \right\}$, rather than the entire spectrum.
   
