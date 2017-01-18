@@ -135,7 +135,9 @@ $(document).ready(function () {
 <h1><strong>CS229 Autumn 2016 Problem Set #1</strong></h1>
 <div id="logistic-regression" class="section level3">
 <h3><strong>1. Logistic Regression</strong></h3>
-<p><strong>a.</strong> Consider the average empirical loss (the risk) for logistic regression: <span class="math display">\[
+<div id="a." class="section level4">
+<h4><strong>a.</strong></h4>
+<p>Consider the average empirical loss (the risk) for logistic regression: <span class="math display">\[
 \begin{align}
 J(\theta) &amp; = \frac{1}{m} \sum_{i=1}^m \log \left(1+e^{-y^{(i)}\theta^Tx^{(i)}} \right) \\
           &amp; = - \frac{1}{m} \sum_{i=1}^m \log \left(h_\theta \left(y^{(i)} x^{(i)} \right) \right) \\
@@ -170,18 +172,26 @@ H = \frac{1}{m} \sum_{i=1}^m h\left(x^{(i)} \right) \left(1-h\left(x^{(i)}\right
 &amp;&amp; \text{and } \left(z^T x^{(i)}\right)^2 \geq 0
 \end{align}
 \]</span></p>
-<p><strong>b.</strong> We have provided two data files:</p>
+</div>
+<div id="b." class="section level4">
+<h4><strong>b.</strong></h4>
+<p>We have provided two data files:</p>
 <ul>
 <li><a href="http://cs229.stanford.edu/ps/ps1/logistic_x.txt" class="uri">http://cs229.stanford.edu/ps/ps1/logistic_x.txt</a></li>
 <li><a href="http://cs229.stanford.edu/ps/ps1/logistic_y.txt" class="uri">http://cs229.stanford.edu/ps/ps1/logistic_y.txt</a></li>
 </ul>
 <p>These files contain the inputs <span class="math inline">\(\left(x^{(i)} \in \mathbb{R}^2 \right)\)</span> and outputs <span class="math inline">\(\left(y^{(i)} \in \left\{-1,1 \right\} \right)\)</span>, respectively, for a binary classification problem, with one training example per row. Implement Newton’s method for optimizing <span class="math inline">\(J(\theta)\)</span>, and apply it to fit a logistic regression model to the data. Initialize Newton’s method with <span class="math inline">\(\theta = \vec{0}\)</span> (the vector of all zeros). What are the coefficients <span class="math inline">\(\theta\)</span> resulting from your fit? (Remember to include the intercept term.)</p>
-<pre class="python"><code></code></pre>
-<p><strong>c.</strong> Plot the training data (your axes should be <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span>, corresponding to the two coordinates of the inputs, and you should use a different symbol for each point plotted to indicate whether that example has label <span class="math inline">\(1\)</span> or <span class="math inline">\(-1\)</span>). Also plot on the same figure the decision boundary fit by logistic regression. (This should be a straight line showing the boundary separating the region where <span class="math inline">\(h_\theta(x) &gt; 0.5\)</span> from where <span class="math inline">\(h_\theta(x) \leq 0.5\)</span>.)</p>
+</div>
+<div id="c." class="section level4">
+<h4><strong>c.</strong></h4>
+<p>Plot the training data (your axes should be <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span>, corresponding to the two coordinates of the inputs, and you should use a different symbol for each point plotted to indicate whether that example has label <span class="math inline">\(1\)</span> or <span class="math inline">\(-1\)</span>). Also plot on the same figure the decision boundary fit by logistic regression. (This should be a straight line showing the boundary separating the region where <span class="math inline">\(h_\theta(x) &gt; 0.5\)</span> from where <span class="math inline">\(h_\theta(x) \leq 0.5\)</span>.)</p>
+</div>
 </div>
 <div id="poisson-regression-and-the-exponential-family" class="section level3">
 <h3><strong>2. Poisson regression and the exponential family</strong></h3>
-<p><strong>a.</strong> Consider the Poisson distribution parameterized by <span class="math inline">\(\lambda\)</span>: <span class="math display">\[
+<div id="a.-1" class="section level4">
+<h4><strong>a.</strong></h4>
+<p>Consider the Poisson distribution parameterized by <span class="math inline">\(\lambda\)</span>: <span class="math display">\[
 p(y; \lambda) = \frac{e^{-\lambda}\lambda^y}{y!}
 \]</span> Show that the Poisson distribution is in the exponential family, and clearly state what <span class="math inline">\(b(y)\)</span>, <span class="math inline">\(\eta\)</span>, <span class="math inline">\(T(y)\)</span>, and <span class="math inline">\(a(\eta)\)</span> are.</p>
 <p><span class="math display">\[
@@ -195,7 +205,7 @@ p(y; \lambda) &amp; = \frac{e^{-\lambda}\lambda^y}{y!} \\
           \eta &amp; = \log \lambda \\
           a(\eta) &amp; = e^\eta
 \end{align}
-\]</span> <strong>b.</strong> Consider performing regression using a GLM model with a Poisson response variable. What is the canonical response function for the family? (You may use the fact that a Poisson random variable with parameter <span class="math inline">\(\lambda\)</span> has mean <span class="math inline">\(\lambda\)</span>.)</p>
+\]</span> ####<strong>b.</strong> Consider performing regression using a GLM model with a Poisson response variable. What is the canonical response function for the family? (You may use the fact that a Poisson random variable with parameter <span class="math inline">\(\lambda\)</span> has mean <span class="math inline">\(\lambda\)</span>.)</p>
 <p><span class="math display">\[
 \begin{align}
 g(\eta) &amp; = \text{E}\left[y; \eta\right] \\
@@ -203,7 +213,10 @@ g(\eta) &amp; = \text{E}\left[y; \eta\right] \\
         &amp; = e^\eta
 \end{align}
 \]</span></p>
-<p><strong>c.</strong> For a training set <span class="math inline">\(\left\{x^{(i)}, y^{(i)}; i = 1, \dots, m \right\}\)</span>, let the log-likelihood of an example be <span class="math inline">\(\log p \left(y^{(i)} | x^{(i)}; \theta \right)\)</span>. By taking the derivative of the log-likelihood w.r.t. <span class="math inline">\(\theta_j\)</span>, derive the stochastic gradient ascent rule for learning using a GLM model with Poisson responses <span class="math inline">\(y\)</span> and the canonical response function.</p>
+</div>
+<div id="c.-1" class="section level4">
+<h4><strong>c.</strong></h4>
+<p>For a training set <span class="math inline">\(\left\{x^{(i)}, y^{(i)}; i = 1, \dots, m \right\}\)</span>, let the log-likelihood of an example be <span class="math inline">\(\log p \left(y^{(i)} | x^{(i)}; \theta \right)\)</span>. By taking the derivative of the log-likelihood w.r.t. <span class="math inline">\(\theta_j\)</span>, derive the stochastic gradient ascent rule for learning using a GLM model with Poisson responses <span class="math inline">\(y\)</span> and the canonical response function.</p>
 <p><span class="math display">\[
 \begin{align}
 p\left(y^{(i)} \mid x^{(i)}; \theta \right) &amp; = \frac{1}{y^{(i)}!} \exp \left(\eta^T y^{(i)}-e^{\eta} \right) \\
@@ -222,7 +235,10 @@ p\left(y^{(i)} \mid x^{(i)}; \theta \right) &amp; = \frac{1}{y^{(i)}!} \exp \lef
 \theta &amp; \gets \theta + \alpha \left(y^{(i)}-e^{\theta^Tx^{(i)}} \right) x_j^{(i)}
 \end{align}
 \]</span></p>
-<p><strong>d.</strong> Consider using a GLM with a response variable from any member of the exponential family in which <span class="math inline">\(T(y) = y\)</span>, and the canonical response function <span class="math inline">\(h(x)\)</span> for the family. Show that stochastic gradient ascent on the log-likelihood <span class="math inline">\(\log p(\vec{y} |X; \theta)\)</span> results in the update rule <span class="math inline">\(\theta_i \gets \theta_i - \alpha(h(x)-y)x_i\)</span>. <span class="math display">\[
+</div>
+<div id="d." class="section level4">
+<h4><strong>d.</strong></h4>
+<p>Consider using a GLM with a response variable from any member of the exponential family in which <span class="math inline">\(T(y) = y\)</span>, and the canonical response function <span class="math inline">\(h(x)\)</span> for the family. Show that stochastic gradient ascent on the log-likelihood <span class="math inline">\(\log p(\vec{y} |X; \theta)\)</span> results in the update rule <span class="math inline">\(\theta_i \gets \theta_i - \alpha(h(x)-y)x_i\)</span>. <span class="math display">\[
 \begin{align}
 \ell (\theta) &amp; = \log p(y \mid x ; \theta) \\
               &amp; = \log \left[b(y) \exp \left(\eta^T T(y) - a(\eta) \right) \right] &amp; \text{response variable in exponential family} \\
@@ -256,6 +272,7 @@ h(x) &amp; = \frac{\partial a(\eta)}{\partial \eta} \\
 \end{align}
 \]</span></p>
 </div>
+</div>
 <div id="gaussian-discriminant-analysis" class="section level3">
 <h3><strong>3. Gaussian discriminant analysis</strong></h3>
 <p>Suppose we are given a dataset <span class="math inline">\(\left\{\left(x^{(i)}, y^{(i)} \right); i = 1, \dots, m \right\}\)</span> consisting of <span class="math inline">\(m\)</span> independent examples, where <span class="math inline">\(x^{(i)} \in \mathbb{R}^n\)</span> are <span class="math inline">\(n\)</span>-dimensional vectors, and <span class="math inline">\(y^{(i)} \in \{-1,1\}\)</span>. We will model the joint distribution of <span class="math inline">\((x,y)\)</span> according to: <span class="math display">\[
@@ -268,7 +285,9 @@ p(x \mid y=-1) &amp; = \frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac
 p(x \mid y=1)  &amp; = \frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{2}}} \exp \left(-\frac{1}{2} \left(x-\mu_{1} \right)^T\Sigma^{-1} \left(x-\mu_{1} \right) \right)
 \end{align}
 \]</span> Here, the parameters of our model are <span class="math inline">\(\phi\)</span>, <span class="math inline">\(\Sigma\)</span>, <span class="math inline">\(\mu_{-1}\)</span>, <span class="math inline">\(\mu_1\)</span>. (Note that while there are two different mean vectors <span class="math inline">\(\mu_{-1}\)</span> and <span class="math inline">\(\mu_1\)</span>, there’s only one covariance matrix <span class="math inline">\(\Sigma\)</span>.)</p>
-<p><strong>a.</strong> Suppose we have already fit <span class="math inline">\(\phi\)</span>, <span class="math inline">\(\Sigma\)</span>, <span class="math inline">\(\mu_{-1}\)</span>, <span class="math inline">\(\mu_1\)</span>, and now want to make a prediction at some new query point <span class="math inline">\(x\)</span>. Show that the posterior distribution of the label at <span class="math inline">\(x\)</span> takes the form of a logistic function, and can be written <span class="math display">\[
+<div id="a.-2" class="section level4">
+<h4><strong>a.</strong></h4>
+<p>Suppose we have already fit <span class="math inline">\(\phi\)</span>, <span class="math inline">\(\Sigma\)</span>, <span class="math inline">\(\mu_{-1}\)</span>, <span class="math inline">\(\mu_1\)</span>, and now want to make a prediction at some new query point <span class="math inline">\(x\)</span>. Show that the posterior distribution of the label at <span class="math inline">\(x\)</span> takes the form of a logistic function, and can be written <span class="math display">\[
 p(y \mid x; \phi, \Sigma, \mu_{-1}, \mu_{1}) = \frac{1}{1+\exp \left(-y(\theta^Tx + \theta_0) \right)},
 \]</span> where <span class="math inline">\(\theta \in \mathbb{R}^n\)</span> and the bias term <span class="math inline">\(\theta_0 \in \mathbb{R}\)</span> are some appropriate functions of <span class="math inline">\(\phi\)</span>, <span class="math inline">\(\Sigma\)</span>, <span class="math inline">\(\mu_{-1}\)</span>, <span class="math inline">\(\mu_1\)</span>. (Note: the term <span class="math inline">\(\theta_0\)</span> corresponds to introducing an extra coordinate <span class="math inline">\(x_0^{(i)}=1\)</span>.)</p>
 <p><span class="math display">\[
@@ -287,7 +306,10 @@ p(y=1 \mid x) &amp; = \frac{p(x \mid y=1)p(y=1)}{p(x)} \\
         p(y=1 \mid x) &amp; = \frac{1}{1+\exp \left(-y(\theta^Tx + \theta_0) \right)}
 \end{align}
 \]</span></p>
-<p><strong>b.</strong> For this part of the problem only, you may assume <span class="math inline">\(n\)</span> (the dimension of <span class="math inline">\(x\)</span>) is <span class="math inline">\(1\)</span>, so that <span class="math inline">\(\Sigma = [\sigma^2]\)</span> is just a real number, and likewise the determinant of <span class="math inline">\(\Sigma\)</span> is given by <span class="math inline">\(\lvert \Sigma\rvert = \sigma^2\)</span>. Given the dataset, we claim that the maximum likelihood estimates of the parameters are given by <span class="math display">\[
+</div>
+<div id="b.-1" class="section level4">
+<h4><strong>b.</strong></h4>
+<p>For this part of the problem only, you may assume <span class="math inline">\(n\)</span> (the dimension of <span class="math inline">\(x\)</span>) is <span class="math inline">\(1\)</span>, so that <span class="math inline">\(\Sigma = [\sigma^2]\)</span> is just a real number, and likewise the determinant of <span class="math inline">\(\Sigma\)</span> is given by <span class="math inline">\(\lvert \Sigma\rvert = \sigma^2\)</span>. Given the dataset, we claim that the maximum likelihood estimates of the parameters are given by <span class="math display">\[
 \begin{align}
 \phi      &amp; = \frac{1}{m} \sum_{i=1}^m 1 \left\{y^{(i)}=1 \right\} \\
 \mu_{-1}  &amp; = \frac{\sum_{i=1}^m 1\left\{y^{(i)}=-1 \right\}x^{(i)}}{\sum_{i=1}^m 1\left\{y^{(i)}=-1\right\}} \\
@@ -303,7 +325,10 @@ p(y=1 \mid x) &amp; = \frac{p(x \mid y=1)p(y=1)}{p(x)} \\
 \]</span></p>
 <p>By maximizing <span class="math inline">\(\ell\)</span> w.r.t. the four parameters, prove that the maximum likelihood estimates of <span class="math inline">\(\phi\)</span>, <span class="math inline">\(\mu_{-1}\)</span>, <span class="math inline">\(\mu_1\)</span>, and <span class="math inline">\(\Sigma\)</span> are indeed as given in the formulas above. (You may assume that there is at least one positive and one negative example, so that the denominators in the definition of <span class="math inline">\(\mu_{-1}\)</span> and <span class="math inline">\(\mu_1\)</span> above are non-zero.)</p>
 <p>See problem 3c.</p>
-<p><strong>c.</strong> Without assuming that <span class="math inline">\(n=1\)</span>, show that the maximum likelihood estimates of <span class="math inline">\(\phi\)</span>, <span class="math inline">\(\mu_{-1}\)</span>, <span class="math inline">\(\mu_1\)</span>, and <span class="math inline">\(\Sigma\)</span> are as given in the formulas in part (b). [Note: If you’re fairly sure that you have the answer to this part right, you don’t have to do part (b), since that’s just a special case.]</p>
+</div>
+<div id="c.-2" class="section level4">
+<h4><strong>c.</strong></h4>
+<p>Without assuming that <span class="math inline">\(n=1\)</span>, show that the maximum likelihood estimates of <span class="math inline">\(\phi\)</span>, <span class="math inline">\(\mu_{-1}\)</span>, <span class="math inline">\(\mu_1\)</span>, and <span class="math inline">\(\Sigma\)</span> are as given in the formulas in part (b). [Note: If you’re fairly sure that you have the answer to this part right, you don’t have to do part (b), since that’s just a special case.]</p>
 <p><span class="math display">\[
 \begin{align}
 \ell \left(\phi, \mu_{-1}, \mu_1, \Sigma \right)  &amp; = \log \prod_{i=1}^m p(x^{(i)}\mid y^{(i)}; \phi, \mu_{-1}, \mu_1, \Sigma)p(y^{(i)};\phi) \\
@@ -347,12 +372,19 @@ A                                                             &amp; = \phi m \\
 \end{align}
 \]</span></p>
 </div>
+</div>
 <div id="linear-invariance-of-optimization-algorithms" class="section level3">
 <h3><strong>4. Linear invariance of optimization algorithms</strong></h3>
 <p>Consider using an iterative optimization algorithm (such as Newton’s method, or gradient descent) to minimize some continuously differentiable function <span class="math inline">\(f(x)\)</span>. Suppose we initialize the algorithm at <span class="math inline">\(x^{(0)} = \vec{0}\)</span>. when the algorithm is run, it will produce a value of <span class="math inline">\(x \in \mathbb{R}^n\)</span> for each iteration: <span class="math inline">\(x^{(1)}, x^{(2)}, \dots\)</span>.</p>
 <p>Now, let some non-singular square matrix <span class="math inline">\(A \in \mathbb{R}^{n \times n}\)</span> be given, and define a new function <span class="math inline">\(g(z) = f(Az)\)</span>. Consider using the same iterative optimization algorithm to optimize <span class="math inline">\(g\)</span> (with initialization <span class="math inline">\(z^{(0)} = \vec{0}\)</span>). If the values <span class="math inline">\(z^{(1)}, z^{(2)}, \dots\)</span> produced by this method necessarily satisfy <span class="math inline">\(z^{(i)} = A^{-1}x^{(i)}\)</span> for all <span class="math inline">\(i\)</span>, we say this optimization algorithm is <strong><em>invariant to linear reparameterizations</em></strong>.</p>
-<p><strong>a.</strong> Show that Newton’s method (applied to find the minimum of a function) is invariant to linear reparameterizations. Note that since <span class="math inline">\(z^{(0)} = \vec{0} = A^{-1}x^{(0)}\)</span>, it is sufficient to show that if Newton’s method applied to <span class="math inline">\(f(x)\)</span> updates <span class="math inline">\(x^{(i)}\)</span> to <span class="math inline">\(x^{(i+1)}\)</span>, then Newton’s method applied to <span class="math inline">\(g(z)\)</span> will update <span class="math inline">\(z^{(i)} = A^{-1}x^{(i)}\)</span> to <span class="math inline">\(z^{(i+1)} = A^{-1}x^{(i+1)}\)</span>.</p>
-<p><strong>b.</strong> Is gradient descent invariant to linear reparameterizations? Justify your answer.</p>
+<div id="a.-3" class="section level4">
+<h4><strong>a.</strong></h4>
+<p>Show that Newton’s method (applied to find the minimum of a function) is invariant to linear reparameterizations. Note that since <span class="math inline">\(z^{(0)} = \vec{0} = A^{-1}x^{(0)}\)</span>, it is sufficient to show that if Newton’s method applied to <span class="math inline">\(f(x)\)</span> updates <span class="math inline">\(x^{(i)}\)</span> to <span class="math inline">\(x^{(i+1)}\)</span>, then Newton’s method applied to <span class="math inline">\(g(z)\)</span> will update <span class="math inline">\(z^{(i)} = A^{-1}x^{(i)}\)</span> to <span class="math inline">\(z^{(i+1)} = A^{-1}x^{(i+1)}\)</span>.</p>
+</div>
+<div id="b.-2" class="section level4">
+<h4><strong>b.</strong></h4>
+<p>Is gradient descent invariant to linear reparameterizations? Justify your answer.</p>
+</div>
 </div>
 <div id="regression-for-denoising-quasar-spectra" class="section level3">
 <h3><strong>5. Regression for denoising quasar spectra</strong></h3>
@@ -368,15 +400,22 @@ f_{\text{obs}}(\lambda) = \text{absorption}(\lambda) \cdot f(\lambda) + \text{no
 <li>Test set: <code>http://cs229.stanford.edu/ps/ps1/quasar_test.csv</code></li>
 </ul>
 <p>Each file contains a single header row containing 450 numbers corresponding integral wavelengths in the interval <span class="math inline">\([1150; 1600] \overset{\circ}{A}\)</span>. The remaining lines contain relative flux measurements for each wavelength. Specifically, <code>quasar_train.csv</code> contains 200 examples and <code>quasar_test.csv</code> contains 50 examples. You may use the helper file <code>load_quasar_data.m</code> to load the data in Matlab: <code>http://cs229.stanford.edu/ps/ps1/load_quasar_data.m</code></p>
-<p><strong>a.</strong> Locally weighted linear regression</p>
+<div id="a.-4" class="section level4">
+<h4><strong>a.</strong></h4>
+<p>Locally weighted linear regression</p>
 <p>Consider a linear regression problem in which we want to “weight” different training examples differently. Specifically, suppose we want to minimize <span class="math display">\[
   J(\theta) = \frac{1}{2} \sum_{i=1}^m w^{(i)} \left(\theta^Tx^{(i)}-y^{(i)} \right)^2
   \]</span> In class, we worked out what happens for the case where all the weights <span class="math inline">\(w^{(i)}\)</span> are the same. In this problem, we will generalize some of those ideas to the weighted setting.</p>
-<p><strong>i.</strong> Show that <span class="math inline">\(J(\theta)\)</span> can also be written <span class="math display">\[
+<div id="i." class="section level5">
+<h5><strong>i.</strong></h5>
+<p>Show that <span class="math inline">\(J(\theta)\)</span> can also be written <span class="math display">\[
   J(\theta) = \left(X \theta - \vec{y} \right)^T W \left(X \theta - \vec{y} \right)
   \]</span> for an appropriate diagonal matrix <span class="math inline">\(W\)</span>, and where <span class="math inline">\(X\)</span> and <span class="math inline">\(\vec{y}\)</span> are as defined in class. State clearly what <span class="math inline">\(W\)</span> is.</p>
 <p><span class="math inline">\(W \in \mathbb{R}^{n \times n}\)</span> is a diagonal matrix, with <span class="math inline">\(W_{ii} = \frac{1}{2}w^{(i)}\)</span>.</p>
-<p><strong>ii.</strong> If all the <span class="math inline">\(w^{(i)}\)</span>’s equal <span class="math inline">\(1\)</span>, then we saw in class that the normal equation is <span class="math display">\[
+</div>
+<div id="ii." class="section level5">
+<h5><strong>ii.</strong></h5>
+<p>If all the <span class="math inline">\(w^{(i)}\)</span>’s equal <span class="math inline">\(1\)</span>, then we saw in class that the normal equation is <span class="math display">\[
   X^TX\theta = X^T \vec{y},
   \]</span> and that the value of <span class="math inline">\(\theta\)</span> that minimizes <span class="math inline">\(J(\theta)\)</span> is given by <span class="math inline">\(\left(X^T X \right)^{-1}X^T \vec{y}\)</span>. By finding the derivative <span class="math inline">\(\nabla_\theta J(\theta)\)</span> and setting that to zero, generalize the normal equation to this weighted setting, and give the new value of <span class="math inline">\(\theta\)</span> that minimizes <span class="math inline">\(J(\theta)\)</span> in closed form as a function of <span class="math inline">\(X\)</span>, <span class="math inline">\(W\)</span>, and <span class="math inline">\(\vec{y}\)</span>.</p>
 <p><span class="math display">\[
@@ -390,7 +429,10 @@ f_{\text{obs}}(\lambda) = \text{absorption}(\lambda) \cdot f(\lambda) + \text{no
           \theta  &amp; = \left(X^T W X \right)^{-1} X^TWy
   \end{align}
   \]</span></p>
-<p><strong>iii.</strong> Suppose we have a training set <span class="math inline">\(\left\{x^{(i)}, y^{(i)}; i=1, \dots, m \right\}\)</span> of <span class="math inline">\(m\)</span> independent examples, but in which the <span class="math inline">\(y^{(i)}\)</span>’s were observed with differing variances. Specifically, suppose that <span class="math display">\[
+</div>
+<div id="iii." class="section level5">
+<h5><strong>iii.</strong></h5>
+<p>Suppose we have a training set <span class="math inline">\(\left\{x^{(i)}, y^{(i)}; i=1, \dots, m \right\}\)</span> of <span class="math inline">\(m\)</span> independent examples, but in which the <span class="math inline">\(y^{(i)}\)</span>’s were observed with differing variances. Specifically, suppose that <span class="math display">\[
 p\left(y^{(i)} \mid x^{(i)}; \theta \right) = \frac{1}{\sqrt{2\pi}\sigma^{(i)}} \exp \left(- \frac{\left(y^{(i)}-\theta^Tx^{(i)} \right)^2}{2 \left(\sigma^{(i)} \right)^2} \right)
 \]</span> I.e., <span class="math inline">\(y^{(i)}\)</span> has mean <span class="math inline">\(\theta^T x^{(i)}\)</span> and variance <span class="math inline">\(\left(\sigma^{(i)} \right)^2\)</span> (where the <span class="math inline">\(\sigma^{(i)}\)</span>’s are fixed, known, constants). Show that finding the maximum likelihood estimate of <span class="math inline">\(\theta\)</span> reduces to solving a weighted linear regression problem. State clearly what the <span class="math inline">\(w^{(i)}\)</span>’s are in terms of the <span class="math inline">\(\sigma^{(i)}\)</span>’s.</p>
 <p><span class="math display">\[
@@ -410,15 +452,22 @@ Maximizing the log-likelihood <span class="math inline">\(\ell(\theta)\)</span> 
 w^{(i)} &amp; = \frac{1}{\left( \sigma^{(i)}\right)^2}
 \end{align}
 \]</span></p>
-<p><strong>b.</strong> Visualizing the data</p>
-<p><strong>i.</strong> Use the normal equations to implement (unweighted) linear regression (<span class="math inline">\(y = \theta^Tx\)</span>) on the <em>first</em> training example (i.e. first non-header row). On one figure, plot both the raw data and the straight line resulting from your fit. State the optimal <span class="math inline">\(\theta\)</span> resulting from the linear regression.</p>
-<p><strong>ii.</strong> Implement locally weighted linear regression on the <em>first</em> training example. Use the normal equations you derived in part (a)(ii). On a different figure, plot both the raw data and the smooth curve resulting from your fit. When evaluating <span class="math inline">\(h(\cdot)\)</span> at a query point <span class="math inline">\(x\)</span>, use weights <span class="math display">\[
+</div>
+</div>
+<div id="b.-3" class="section level4">
+<h4><strong>b.</strong></h4>
+<p>Visualizing the data</p>
+<p>#####<strong>i.</strong> Use the normal equations to implement (unweighted) linear regression (<span class="math inline">\(y = \theta^Tx\)</span>) on the <em>first</em> training example (i.e. first non-header row). On one figure, plot both the raw data and the straight line resulting from your fit. State the optimal <span class="math inline">\(\theta\)</span> resulting from the linear regression.</p>
+<p>#####<strong>ii.</strong> Implement locally weighted linear regression on the <em>first</em> training example. Use the normal equations you derived in part (a)(ii). On a different figure, plot both the raw data and the smooth curve resulting from your fit. When evaluating <span class="math inline">\(h(\cdot)\)</span> at a query point <span class="math inline">\(x\)</span>, use weights <span class="math display">\[
   w^{(i)} = \exp \left(- \frac{\left(x-x^{(i)} \right)^2}{2 \tau^2} \right),
   \]</span></p>
 <p>with bandwidth parameter <span class="math inline">\(\tau = 5\)</span>.</p>
-<p><strong>iii.</strong> Repeat (b)(ii) four more times with <span class="math inline">\(\tau = 1, 10, 100\)</span> and <span class="math inline">\(1000\)</span>. Plot the resulting curves. You can submit one plot with all four <span class="math inline">\(\tau\)</span> values or submit four separate plots. If you submit one plot, make sure all curves are visible. Additionally, in <strong>2-3 sentences</strong>, comment on what happens to the locally weighted linear regression line as <span class="math inline">\(\tau\)</span> varies.</p>
-<p><strong>c.</strong> Predicting quasar spectra with functional regression</p>
-<p>We now go a step beyond what we have covered explicitly in class, and we wish to predict an entire part of a spectrum|a curve|from noisy observed data. We begin by supposing that we observe a random sample of <span class="math inline">\(m\)</span> absorption-free spectra, which is possible for quasars very close (in a sense relative to the size of the universe!) to Earth. For a given spectrum <span class="math inline">\(f\)</span>, define <span class="math inline">\(f_{\text{right}}\)</span> to be the spectrum to the right of the Lyman-<span class="math inline">\(\alpha\)</span> line. Let <span class="math inline">\(f_{\text{left}}\)</span> be the spectrum within the Lyman-<span class="math inline">\(\alpha\)</span> forest region, that is, for lower wavelengths. To make the results cleaner, we define: <span class="math display">\[
+<p>#####<strong>iii.</strong> Repeat (b)(ii) four more times with <span class="math inline">\(\tau = 1, 10, 100\)</span> and <span class="math inline">\(1000\)</span>. Plot the resulting curves. You can submit one plot with all four <span class="math inline">\(\tau\)</span> values or submit four separate plots. If you submit one plot, make sure all curves are visible. Additionally, in <strong>2-3 sentences</strong>, comment on what happens to the locally weighted linear regression line as <span class="math inline">\(\tau\)</span> varies.</p>
+</div>
+<div id="c.-3" class="section level4">
+<h4><strong>c.</strong></h4>
+<p>Predicting quasar spectra with functional regression</p>
+<p>We now go a step beyond what we have covered explicitly in class, and we wish to predict an entire part of a spectrum (a curve) from noisy observed data. We begin by supposing that we observe a random sample of <span class="math inline">\(m\)</span> absorption-free spectra, which is possible for quasars very close (in a sense relative to the size of the universe!) to Earth. For a given spectrum <span class="math inline">\(f\)</span>, define <span class="math inline">\(f_{\text{right}}\)</span> to be the spectrum to the right of the Lyman-<span class="math inline">\(\alpha\)</span> line. Let <span class="math inline">\(f_{\text{left}}\)</span> be the spectrum within the Lyman-<span class="math inline">\(\alpha\)</span> forest region, that is, for lower wavelengths. To make the results cleaner, we define: <span class="math display">\[
 f(\lambda) = 
 \begin{cases}
 f_{\text{left}}(\lambda) &amp; \text{if } \lambda &lt; 1200 \\
@@ -430,9 +479,22 @@ f_{\text{obs}} = \text{absorption}(\lambda) \cdot f(\lambda) + \text{noise}(\lam
 <p>We formulate the functional regression task as the goal of learning the function <span class="math inline">\(r\)</span> mapping <span class="math inline">\(f_{\text{left}}\)</span> to <span class="math inline">\(f_{\text{right}}\)</span>: <span class="math display">\[
 r(f_{\text{right}})(\lambda) = \text{E} \left(f_{\text{left}} \mid f_{\text{right}} \right)(\lambda)
 \]</span> for <span class="math inline">\(\lambda\)</span> in the Lyman-<span class="math inline">\(\alpha\)</span> forest.</p>
-<p><strong>i.</strong></p>
-<p><strong>ii.</strong></p>
-<p><strong>iii.</strong></p>
+<p>#####<strong>i.</strong> First, we must smooth the data in the training dataset to make it more useful for prediction. For each <span class="math inline">\(i=1,\dots,m\)</span>, define <span class="math inline">\(f^{(i)} \left(\lambda \right)\)</span> to be the weighted lienar regression estimate of the <span class="math inline">\(i\)</span>th spectrum. Use your code from part (b)(ii) above to smooth all spectra in the training set using <span class="math inline">\(\tau = 5\)</span>. Do the same for the test set. We will now operate on these smoothed spectra.</p>
+<p>#####<strong>ii.</strong> Using your estimated regression functions <span class="math inline">\(f^{(i)}\)</span> for <span class="math inline">\(i = 1, \dots, m\)</span>, we now wish to estimate the unobserved spectrum <span class="math inline">\(f_\text{left}\)</span> of a quasar from its (noisy) observed spectrum <span class="math inline">\(f_{\text{right}}\)</span>. To do so, we perform a weighted regression of the <em>locally weighted regressions</em>. In particular, given a new noisy spectrum observation: <span class="math display">\[
+  f_{\text{obs}}(\lambda) = f(\lambda) + \text{noise}(\lambda) \quad \text{for } \lambda \in \left\{1300, \dots, 1599\right\}
+  \]</span> We define a metric <span class="math inline">\(d\)</span> which takes as input, two spectra <span class="math inline">\(f_1\)</span> and <span class="math inline">\(f_2\)</span>, and outputs a scalar: <span class="math display">\[
+  d\left(f_1, f_2 \right) = \sum_i \left(f_1(\lambda_1) - f_2 (\lambda_2) \right)^2.
+  \]</span> The metric <span class="math inline">\(d\)</span> computes squared distance between the new datapoint and previous datapoints. If <span class="math inline">\(f_1\)</span> and <span class="math inline">\(f_2\)</span> are right spectra, then we take the preceding sum only over <span class="math inline">\(\lambda \in \left\{1300, \dots, 1599 \right\}\)</span>, rather than the entire spectrum.</p>
+<p>Based on this distance function, we may define the nonparametric <em>functional</em> regresion estimator, which is a locally weighted sum of <em>functions</em> <span class="math inline">\(f_{\text{left}}\)</span> from the training data (this is like locally weighted linear regression, except that instead of predicting <span class="math inline">\(y \in \mathbb{R}\)</span> we predict a function <span class="math inline">\(f_{\text{left}}\)</span>). Specifically, let <span class="math inline">\(f_{\text{right}}\)</span> denote the right side of a spectrum, which we have smoothed using locally weighted linear regression (as you were told to do in the previous part of the problem). We wish to estimate the associated <em>left</em> spectrum <span class="math inline">\(f_{\text{left}}\)</span>. Define the function <span class="math inline">\(\text{ker}(t) = \max \left\{1-t, 0 \right\}\)</span> and let <span class="math inline">\(\text{neighb}_k\left(f_{\text{right}}\right)\)</span> denote the <span class="math inline">\(k\)</span> indices <span class="math inline">\(i \in \left\{1,2,\dots,m \right\}\)</span> that are closest to <span class="math inline">\(f_{\text{right}}\)</span> i.e. <span class="math display">\[
+  d \left(f_{\text{right}}^{(i)} , f_\text{right}\right) &lt; d \left(f_{\text{right}}^{(j)}, f_{\text{right}} \right) \quad \text{for all } i \in \text{neighb}_k \left(f_{\text{right}} \right), j \notin \text{neighb}_k\left(f_{\text{right}} \right)
+  \]</span> and <span class="math inline">\(\text{neighb}_k \left(f_{\text{right}} \right)\)</span> contains exactly <span class="math inline">\(k\)</span> indices. In addition, let <span class="math display">\[
+  h := \max_{i \in \left\{1, \dots, m \right\}} d \left(f_{\text{right}}^{(i)}, f_{\text{right}} \right).
+  \]</span> Then define the estimated function <span class="math inline">\(\hat f_{\text{left}}: \mathbb{R} \to \mathbb{R}\)</span> by <span class="math display">\[
+  \hat f_{\text{left}} = \frac{\sum_{i \in \text{neighb}_k \left(f_\text{right} \right)} \ker \left(\frac{d\left(f_{\text{right}}^{(i)}, f_{\text{right}}\right)}{h} \right) f_{\text{left}}^{(i)}(\lambda)} {\sum_{i \in \text{neighb}_k \left(f_\text{right} \right)} \ker \left(\frac{d \left(f_{\text{right}}^{(i)} , f_{\text{right}}\right)}{h} \right)}.
+  \]</span> Recall that <span class="math inline">\(f_{\text{right}}^{(i)}\)</span> is the <em>smoothed</em> (weighted linear regression) estiamte of the <span class="math inline">\(i\)</span>th training spectrum.</p>
+<p>Construct the functional regression estimate (1) for each spectrum in the entire training set using <span class="math inline">\(k=3\)</span> nearest neighbors: for each <span class="math inline">\(j=1,\dots,m\)</span>, construct the estimator <span class="math inline">\(\hat f_{\text{left}}\)</span> from (1) using <span class="math inline">\(f_{\text{right}} = f_{\text{right}}^{(j)}\)</span>. Then compute the error <span class="math inline">\(d \left(f_{\text{left}}^{(i)}, \hat f_{\text{left}} \right)\)</span> between the true spectrum <span class="math inline">\(f_{\text{left}}^{(j)}\)</span> and your estimated spectrum <span class="math inline">\(\hat f_{\text{left}}\)</span> for each <span class="math inline">\(j\)</span>, and return the average over the training data. What is your average training error?</p>
+<p>#####<strong>iii.</strong> Perform functional regression on the test set using the same procedure as in the previous subquestion. What is your average test error? For test examples 1 and 6, include a plot with both the entire smooth spectrum and the fitted curve <span class="math inline">\(\hat f_{\text{left}}\)</span> curve on the same graph. You should submit two plots: one for test example 1 and one for test example 6.</p>
+</div>
 </div>
 </div>
 

@@ -14,7 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### **1. Logistic Regression**
 
-**a.** Consider the average empirical loss (the risk) for logistic regression:
+####**a.**
+Consider the average empirical loss (the risk) for logistic regression:
 $$
 \begin{align}
 J(\theta) & = \frac{1}{m} \sum_{i=1}^m \log \left(1+e^{-y^{(i)}\theta^Tx^{(i)}} \right) \\
@@ -61,22 +62,22 @@ $$
 $$
 
 
-**b.** We have provided two data files:
+####**b.**
+We have provided two data files:
 
   - http://cs229.stanford.edu/ps/ps1/logistic_x.txt
   - http://cs229.stanford.edu/ps/ps1/logistic_y.txt
   
 These files contain the inputs $\left(x^{(i)} \in \mathbb{R}^2 \right)$ and outputs $\left(y^{(i)} \in \left\{-1,1 \right\} \right)$, respectively, for a binary classification problem, with one training example per row. Implement Newton's method for optimizing $J(\theta)$, and apply it to fit a logistic regression model to the data. Initialize Newton's method with $\theta = \vec{0}$ (the vector of all zeros). What are the coefficients $\theta$ resulting from your fit? (Remember to include the intercept term.)
 
-```{python}
-
-```
-
-**c.** Plot the training data (your axes should be $x_1$ and $x_2$, corresponding to the two coordinates of the inputs, and you should use a different symbol for each point plotted to indicate whether that example has label $1$ or $-1$). Also plot on the same figure the decision boundary fit by logistic regression. (This should be a straight line showing the boundary separating the region where $h_\theta(x) > 0.5$ from where $h_\theta(x) \leq 0.5$.)
+####**c.**
+Plot the training data (your axes should be $x_1$ and $x_2$, corresponding to the two coordinates of the inputs, and you should use a different symbol for each point plotted to indicate whether that example has label $1$ or $-1$). Also plot on the same figure the decision boundary fit by logistic regression. (This should be a straight line showing the boundary separating the region where $h_\theta(x) > 0.5$ from where $h_\theta(x) \leq 0.5$.)
 
 ### **2. Poisson regression and the exponential family**
 
-**a.** Consider the Poisson distribution parameterized by $\lambda$:
+####**a.**
+
+Consider the Poisson distribution parameterized by $\lambda$:
 $$
 p(y; \lambda) = \frac{e^{-\lambda}\lambda^y}{y!}
 $$
@@ -94,7 +95,8 @@ p(y; \lambda) & = \frac{e^{-\lambda}\lambda^y}{y!} \\
           a(\eta) & = e^\eta
 \end{align}
 $$
-**b.** Consider performing regression using a GLM model with a Poisson response variable. What is the canonical response function for the family? (You may use the fact that a Poisson random variable with parameter $\lambda$ has mean $\lambda$.)
+####**b.**
+Consider performing regression using a GLM model with a Poisson response variable. What is the canonical response function for the family? (You may use the fact that a Poisson random variable with parameter $\lambda$ has mean $\lambda$.)
 
 $$
 \begin{align}
@@ -104,7 +106,8 @@ g(\eta) & = \text{E}\left[y; \eta\right] \\
 \end{align}
 $$
 
-**c.** For a training set $\left\{x^{(i)}, y^{(i)}; i = 1, \dots, m \right\}$, let the log-likelihood of an example be $\log p \left(y^{(i)} | x^{(i)}; \theta \right)$. By taking the derivative of the log-likelihood w.r.t. $\theta_j$, derive the stochastic gradient ascent rule for learning using a GLM model with Poisson responses $y$ and the canonical response function.
+####**c.**
+For a training set $\left\{x^{(i)}, y^{(i)}; i = 1, \dots, m \right\}$, let the log-likelihood of an example be $\log p \left(y^{(i)} | x^{(i)}; \theta \right)$. By taking the derivative of the log-likelihood w.r.t. $\theta_j$, derive the stochastic gradient ascent rule for learning using a GLM model with Poisson responses $y$ and the canonical response function.
 
 $$
 \begin{align}
@@ -127,7 +130,8 @@ $$
 \end{align}
 $$
 
-**d.** Consider using a GLM with a response variable from any member of the exponential family in which $T(y) = y$, and the canonical response function $h(x)$ for the family. Show that stochastic gradient ascent on the log-likelihood $\log p(\vec{y} |X; \theta)$ results in the update rule $\theta_i \gets \theta_i - \alpha(h(x)-y)x_i$.
+####**d.**
+Consider using a GLM with a response variable from any member of the exponential family in which $T(y) = y$, and the canonical response function $h(x)$ for the family. Show that stochastic gradient ascent on the log-likelihood $\log p(\vec{y} |X; \theta)$ results in the update rule $\theta_i \gets \theta_i - \alpha(h(x)-y)x_i$.
 $$
 \begin{align}
 \ell (\theta) & = \log p(y \mid x ; \theta) \\
@@ -180,7 +184,8 @@ p(x \mid y=1)  & = \frac{1}{(2\pi)^{\frac{n}{2}} \lvert \Sigma \rvert^{\frac{1}{
 $$
 Here, the parameters of our model are $\phi$, $\Sigma$, $\mu_{-1}$, $\mu_1$. (Note that while there are two different mean vectors $\mu_{-1}$ and $\mu_1$, there's only one covariance matrix $\Sigma$.)
 
-**a.** Suppose we have already fit $\phi$, $\Sigma$, $\mu_{-1}$, $\mu_1$, and now want to make a prediction at some new query point $x$. Show that the posterior distribution of the label at $x$ takes the form of a logistic function, and can be written
+####**a.**
+Suppose we have already fit $\phi$, $\Sigma$, $\mu_{-1}$, $\mu_1$, and now want to make a prediction at some new query point $x$. Show that the posterior distribution of the label at $x$ takes the form of a logistic function, and can be written
 $$
 p(y \mid x; \phi, \Sigma, \mu_{-1}, \mu_{1}) = \frac{1}{1+\exp \left(-y(\theta^Tx + \theta_0) \right)},
 $$
@@ -203,7 +208,8 @@ p(y=1 \mid x) & = \frac{p(x \mid y=1)p(y=1)}{p(x)} \\
 \end{align}
 $$
 
-**b.** For this part of the problem only, you may assume $n$ (the dimension of $x$) is $1$, so that $\Sigma = [\sigma^2]$ is just a real number, and likewise the determinant of $\Sigma$ is given by $\lvert \Sigma\rvert = \sigma^2$. Given the dataset, we claim that the maximum likelihood estimates of the parameters are given by
+####**b.**
+For this part of the problem only, you may assume $n$ (the dimension of $x$) is $1$, so that $\Sigma = [\sigma^2]$ is just a real number, and likewise the determinant of $\Sigma$ is given by $\lvert \Sigma\rvert = \sigma^2$. Given the dataset, we claim that the maximum likelihood estimates of the parameters are given by
 $$
 \begin{align}
 \phi      & = \frac{1}{m} \sum_{i=1}^m 1 \left\{y^{(i)}=1 \right\} \\
@@ -225,7 +231,8 @@ By maximizing $\ell$ w.r.t. the four parameters, prove that the maximum likeliho
 
 See problem 3c.
 
-**c.** Without assuming that $n=1$, show that the maximum likelihood estimates of $\phi$, $\mu_{-1}$, $\mu_1$, and $\Sigma$ are as given in the formulas in part (b). [Note: If you're fairly sure that you have the answer to this part right, you don't have to do part (b), since that's just a special case.]
+####**c.**
+Without assuming that $n=1$, show that the maximum likelihood estimates of $\phi$, $\mu_{-1}$, $\mu_1$, and $\Sigma$ are as given in the formulas in part (b). [Note: If you're fairly sure that you have the answer to this part right, you don't have to do part (b), since that's just a special case.]
 
 $$
 \begin{align}
@@ -279,9 +286,11 @@ Consider using an iterative optimization algorithm (such as Newton's method, or 
 
 Now, let some non-singular square matrix $A \in \mathbb{R}^{n \times n}$ be given, and define a new function $g(z) = f(Az)$. Consider using the same iterative optimization algorithm to optimize $g$ (with initialization $z^{(0)} = \vec{0}$). If the values $z^{(1)}, z^{(2)}, \dots$ produced by this method necessarily satisfy $z^{(i)} = A^{-1}x^{(i)}$ for all $i$, we say this optimization algorithm is ***invariant to linear reparameterizations***.
 
-**a.** Show that Newton's method (applied to find the minimum of a function) is invariant to linear reparameterizations. Note that since $z^{(0)} = \vec{0} = A^{-1}x^{(0)}$, it is sufficient to show that if Newton's method applied to $f(x)$ updates $x^{(i)}$ to $x^{(i+1)}$, then Newton's method applied to $g(z)$ will update $z^{(i)} = A^{-1}x^{(i)}$ to $z^{(i+1)} = A^{-1}x^{(i+1)}$.
+####**a.**
+Show that Newton's method (applied to find the minimum of a function) is invariant to linear reparameterizations. Note that since $z^{(0)} = \vec{0} = A^{-1}x^{(0)}$, it is sufficient to show that if Newton's method applied to $f(x)$ updates $x^{(i)}$ to $x^{(i+1)}$, then Newton's method applied to $g(z)$ will update $z^{(i)} = A^{-1}x^{(i)}$ to $z^{(i+1)} = A^{-1}x^{(i+1)}$.
 
-**b.** Is gradient descent invariant to linear reparameterizations? Justify your answer.
+####**b.**
+Is gradient descent invariant to linear reparameterizations? Justify your answer.
 
 
 ### **5. Regression for denoising quasar spectra**
@@ -304,7 +313,8 @@ Astrophysicists and cosmologists wish to understand the absorption function, whi
 
 Each file contains a single header row containing 450 numbers corresponding integral wavelengths in the interval $[1150; 1600] \overset{\circ}{A}$. The remaining lines contain relative flux measurements for each wavelength. Specifically, `quasar_train.csv` contains 200 examples and `quasar_test.csv` contains 50 examples. You may use the helper file `load_quasar_data.m` to load the data in Matlab: `http://cs229.stanford.edu/ps/ps1/load_quasar_data.m`
 
-**a.** Locally weighted linear regression
+####**a.**
+Locally weighted linear regression
 
   Consider a linear regression problem in which we want to "weight" different training examples differently. Specifically, suppose we want to minimize
   $$
@@ -312,7 +322,8 @@ Each file contains a single header row containing 450 numbers corresponding inte
   $$
   In class, we worked out what happens for the case where all the weights $w^{(i)}$ are the same. In this problem, we will generalize some of those ideas to the weighted setting.
   
-  **i.** Show that $J(\theta)$ can also be written
+#####**i.**
+Show that $J(\theta)$ can also be written
   $$
   J(\theta) = \left(X \theta - \vec{y} \right)^T W \left(X \theta - \vec{y} \right)
   $$
@@ -320,7 +331,8 @@ Each file contains a single header row containing 450 numbers corresponding inte
   
   $W \in \mathbb{R}^{n \times n}$ is a diagonal matrix, with $W_{ii} = \frac{1}{2}w^{(i)}$.
   
-  **ii.** If all the $w^{(i)}$'s equal $1$, then we saw in class that the normal equation is
+#####**ii.**
+If all the $w^{(i)}$'s equal $1$, then we saw in class that the normal equation is
   $$
   X^TX\theta = X^T \vec{y},
   $$
@@ -338,7 +350,8 @@ Each file contains a single header row containing 450 numbers corresponding inte
   \end{align}
   $$
   
-  **iii.** Suppose we have a training set $\left\{x^{(i)}, y^{(i)}; i=1, \dots, m \right\}$ of $m$ independent examples, but in which the $y^{(i)}$'s were observed with differing variances. Specifically, suppose that
+#####**iii.**
+Suppose we have a training set $\left\{x^{(i)}, y^{(i)}; i=1, \dots, m \right\}$ of $m$ independent examples, but in which the $y^{(i)}$'s were observed with differing variances. Specifically, suppose that
 $$
 p\left(y^{(i)} \mid x^{(i)}; \theta \right) = \frac{1}{\sqrt{2\pi}\sigma^{(i)}} \exp \left(- \frac{\left(y^{(i)}-\theta^Tx^{(i)} \right)^2}{2 \left(\sigma^{(i)} \right)^2} \right)
 $$
@@ -363,22 +376,26 @@ w^{(i)} & = \frac{1}{\left( \sigma^{(i)}\right)^2}
 \end{align}
 $$
   
-**b.** Visualizing the data
+####**b.**
+Visualizing the data
 
-  **i.** Use the normal equations to implement (unweighted) linear regression ($y = \theta^Tx$) on the *first* training example (i.e. first non-header row). On one figure, plot both the raw data and the straight line resulting from your fit. State the optimal $\theta$ resulting from the linear regression.
+  #####**i.**
+  Use the normal equations to implement (unweighted) linear regression ($y = \theta^Tx$) on the *first* training example (i.e. first non-header row). On one figure, plot both the raw data and the straight line resulting from your fit. State the optimal $\theta$ resulting from the linear regression.
   
-  **ii.** Implement locally weighted linear regression on the *first* training example. Use the normal equations you derived in part (a)(ii). On a different figure, plot both the raw data and the smooth curve resulting from your fit. When evaluating $h(\cdot)$ at a query point $x$, use weights
+  #####**ii.**
+  Implement locally weighted linear regression on the *first* training example. Use the normal equations you derived in part (a)(ii). On a different figure, plot both the raw data and the smooth curve resulting from your fit. When evaluating $h(\cdot)$ at a query point $x$, use weights
   $$
   w^{(i)} = \exp \left(- \frac{\left(x-x^{(i)} \right)^2}{2 \tau^2} \right),
   $$
   
   with bandwidth parameter $\tau = 5$.
   
-  **iii.** Repeat (b)(ii) four more times with $\tau = 1, 10, 100$ and $1000$. Plot the resulting curves. You can submit one plot with all four $\tau$ values or submit four separate plots. If you submit one plot, make sure all curves are visible. Additionally, in **2-3 sentences**, comment on what happens to the locally weighted linear regression line as $\tau$ varies.
+  #####**iii.** Repeat (b)(ii) four more times with $\tau = 1, 10, 100$ and $1000$. Plot the resulting curves. You can submit one plot with all four $\tau$ values or submit four separate plots. If you submit one plot, make sure all curves are visible. Additionally, in **2-3 sentences**, comment on what happens to the locally weighted linear regression line as $\tau$ varies.
   
-**c.** Predicting quasar spectra with functional regression
+####**c.**
+Predicting quasar spectra with functional regression
 
-We now go a step beyond what we have covered explicitly in class, and we wish to predict an entire part of a spectrum|a curve|from noisy observed data. We begin by supposing
+We now go a step beyond what we have covered explicitly in class, and we wish to predict an entire part of a spectrum (a curve) from noisy observed data. We begin by supposing
 that we observe a random sample of $m$ absorption-free spectra, which is possible for quasars very close (in a sense relative to the size of the universe!) to Earth. For a given spectrum $f$, define $f_{\text{right}}$ to be the spectrum to the right of the Lyman-$\alpha$ line. Let $f_{\text{left}}$ be the spectrum within the Lyman-$\alpha$ forest region, that is, for lower wavelengths. To make the results cleaner, we define:
 $$
 f(\lambda) = 
@@ -400,8 +417,35 @@ r(f_{\text{right}})(\lambda) = \text{E} \left(f_{\text{left}} \mid f_{\text{righ
 $$
 for $\lambda$ in the Lyman-$\alpha$ forest.
 
-  **i.**
+  #####**i.**
+  First, we must smooth the data in the training dataset to make it more useful for prediction. For each $i=1,\dots,m$, define $f^{(i)} \left(\lambda \right)$ to be the weighted lienar regression estimate of the $i$th spectrum. Use your code from part (b)(ii) above to smooth all spectra in the training set using $\tau = 5$. Do the same for the test set. We will now operate on these smoothed spectra.
   
-  **ii.**
+  #####**ii.**
+  Using your estimated regression functions $f^{(i)}$ for $i = 1, \dots, m$, we now wish to estimate the unobserved spectrum $f_\text{left}$ of a quasar from its (noisy) observed spectrum $f_{\text{right}}$. To do so, we perform a weighted regression of the *locally weighted regressions*. In particular, given a new noisy spectrum observation:
+  $$
+  f_{\text{obs}}(\lambda) = f(\lambda) + \text{noise}(\lambda) \quad \text{for } \lambda \in \left\{1300, \dots, 1599\right\}
+  $$
+  We define a metric $d$ which takes as input, two spectra $f_1$ and $f_2$, and outputs a scalar:
+  $$
+  d\left(f_1, f_2 \right) = \sum_i \left(f_1(\lambda_1) - f_2 (\lambda_2) \right)^2.
+  $$
+  The metric $d$ computes squared distance between the new datapoint and previous datapoints. If $f_1$ and $f_2$ are right spectra, then we take the preceding sum only over $\lambda \in \left\{1300, \dots, 1599 \right\}$, rather than the entire spectrum.
   
-  **iii.**
+  Based on this distance function, we may define the nonparametric *functional* regresion estimator, which is a locally weighted sum of *functions* $f_{\text{left}}$ from the training data (this is like locally weighted linear regression, except that instead of predicting $y \in \mathbb{R}$ we predict a function $f_{\text{left}}$). Specifically, let $f_{\text{right}}$ denote the right side of a spectrum, which we have smoothed using locally weighted linear regression (as you were told to do in the previous part of the problem). We wish to estimate the associated *left* spectrum $f_{\text{left}}$. Define the function $\text{ker}(t) = \max \left\{1-t, 0 \right\}$ and let $\text{neighb}_k\left(f_{\text{right}}\right)$ denote the $k$ indices $i \in \left\{1,2,\dots,m \right\}$ that are closest to $f_{\text{right}}$ i.e.
+  $$
+  d \left(f_{\text{right}}^{(i)} , f_\text{right}\right) < d \left(f_{\text{right}}^{(j)}, f_{\text{right}} \right) \quad \text{for all } i \in \text{neighb}_k \left(f_{\text{right}} \right), j \notin \text{neighb}_k\left(f_{\text{right}} \right)
+  $$
+  and $\text{neighb}_k \left(f_{\text{right}} \right)$ contains exactly $k$ indices. In addition, let
+  $$
+  h := \max_{i \in \left\{1, \dots, m \right\}} d \left(f_{\text{right}}^{(i)}, f_{\text{right}} \right).
+  $$
+  Then define the estimated function $\hat f_{\text{left}}: \mathbb{R} \to \mathbb{R}$ by
+  $$
+  \hat f_{\text{left}} = \frac{\sum_{i \in \text{neighb}_k \left(f_\text{right} \right)} \ker \left(\frac{d\left(f_{\text{right}}^{(i)}, f_{\text{right}}\right)}{h} \right) f_{\text{left}}^{(i)}(\lambda)} {\sum_{i \in \text{neighb}_k \left(f_\text{right} \right)} \ker \left(\frac{d \left(f_{\text{right}}^{(i)} , f_{\text{right}}\right)}{h} \right)}.
+  $$
+  Recall that $f_{\text{right}}^{(i)}$ is the *smoothed* (weighted linear regression) estiamte of the $i$th training spectrum.
+  
+  Construct the functional regression estimate (1) for each spectrum in the entire training set using $k=3$ nearest neighbors: for each $j=1,\dots,m$, construct the estimator $\hat f_{\text{left}}$ from (1) using $f_{\text{right}} = f_{\text{right}}^{(j)}$. Then compute the error $d \left(f_{\text{left}}^{(i)}, \hat f_{\text{left}} \right)$ between the true spectrum $f_{\text{left}}^{(j)}$ and your estimated spectrum $\hat f_{\text{left}}$ for each $j$, and return the average over the training data. What is your average training error?
+  
+  #####**iii.**
+  Perform functional regression on the test set using the same procedure as in the previous subquestion. What is your average test error? For test examples 1 and 6, include a plot with both the entire smooth spectrum and the fitted curve $\hat f_{\text{left}}$ curve  on the same graph. You should submit two plots: one for test example 1 and one for test example 6.
