@@ -6,7 +6,7 @@ output:
     css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
 ---
 
-# **CS229 Autumn 2016 Problem Set #0**
+My solutions to the [CS229 problem set #0](http://cs229.stanford.edu/materials.html) from fall 2016. The official solutions are available there as well.
 
 ### **1. Gradients and Hessians**
 Recall that a matrix $A \in \mathbb{R}^{n \times n}$ is *symmetric* if $A^T = A$, i.e. $A_{ij} = A_{ji} \hspace{.2em} \forall \hspace{.2em} i,j$. Also recall the gradient $\nabla_x f(x)$ of a function $f: \mathbb{R}^n \mapsto \mathbb{R}$, which is the $n$-vector of partial derivatives
@@ -84,10 +84,27 @@ x^TAx & = x^Tzz^Tx \\
 $$
 
 **b**. Let $z \in \mathbb{R}^n$ be a *non-zero* $n$-vector. Let $A = zz^T$. What is the null-space of $A$? What is the rank of $A$?
+The null-space of $A$ is all $x \in \mathbb{R}^n$ such that $Ax=0$:
 
-?????????????????????
+$$
+\begin{align}
+Ax    & = 0 \\
+zz^Tx & = 0 & \text{since }z \text{ is non-zero,} \\ 
+ z^Tx & = 0
+\end{align}
+$$
+I.e., $x$ is in the nullspace of $A$ if it is orthogonal to $z$, so the nullity (dimension of the nullspace) is $n-1$ (where the one missing dimension is the one occupied by $z$).
 
-**c**. Let $A \in \mathbb{R}^n$ be positive semidefinite and $B \in \mathbb{R}^{m \times n}$ be arbitrary, where $m,n \in \mathbb{N}$. Is $BAB^T$ PSD? If so, prove it. If note, give a counterexample wtih explicit $A,B$.
+The rank-nullity theorem states (for $A \in \mathbb{R}^{m \times n}$):
+$$
+\begin{align}
+\text{rank}(A) + \text{nul}(A) & = n \\
+\text{rank}(A) + (n-1) & = n \\
+\text{rank}(A) & = 1
+\end{align}
+$$
+
+**c**. Let $A \in \mathbb{R}^n$ be positive semidefinite and $B \in \mathbb{R}^{m \times n}$ be arbitrary, where $m,n \in \mathbb{N}$. Is $BAB^T$ PSD? If so, prove it. If note, give a counterexample with explicit $A,B$.
 
 $BAB^T$ is PSD if $x^TBAB^Tx \geq 0 \hspace{.3em}\forall \hspace{.3em} x \in \mathbb{R}^m$:
 $$
@@ -188,7 +205,9 @@ Au^{(1)}  & Au^{(2)}  & \cdots  & Au^{(n)}  \\
 \end{align}
 $$
 
-**c**. Show that if $A$ is PSD, then $\lambda_i(A) \geq 0$ for each $i$.
+
+**c**. Show that if $A$ is PSD, then $\lambda_i(A) \geq 0$ for each $i$. 
+
 $$
 \begin{align}
 At^{(i)}              & = \lambda_i t^{(i)} \\
@@ -198,3 +217,6 @@ At^{(i)}              & = \lambda_i t^{(i)} \\
                       & \qquad \lambda_i \geq 0
 \end{align}
 $$
+
+The quick brown fox jumps over the lazy dog (this line is just here so that the math in 3c above gets rendered...).
+

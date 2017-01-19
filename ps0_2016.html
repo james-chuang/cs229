@@ -121,16 +121,13 @@ $(document).ready(function () {
 
 <div id="TOC">
 <ul>
-<li><a href="#cs229-autumn-2016-problem-set-0"><strong>CS229 Autumn 2016 Problem Set #0</strong></a><ul>
 <li><a href="#gradients-and-hessians"><strong>1. Gradients and Hessians</strong></a></li>
 <li><a href="#positive-definite-matrices"><strong>2. Positive definite matrices</strong></a></li>
 <li><a href="#eigenvectors-eigenvalues-and-the-spectral-theorem"><strong>3. Eigenvectors, eigenvalues, and the spectral theorem</strong></a></li>
-</ul></li>
 </ul>
 </div>
 
-<div id="cs229-autumn-2016-problem-set-0" class="section level1">
-<h1><strong>CS229 Autumn 2016 Problem Set #0</strong></h1>
+<p>My solutions to the <a href="http://cs229.stanford.edu/materials.html">CS229 problem set #0</a> from fall 2016. The official solutions are available there as well.</p>
 <div id="gradients-and-hessians" class="section level3">
 <h3><strong>1. Gradients and Hessians</strong></h3>
 <p>Recall that a matrix <span class="math inline">\(A \in \mathbb{R}^{n \times n}\)</span> is <em>symmetric</em> if <span class="math inline">\(A^T = A\)</span>, i.e. <span class="math inline">\(A_{ij} = A_{ji} \hspace{.2em} \forall \hspace{.2em} i,j\)</span>. Also recall the gradient <span class="math inline">\(\nabla_x f(x)\)</span> of a function <span class="math inline">\(f: \mathbb{R}^n \mapsto \mathbb{R}\)</span>, which is the <span class="math inline">\(n\)</span>-vector of partial derivatives</p>
@@ -194,9 +191,22 @@ x^TAx &amp; = x^Tzz^Tx \\
       &amp; = (x^Tz)^2 \geq 0 &amp; \text{by commutativity of dot product}
 \end{align}
 \]</span></p>
-<p><strong>b</strong>. Let <span class="math inline">\(z \in \mathbb{R}^n\)</span> be a <em>non-zero</em> <span class="math inline">\(n\)</span>-vector. Let <span class="math inline">\(A = zz^T\)</span>. What is the null-space of <span class="math inline">\(A\)</span>? What is the rank of <span class="math inline">\(A\)</span>?</p>
-<p>?????????????????????</p>
-<p><strong>c</strong>. Let <span class="math inline">\(A \in \mathbb{R}^n\)</span> be positive semidefinite and <span class="math inline">\(B \in \mathbb{R}^{m \times n}\)</span> be arbitrary, where <span class="math inline">\(m,n \in \mathbb{N}\)</span>. Is <span class="math inline">\(BAB^T\)</span> PSD? If so, prove it. If note, give a counterexample wtih explicit <span class="math inline">\(A,B\)</span>.</p>
+<p><strong>b</strong>. Let <span class="math inline">\(z \in \mathbb{R}^n\)</span> be a <em>non-zero</em> <span class="math inline">\(n\)</span>-vector. Let <span class="math inline">\(A = zz^T\)</span>. What is the null-space of <span class="math inline">\(A\)</span>? What is the rank of <span class="math inline">\(A\)</span>? The null-space of <span class="math inline">\(A\)</span> is all <span class="math inline">\(x \in \mathbb{R}^n\)</span> such that <span class="math inline">\(Ax=0\)</span>:</p>
+<p><span class="math display">\[
+\begin{align}
+Ax    &amp; = 0 \\
+zz^Tx &amp; = 0 &amp; \text{since }z \text{ is non-zero,} \\ 
+ z^Tx &amp; = 0
+\end{align}
+\]</span> I.e., <span class="math inline">\(x\)</span> is in the nullspace of <span class="math inline">\(A\)</span> if it is orthogonal to <span class="math inline">\(z\)</span>, so the nullity (dimension of the nullspace) is <span class="math inline">\(n-1\)</span> (where the one missing dimension is the one occupied by <span class="math inline">\(z\)</span>).</p>
+<p>The rank-nullity theorem states (for <span class="math inline">\(A \in \mathbb{R}^{m \times n}\)</span>): <span class="math display">\[
+\begin{align}
+\text{rank}(A) + \text{nul}(A) &amp; = n \\
+\text{rank}(A) + (n-1) &amp; = n \\
+\text{rank}(A) &amp; = 1
+\end{align}
+\]</span></p>
+<p><strong>c</strong>. Let <span class="math inline">\(A \in \mathbb{R}^n\)</span> be positive semidefinite and <span class="math inline">\(B \in \mathbb{R}^{m \times n}\)</span> be arbitrary, where <span class="math inline">\(m,n \in \mathbb{N}\)</span>. Is <span class="math inline">\(BAB^T\)</span> PSD? If so, prove it. If note, give a counterexample with explicit <span class="math inline">\(A,B\)</span>.</p>
 <p><span class="math inline">\(BAB^T\)</span> is PSD if <span class="math inline">\(x^TBAB^Tx \geq 0 \hspace{.3em}\forall \hspace{.3em} x \in \mathbb{R}^m\)</span>: <span class="math display">\[
 \begin{align}
 &amp; \qquad x^TBAB^Tx \\
@@ -287,7 +297,8 @@ Au^{(1)}  &amp; Au^{(2)}  &amp; \cdots  &amp; Au^{(n)}  \\
 \therefore Au^{(i)} &amp; = \lambda_i u^{(i)} \quad i \in \{1, 2, \dots, n\}
 \end{align}
 \]</span></p>
-<p><strong>c</strong>. Show that if <span class="math inline">\(A\)</span> is PSD, then <span class="math inline">\(\lambda_i(A) \geq 0\)</span> for each <span class="math inline">\(i\)</span>. <span class="math display">\[
+<p><strong>c</strong>. Show that if <span class="math inline">\(A\)</span> is PSD, then <span class="math inline">\(\lambda_i(A) \geq 0\)</span> for each <span class="math inline">\(i\)</span>.</p>
+<p><span class="math display">\[
 \begin{align}
 At^{(i)}              &amp; = \lambda_i t^{(i)} \\
 {t^{(i)}}^T At^{(i)}  &amp; = {t^{(i)}}^T \lambda_i t^{(i)} \\
@@ -296,7 +307,7 @@ At^{(i)}              &amp; = \lambda_i t^{(i)} \\
                       &amp; \qquad \lambda_i \geq 0
 \end{align}
 \]</span></p>
-</div>
+<p>The quick brown fox jumps over the lazy dog (this line is just here so that the math in 3c above gets rendered…).</p>
 </div>
 
 
