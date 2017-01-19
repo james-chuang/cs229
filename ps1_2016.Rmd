@@ -79,7 +79,7 @@ See python notebook `ps1-1bc.ipynb`.
 
 **c.** Plot the training data (your axes should be $x_1$ and $x_2$, corresponding to the two coordinates of the inputs, and you should use a different symbol for each point plotted to indicate whether that example has label $1$ or $-1$). Also plot on the same figure the decision boundary fit by logistic regression. (This should be a straight line showing the boundary separating the region where $h_\theta(x) > 0.5$ from where $h_\theta(x) \leq 0.5$.)
 
-<center>![](ps1-1c.png)</center>
+<center>![](figures/ps1-1c.png)</center>
 
 See python notebook `ps1-1bc.ipynb`.
 
@@ -383,7 +383,7 @@ $$
             -9.811 \times 10^{-4}
             \end{bmatrix}
   $$
-<center>![](ps1-5bi.png)</center>
+<center>![](figures/ps1-5bi.png)</center>
   
   **ii.** Implement locally weighted linear regression on the *first* training example. Use the normal equations you derived in part (a)(ii). On a different figure, plot both the raw data and the smooth curve resulting from your fit. When evaluating $h(\cdot)$ at a query point $x$, use weights
   $$
@@ -392,11 +392,11 @@ $$
   
   with bandwidth parameter $\tau = 5$.
   
-<center>![](ps1-5bii.png)</center>
+<center>![](figures/ps1-5bii.png)</center>
   
   **iii.** Repeat (b)(ii) four more times with $\tau = 1, 10, 100$ and $1000$. Plot the resulting curves. You can submit one plot with all four $\tau$ values or submit four separate plots. If you submit one plot, make sure all curves are visible. Additionally, in **2-3 sentences**, comment on what happens to the locally weighted linear regression line as $\tau$ varies.
 
-<center>![](ps1-5biii.png)</center>
+<center>![](figures/ps1-5biii.png)</center>
   
   For large $\tau$, the regression line approaches the global (unweighted) linear regression line. As $\tau$ decreases, the regression line better fits the local structure of the data; however, if $\tau$ is too small, the regression line starts overfitting the training data. In other words, there is a bias-variance trade-off where as $\tau$ decreases, bias decreases but variance increases.
   
@@ -461,7 +461,7 @@ See python notebook `ps1-5bc.ipynb`.
   
   Test set error: 2.7100
   
-<center>![](ps1-5ciii-1.png)</center>
-<center>![](ps1-5ciii-2.png)</center>
+<center>![](figures/ps1-5ciii-1.png)</center>
+<center>![](figures/ps1-5ciii-2.png)</center>
 
 See python notebook `ps1-5bc.ipynb`.
