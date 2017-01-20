@@ -123,7 +123,7 @@ $(document).ready(function () {
 <ul>
 <li><a href="#generative-learning-algorithms"><strong>Generative Learning algorithms</strong></a><ul>
 <li><a href="#gaussian-discriminant-analysis"><strong>Gaussian discriminant analysis</strong></a><ul>
-<li><a href="#the-multivariate-normal-distribution"><strong><em>The multivariate normal distribution</em></strong></a></li>
+<li><a href="#the-multivariate-normal-distribution"><strong>The multivariate normal distribution</strong></a></li>
 </ul></li>
 <li><a href="#the-gaussian-discriminant-analysis-model"><strong>The Gaussian Discriminant Analysis model</strong></a></li>
 <li><a href="#gda-and-logistic-regression"><strong>GDA and logistic regression</strong></a></li>
@@ -170,9 +170,9 @@ p(y \mid x) = \frac{p(x \mid y) p (y)}{p(x)}
 </ul>
 <div id="gaussian-discriminant-analysis" class="section level2">
 <h2><strong>Gaussian discriminant analysis</strong></h2>
-<p>Assume that <span class="math inline">\(p(x \mid y)\)</span> is distributed according to a multivariable normal distribution.</p>
+<p>Also known as <strong><em>linear discriminant analysis</em></strong>. Assume that <span class="math inline">\(p(x \mid y)\)</span> is distributed according to a multivariate normal distribution.</p>
 <div id="the-multivariate-normal-distribution" class="section level3">
-<h3><strong><em>The multivariate normal distribution</em></strong></h3>
+<h3><strong>The multivariate normal distribution</strong></h3>
 <p>parameters</p>
 <ul>
 <li><strong><em>mean vector</em></strong> <span class="math inline">\(\mu \in \mathbb{R}^n\)</span></li>
@@ -192,7 +192,7 @@ p(y \mid x) = \frac{p(x \mid y) p (y)}{p(x)}
 <p><span class="math display">\[
 \begin{align}
 \text{Cov}(Z) &amp; = \text{E} \left[(Z-\text{E}[Z]) (Z-\text{E}[Z])^T \right] \\
-              &amp; = \text{E} \left[(Z-\text{E}[Z]) \left(Z^T-\left(\text{E}[Z]\right)^T\right) \right] &amp; \text{transpose respects addition}                                   \\
+              &amp; = \text{E} \left[(Z-\text{E}[Z]) \left(Z^T-\left(\text{E}[Z]^T\right)\right) \right] &amp; \text{transpose respects addition}                                   \\
               &amp; = \text{E} \left[\left(Z-\text{E}[Z]\right) \left(Z^T-\text{E}[Z] \right) \right] &amp; \text{transpose of a scalar: }\text{E}[Z] = \left(\text{E}[Z]\right)^T \\
               &amp; = \text{E} \left[ZZ^T- Z \text{E}[Z] - \text{E}[Z]Z^T + \text{E}^2[Z] \right] \\
               &amp; = \text{E} \left[ZZ^T \right] - \text{E}[Z\text{E}[Z]] - \text{E}[\text{E}[Z]Z^T] + \text{E}[\text{E}^2[Z]] \\
@@ -241,7 +241,7 @@ p(y=1 \mid x; \phi, \mu_0, \mu_1, \Sigma) &amp; = \frac{1}{(2\pi)^{\frac{n}{2}} 
                                           &amp; = \frac{1}{1+ \exp(-\theta^Tx)}, \qquad\text{where } \theta = f\left(\phi, \Sigma, \mu_0, \mu_1 \right)
 \end{align}
 \]</span></p>
-<p>, which is the form of logistic regression. The above argument says that if <span class="math inline">\(p(x \mid y)\)</span> is multivariate gaussian (with shared <span class="math inline">\(\Sigma\)</span>), then <span class="math inline">\(p(y \mid x)\)</span> follows a logistic function. However, the converse is not true: <span class="math inline">\(p(y \mid x)\)</span> being a logistic function does not imply <span class="math inline">\(p(x \mid y)\)</span> is multivariate Gaussian. So, GDA makes <em>stronger</em> modeling assumptions about the data than logistic regression. When these assumptions are correct, then GDA will better fit to the data, and is a better model. Specifically, when <span class="math inline">\(p(x \mid y)\)</span> is Gaussian (with shared <span class="math inline">\(\Sigma\)</span>), then GDA is <strong><em>asymptotically efficient</em></strong>- in the limit of large training sets, there is no algorithm that is strictly better than GDA. In constrast, logistic regression makes weaker assumptions about the data and is thus more <em>robust</em> to incorrect modelling assumptions. When the data is non-Gaussian, then in the limit of large datasets, logistic regression will usually outperform GDA.</p>
+<p>, which is the form of logistic regression. The above argument says that if <span class="math inline">\(p(x \mid y)\)</span> is multivariate Gaussian (with shared <span class="math inline">\(\Sigma\)</span>), then <span class="math inline">\(p(y \mid x)\)</span> follows a logistic function. However, the converse is not true: <span class="math inline">\(p(y \mid x)\)</span> being a logistic function does not imply <span class="math inline">\(p(x \mid y)\)</span> is multivariate Gaussian. So, GDA makes <em>stronger</em> modeling assumptions about the data than logistic regression. When these assumptions are correct, then GDA will better fit to the data, and is a better model. Specifically, when <span class="math inline">\(p(x \mid y)\)</span> is Gaussian (with shared <span class="math inline">\(\Sigma\)</span>), then GDA is <strong><em>asymptotically efficient</em></strong>- in the limit of large training sets, there is no algorithm that is strictly better than GDA. In constrast, logistic regression makes weaker assumptions about the data and is thus more <em>robust</em> to incorrect modelling assumptions. When the data is non-Gaussian, then in the limit of large datasets, logistic regression will usually outperform GDA.</p>
 </div>
 <div id="naive-bayes" class="section level2">
 <h2><strong>Naive Bayes</strong></h2>
@@ -346,10 +346,30 @@ p(y=1 \mid x) &amp; = \frac{\left(\prod_{i=1}^n  p(x_i \mid y =1) \right)p(y=1)}
 <p>Parameters for the multinomial event model: <span class="math display">\[
 \begin{align}
 \phi_y &amp; = p(y) \\
-\phi_{k \mid y=1} &amp; = p(x_j = k \mid y=1) &amp; \text{(for any j)} \\
+\phi_{k \mid y=1} &amp; = p(x_j = k \mid y=1) &amp; \text{(for any} j\text{, i.e. a word's distribution is independent of its position }j\text{)} \\
 \phi_{i \mid y=0} &amp; = p(x_j = k \mid y=0)
 \end{align}
 \]</span></p>
+<p>Given a training set <span class="math inline">\(\left\{ \left(x^{(i)}, y^{(i)} \right); i=1, \dots, m \right\}\)</span> where <span class="math inline">\(x^{(i)} = \left(x_1^{(i)}, x_2^{(i)}, \dots, x_{n_i}^{(i)} \right)\)</span> (where $n_i = $number of words in the <span class="math inline">\(i\)</span>th training example), the likelihood of the data is given by: <span class="math display">\[
+\begin{align}
+\mathcal{L} \left(\phi, \phi_{k|y=0}, \phi_{k|y=1} \right)  &amp; = \prod_{i=1}^m p \left(x^{(i)}, y^{(i)} \right) \\
+                                                            &amp; = \prod_{i=1}^m \left(\prod_{j=1}^{n_i} p \left(x_j^{(i)} \mid y; \phi_{k|y=0}, \phi_{k|y=1} \right) \right) p \left(y^{(i)}; \phi_y \right).
+\end{align}
+\]</span></p>
+<p>Maximize to get the maximum likelihood estimates of the parameters: <span class="math display">\[
+\begin{align}
+\phi_{k | y=1} &amp; = \frac{\sum_{i=1}^m \sum_{j=1}^{n_i} 1 \left\{x_j^{(i)} = k \hspace{.2em} \wedge \hspace{.2em} y^{(i)}=1 \right\}}{\sum_{i=1}^m 1 \left\{y^{(i)}=1 \right\}n_i} \\
+\phi_{k | y=0} &amp; = \frac{\sum_{i=1}^m \sum_{j=1}^{n_i} 1 \left\{x_j^{(i)} = k \hspace{.2em} \wedge \hspace{.2em} y^{(i)}=0 \right\}}{\sum_{i=1}^m 1 \left\{y^{(i)}=0 \right\}n_i} \\
+\phi_y &amp; = \frac{\sum_{i=1}^m 1 \left\{y^{(i)}=1 \right\}}{m}
+\end{align}
+\]</span></p>
+<p>MLE estimates with Laplace smoothing: Add <span class="math inline">\(1\)</span> to numerators and <span class="math inline">\(\lvert V \rvert\)</span> to the denominators to obtain: <span class="math display">\[
+\begin{align}
+\phi_{k | y=1} &amp; = \frac{\sum_{i=1}^m \sum_{j=1}^{n_i} 1 \left\{x_j^{(i)} = k \hspace{.2em} \wedge \hspace{.2em} y^{(i)}=1 \right\}+1}{\sum_{i=1}^m 1 \left\{y^{(i)}=1 \right\}n_i + \lvert V \rvert} \\
+\phi_{k | y=0} &amp; = \frac{\sum_{i=1}^m \sum_{j=1}^{n_i} 1 \left\{x_j^{(i)} = k \hspace{.2em} \wedge \hspace{.2em} y^{(i)}=0 \right\}+1}{\sum_{i=1}^m 1 \left\{y^{(i)}=0 \right\}n_i + \lvert V \rvert}
+\end{align}
+\]</span></p>
+<p>Naive Bayes: not necessarily the best classification algorithm, but often works surprisingly well. Often a good “first thing to try”, due to its simplicity and ease of implementation.</p>
 </div>
 </div>
 
