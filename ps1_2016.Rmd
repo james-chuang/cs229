@@ -291,6 +291,106 @@ Now, let some non-singular square matrix $A \in \mathbb{R}^{n \times n}$ be give
 
 **a.** Show that Newton's method (applied to find the minimum of a function) is invariant to linear reparameterizations. Note that since $z^{(0)} = \vec{0} = A^{-1}x^{(0)}$, it is sufficient to show that if Newton's method applied to $f(x)$ updates $x^{(i)}$ to $x^{(i+1)}$, then Newton's method applied to $g(z)$ will update $z^{(i)} = A^{-1}x^{(i)}$ to $z^{(i+1)} = A^{-1}x^{(i+1)}$.
 
+For Newton's method, need the gradient $\nabla_z g(z)$ and the Hessian $\nabla_z^2 g(z)$. Start with the gradient. I got confused as hell without keeping track of the dimensions of everything:
+$$
+\begin{align}
+\nabla_z g(z) & \in \mathbb{R}^{n} & \text{gradient wrt } z \in \mathbb{R}^n \text{ is also } \in \mathbb{R}^n \\
+\frac{\partial g}{\partial z_i} & \in \mathbb{R} & \text{each component of } \nabla_z g(z) \text{ is} \in \mathbb{R}\\
+\frac{\partial f(Az)}{\partial(Az)} & \in \mathbb{R}^{n} & \text{derivative of } f \in \mathbb{R} \text{ wrt } Az \in \mathbb{R}^{n}\\
+\frac{\partial (Az)}{\partial z_i} & \in \mathbb{R}^{n} & \text{derivative of }Az \in \mathbb{R}^n \text{ wrt } z_i \in \mathbb{R}
+\end{align}
+$$
+$$
+\begin{align}
+\nabla_z g(z)  = \begin{bmatrix} 
+                  \frac{\partial g(z)}{\partial z_1} \\ \frac{\partial g(z)}{\partial z_2} \\ \vdots \\ \frac{\partial g(z)}{\partial z_n}
+                  \end{bmatrix} 
+              &  = \begin{bmatrix}
+                  \left[ \frac{\partial (Az)}{\partial z_1} \right]^T  \left[ \frac{\partial f(Az)}{\partial \left(Az\right)} \right]\\
+                  \left[ \frac{\partial (Az)}{\partial z_2} \right]^T  \left[ \frac{\partial f(Az)}{\partial \left(Az\right)} \right]\\
+                  \vdots \\
+                  \left[ \frac{\partial (Az)}{\partial z_n} \right]^T  \left[ \frac{\partial f(Az)}{\partial \left(Az\right)} \right]\\
+                  \end{bmatrix} \hspace{2em} \text{by the chain rule}\\
+              & = \begin{bmatrix}
+                  \begin{bmatrix} - & a_1^T & - \end{bmatrix} \left[ \frac{\partial f(Az)}{\partial \left(Az\right)} \right]  \\
+                  \begin{bmatrix} - & a_2^T & - \end{bmatrix} \left[ \frac{\partial f(Az)}{\partial \left(Az\right)} \right]  \\
+                  \vdots \\
+                  \begin{bmatrix} - & a_n^T & - \end{bmatrix} \left[ \frac{\partial f(Az)}{\partial \left(Az\right)} \right]  \\
+                  \end{bmatrix} 
+               = \begin{bmatrix}
+                  - & a_1^T & - \\
+                  - & a_2^T & - \\
+                    & \vdots&   \\
+                  - & a_n^T & - \\
+                  \end{bmatrix}
+                  \left[ \frac{\partial f(Az)}{\partial \left(Az\right)} \right]
+               = A^T \nabla_x f(Az), \\
+               \\
+              & \text{where the fact that } \frac{\partial(Az)}{\partial z_i} = a_i \text{ (the } i\text{-th column of A) by:} \\
+Az            & = \begin{bmatrix} \mid \\ a_1 \\ \mid \end{bmatrix} z_1 + \begin{bmatrix} \mid \\ a_2 \\ \mid \end{bmatrix} z_2 + \dots + \begin{bmatrix} \mid \\ a_n \\ \mid \end{bmatrix} z_n \\
+\frac{\partial}{\partial z_i} Az& = \begin{bmatrix} \mid \\ a_i \\ \mid \end{bmatrix}
+\end{align}
+$$
+Now for the Hessian, starting again with the dimensions of everything in order to be slightly less confused:
+$$
+\begin{align}
+\nabla_z^2 g(z)   & \in \mathbb{R}^{n \times n} & \text{Hessian wrt }z \in \mathbb{R}^n \\
+(\nabla_z g(z))_i & \in \mathbb{R}              & i\text{-th component of the gradient is} \in \mathbb{R} \\
+\nabla_z (\nabla_z g(z))_i & \in \mathbb{R}^n   & \text{gradient wrt }z \in \mathbb{R}^n
+\end{align}
+$$
+
+
+$$
+\begin{align}
+\nabla_z^2 g(z) & = \begin{bmatrix} \nabla_z \left(\nabla_z g(z) \right)_1 & \nabla_z \left(\nabla_z g(z) \right)_2 & \cdots & \nabla_z \left(\nabla_z g(z) \right)_n \end{bmatrix} \\
+                & = \begin{bmatrix} \nabla_z \left( a_1^T \nabla_x f(Az) \right) & \nabla_z \left( a_2^T \nabla_x f(Az) \right) & \cdots & \nabla_z \left( a_n^T \nabla_x f(Az) \right) \end{bmatrix} \\
+                & = \begin{bmatrix}
+                    \frac{\partial}{\partial z_1} a_1^T \frac{\partial f (Az)}{\partial (Az)} & \frac{\partial}{\partial z_1} a_2^T \frac{\partial f (Az)}{\partial (Az)} & \cdots & \frac{\partial}{\partial z_1} a_n^T \frac{\partial f (Az)}{\partial (Az)} \\
+                    \frac{\partial}{\partial z_2} a_1^T \frac{\partial f (Az)}{\partial (Az)} & \frac{\partial}{\partial z_2} a_2^T \frac{\partial f (Az)}{\partial (Az)} & \cdots & \frac{\partial}{\partial z_2} a_n^T \frac{\partial f (Az)}{\partial (Az)} \\
+                    \vdots & \vdots & \ddots & \vdots \\
+                    \frac{\partial}{\partial z_n} a_1^T \frac{\partial f (Az)}{\partial (Az)} & \frac{\partial}{\partial z_n} a_2^T \frac{\partial f (Az)}{\partial (Az)} & \cdots & \frac{\partial}{\partial z_n} a_n^T \frac{\partial f (Az)}{\partial (Az)}
+                    \end{bmatrix} \\
+                & = 
+\end{align}
+$$
+
+$$
+\begin{align}
+\nabla_z^2 g(z) & = \begin{bmatrix}
+                    \frac{\partial^2 g(z)}{\partial z_1^2} & \frac{\partial^2 g(z)}{\partial z_1 \partial z_2} & \cdots & \frac{\partial^2 g(z)}{\partial z_1 \partial z_n} \\
+                    \frac{\partial^2 g(z)}{\partial z_2 \partial z_1} & \frac{\partial^2 g(z)}{\partial z_2^2} & \cdots & \frac{\partial^2 g(z)}{\partial z_2 \partial z_n} \\
+                    \vdots & \vdots & \ddots & \vdots \\
+                    \frac{\partial^2 g(z)}{\partial z_n \partial z_1} & \frac{\partial^2 g(z)}{\partial z_n \partial z_2} & \cdots & \frac{\partial^2 g(z)}{\partial z_n^2}
+                    \end{bmatrix} \\
+                & = \begin{bmatrix}
+                    \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_1} \frac{\partial (Az)}{\partial z_1} & \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_1} \frac{\partial (Az)}{\partial z_2} & \cdots & \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_1} \frac{\partial (Az)}{\partial z_n} \\
+                    \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_2} \frac{\partial (Az)}{\partial z_1} & \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_2} \frac{\partial (Az)}{\partial z_2} & \cdots & \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_2} \frac{\partial (Az)}{\partial z_n} \\
+                    \vdots & \vdots & \ddots & \vdots \\
+                    \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_n} \frac{\partial (Az)}{\partial z_1} & \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_n} \frac{\partial (Az)}{\partial z_2} & \cdots & \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_n} \frac{\partial (Az)}{\partial z_n}
+                    \end{bmatrix} \\
+                & = \begin{bmatrix}
+                    - & a_1^T & - \\
+                    - & a_2^T & - \\
+                      & \vdots &  \\
+                    - & a_n^T & - \\
+                    \end{bmatrix}
+                    \begin{bmatrix}
+                    \frac{\partial^2 f(x)}{\partial x_1^2} & \frac{\partial^2 f(x)}{\partial x_1 \partial x_2} & \cdots  & \frac{\partial^2 f(x)}{\partial x_1 \partial x_n} \\
+                    \frac{\partial^2 f(x)}{\partial x_2 \partial x_1} & \frac{\partial^2 f(x)}{\partial x_2^2} & \cdots  & \frac{\partial^2 f(x)}{\partial x_2 \partial x_n} \\
+                    \vdots  & \vdots  & \ddots  & \vdots  \\
+                    \frac{\partial^2 f(x)}{\partial x_n \partial x_1} & \frac{\partial^2 f(x)}{\partial x_n \partial x_2} & \cdots  & \frac{\partial^2 f(x)}{\partial x_n^2}
+                    
+                    \end{bmatrix}
+                    \begin{bmatrix}
+                    \mid  & \mid  &         & \mid  \\
+                    a_1   & a_2   & \cdots  & a_3   \\
+                    \mid  & \mid  &         & \mid
+                    \end{bmatrix}
+\end{align}
+$$
+
+
 **b.** Is gradient descent invariant to linear reparameterizations? Justify your answer.
 
 

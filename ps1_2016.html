@@ -363,7 +363,44 @@ A                                                             &amp; = \phi m \\
 <p>Consider using an iterative optimization algorithm (such as Newton’s method, or gradient descent) to minimize some continuously differentiable function <span class="math inline">\(f(x)\)</span>. Suppose we initialize the algorithm at <span class="math inline">\(x^{(0)} = \vec{0}\)</span>. when the algorithm is run, it will produce a value of <span class="math inline">\(x \in \mathbb{R}^n\)</span> for each iteration: <span class="math inline">\(x^{(1)}, x^{(2)}, \dots\)</span>.</p>
 <p>Now, let some non-singular square matrix <span class="math inline">\(A \in \mathbb{R}^{n \times n}\)</span> be given, and define a new function <span class="math inline">\(g(z) = f(Az)\)</span>. Consider using the same iterative optimization algorithm to optimize <span class="math inline">\(g\)</span> (with initialization <span class="math inline">\(z^{(0)} = \vec{0}\)</span>). If the values <span class="math inline">\(z^{(1)}, z^{(2)}, \dots\)</span> produced by this method necessarily satisfy <span class="math inline">\(z^{(i)} = A^{-1}x^{(i)}\)</span> for all <span class="math inline">\(i\)</span>, we say this optimization algorithm is <strong><em>invariant to linear reparameterizations</em></strong>.</p>
 <p><strong>a.</strong> Show that Newton’s method (applied to find the minimum of a function) is invariant to linear reparameterizations. Note that since <span class="math inline">\(z^{(0)} = \vec{0} = A^{-1}x^{(0)}\)</span>, it is sufficient to show that if Newton’s method applied to <span class="math inline">\(f(x)\)</span> updates <span class="math inline">\(x^{(i)}\)</span> to <span class="math inline">\(x^{(i+1)}\)</span>, then Newton’s method applied to <span class="math inline">\(g(z)\)</span> will update <span class="math inline">\(z^{(i)} = A^{-1}x^{(i)}\)</span> to <span class="math inline">\(z^{(i+1)} = A^{-1}x^{(i+1)}\)</span>.</p>
-<p><strong>b.</strong> Is gradient descent invariant to linear reparameterizations? Justify your answer.</p>
+<span class="math display">\[
+\begin{align}
+\nabla_z g(z) &amp; = \begin{bmatrix} 
+                  \frac{\partial g(z)}{\partial z_1} \\ \frac{\partial g(z)}{\partial z_2} \\ \vdots \\ \frac{\partial g(z)}{\partial z_n}
+                  \end{bmatrix} \\
+              &amp; = \begin{bmatrix}
+                  \frac{\partial f(Az)}{\partial \left(Az\right)} \frac{\partial (Az)}{\partial z_1} \\
+                  \frac{\partial f(Az)}{\partial \left(Az\right)} \frac{\partial (Az)}{\partial z_2} \\
+                  \vdots \\
+                  \frac{\partial f(Az)}{\partial \left(Az\right)} \frac{\partial (Az)}{\partial z_n} \\
+                  \end{bmatrix} &amp; g(z) = f(Az)\text{, plus the chain rule}\\
+              &amp; = \begin{bmatrix}
+                  \frac{\partial f(Az)}{\partial \left(Az\right)} \begin{bmatrix} \mid \\ a_1 \\ \mid \end{bmatrix} \\
+                  \frac{\partial f(Az)}{\partial \left(Az\right)} \begin{bmatrix} \mid \\ a_2 \\ \mid \end{bmatrix} \\
+                  \vdots \\
+                  \frac{\partial f(Az)}{\partial \left(Az\right)} \begin{bmatrix} \mid \\ a_n \\ \mid \end{bmatrix} \\
+                  \end{bmatrix} \\
+              &amp; = \begin{bmatrix}
+                  - &amp; a_1^T &amp; - \\
+                  - &amp; a_2^T &amp; - \\
+                    &amp; \vdots&amp;   \\
+                  - &amp; a_n^T &amp; - \\
+                  \end{bmatrix}
+                  \begin{bmatrix}
+                  \frac{\partial f(Az)}{\partial \left(Az\right)}  \\
+                  \frac{\partial f(Az)}{\partial \left(Az\right)}  \\
+                  \vdots \\
+                  \frac{\partial f(Az)}{\partial \left(Az\right)}  \\
+                  \end{bmatrix} \\
+              &amp; = A^T \nabla_x f(Az)
+\end{align}
+\]</span> $$
+<span class="math display">\[\begin{align}
+Az                            &amp; = \begin{bmatrix} \mid \\ a_1 \\ \mid \end{bmatrix} z_1 + \begin{bmatrix} \mid \\ a_2 \\ \mid \end{bmatrix} z_2 + \dots + \begin{bmatrix} \mid \\ a_n \\ \mid \end{bmatrix} z_n \\
+\frac{\partial}{\partial z_i} Az&amp; = \begin{bmatrix} \mid \\ a_i \\ \mid \end{bmatrix}
+
+\end{align}\]</span>
+<p>$$ <strong>b.</strong> Is gradient descent invariant to linear reparameterizations? Justify your answer.</p>
 </div>
 <div id="regression-for-denoising-quasar-spectra" class="section level3">
 <h3><strong>5. Regression for denoising quasar spectra</strong></h3>
