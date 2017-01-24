@@ -363,44 +363,126 @@ A                                                             &amp; = \phi m \\
 <p>Consider using an iterative optimization algorithm (such as Newton’s method, or gradient descent) to minimize some continuously differentiable function <span class="math inline">\(f(x)\)</span>. Suppose we initialize the algorithm at <span class="math inline">\(x^{(0)} = \vec{0}\)</span>. when the algorithm is run, it will produce a value of <span class="math inline">\(x \in \mathbb{R}^n\)</span> for each iteration: <span class="math inline">\(x^{(1)}, x^{(2)}, \dots\)</span>.</p>
 <p>Now, let some non-singular square matrix <span class="math inline">\(A \in \mathbb{R}^{n \times n}\)</span> be given, and define a new function <span class="math inline">\(g(z) = f(Az)\)</span>. Consider using the same iterative optimization algorithm to optimize <span class="math inline">\(g\)</span> (with initialization <span class="math inline">\(z^{(0)} = \vec{0}\)</span>). If the values <span class="math inline">\(z^{(1)}, z^{(2)}, \dots\)</span> produced by this method necessarily satisfy <span class="math inline">\(z^{(i)} = A^{-1}x^{(i)}\)</span> for all <span class="math inline">\(i\)</span>, we say this optimization algorithm is <strong><em>invariant to linear reparameterizations</em></strong>.</p>
 <p><strong>a.</strong> Show that Newton’s method (applied to find the minimum of a function) is invariant to linear reparameterizations. Note that since <span class="math inline">\(z^{(0)} = \vec{0} = A^{-1}x^{(0)}\)</span>, it is sufficient to show that if Newton’s method applied to <span class="math inline">\(f(x)\)</span> updates <span class="math inline">\(x^{(i)}\)</span> to <span class="math inline">\(x^{(i+1)}\)</span>, then Newton’s method applied to <span class="math inline">\(g(z)\)</span> will update <span class="math inline">\(z^{(i)} = A^{-1}x^{(i)}\)</span> to <span class="math inline">\(z^{(i+1)} = A^{-1}x^{(i+1)}\)</span>.</p>
-<span class="math display">\[
+<p>For Newton’s method, need the gradient <span class="math inline">\(\nabla_z g(z)\)</span> and the Hessian <span class="math inline">\(\nabla_z^2 g(z)\)</span>. Start with the gradient. I got confused as hell without keeping track of the dimensions of everything: <span class="math display">\[
 \begin{align}
-\nabla_z g(z) &amp; = \begin{bmatrix} 
+\nabla_z g(z) &amp; \in \mathbb{R}^{n} &amp; \text{gradient wrt } z \in \mathbb{R}^n \text{ is also } \in \mathbb{R}^n \\
+\frac{\partial g}{\partial z_i} &amp; \in \mathbb{R} &amp; \text{each component of } \nabla_z g(z) \text{ is} \in \mathbb{R}\\
+\frac{\partial f(Az)}{\partial(Az)} &amp; \in \mathbb{R}^{n} &amp; \text{derivative of } f \in \mathbb{R} \text{ wrt } Az \in \mathbb{R}^{n}\\
+\frac{\partial (Az)}{\partial z_i} &amp; \in \mathbb{R}^{n} &amp; \text{derivative of }Az \in \mathbb{R}^n \text{ wrt } z_i \in \mathbb{R}
+\end{align}
+\]</span> <span class="math display">\[
+\begin{align}
+\nabla_z g(z)  = \begin{bmatrix} 
                   \frac{\partial g(z)}{\partial z_1} \\ \frac{\partial g(z)}{\partial z_2} \\ \vdots \\ \frac{\partial g(z)}{\partial z_n}
-                  \end{bmatrix} \\
-              &amp; = \begin{bmatrix}
-                  \frac{\partial f(Az)}{\partial \left(Az\right)} \frac{\partial (Az)}{\partial z_1} \\
-                  \frac{\partial f(Az)}{\partial \left(Az\right)} \frac{\partial (Az)}{\partial z_2} \\
+                  \end{bmatrix} 
+              &amp;  = \begin{bmatrix}
+                  \left[ \frac{\partial (Az)}{\partial z_1} \right]^T  \left[ \frac{\partial f(Az)}{\partial \left(Az\right)} \right]\\
+                  \left[ \frac{\partial (Az)}{\partial z_2} \right]^T  \left[ \frac{\partial f(Az)}{\partial \left(Az\right)} \right]\\
                   \vdots \\
-                  \frac{\partial f(Az)}{\partial \left(Az\right)} \frac{\partial (Az)}{\partial z_n} \\
-                  \end{bmatrix} &amp; g(z) = f(Az)\text{, plus the chain rule}\\
+                  \left[ \frac{\partial (Az)}{\partial z_n} \right]^T  \left[ \frac{\partial f(Az)}{\partial \left(Az\right)} \right]\\
+                  \end{bmatrix} \hspace{2em} \text{by the chain rule}\\
               &amp; = \begin{bmatrix}
-                  \frac{\partial f(Az)}{\partial \left(Az\right)} \begin{bmatrix} \mid \\ a_1 \\ \mid \end{bmatrix} \\
-                  \frac{\partial f(Az)}{\partial \left(Az\right)} \begin{bmatrix} \mid \\ a_2 \\ \mid \end{bmatrix} \\
+                  \begin{bmatrix} - &amp; a_1^T &amp; - \end{bmatrix} \left[ \frac{\partial f(Az)}{\partial \left(Az\right)} \right]  \\
+                  \begin{bmatrix} - &amp; a_2^T &amp; - \end{bmatrix} \left[ \frac{\partial f(Az)}{\partial \left(Az\right)} \right]  \\
                   \vdots \\
-                  \frac{\partial f(Az)}{\partial \left(Az\right)} \begin{bmatrix} \mid \\ a_n \\ \mid \end{bmatrix} \\
-                  \end{bmatrix} \\
-              &amp; = \begin{bmatrix}
+                  \begin{bmatrix} - &amp; a_n^T &amp; - \end{bmatrix} \left[ \frac{\partial f(Az)}{\partial \left(Az\right)} \right]  \\
+                  \end{bmatrix} 
+               = \begin{bmatrix}
                   - &amp; a_1^T &amp; - \\
                   - &amp; a_2^T &amp; - \\
                     &amp; \vdots&amp;   \\
                   - &amp; a_n^T &amp; - \\
                   \end{bmatrix}
-                  \begin{bmatrix}
-                  \frac{\partial f(Az)}{\partial \left(Az\right)}  \\
-                  \frac{\partial f(Az)}{\partial \left(Az\right)}  \\
-                  \vdots \\
-                  \frac{\partial f(Az)}{\partial \left(Az\right)}  \\
-                  \end{bmatrix} \\
-              &amp; = A^T \nabla_x f(Az)
-\end{align}
-\]</span> $$
-<span class="math display">\[\begin{align}
-Az                            &amp; = \begin{bmatrix} \mid \\ a_1 \\ \mid \end{bmatrix} z_1 + \begin{bmatrix} \mid \\ a_2 \\ \mid \end{bmatrix} z_2 + \dots + \begin{bmatrix} \mid \\ a_n \\ \mid \end{bmatrix} z_n \\
+                  \left[ \frac{\partial f(Az)}{\partial \left(Az\right)} \right]
+               = A^T \nabla_x f(Az), \\
+               \\
+              &amp; \text{where the fact that } \frac{\partial(Az)}{\partial z_i} = a_i \text{ (the } i\text{-th column of A) by:} \\
+Az            &amp; = \begin{bmatrix} \mid \\ a_1 \\ \mid \end{bmatrix} z_1 + \begin{bmatrix} \mid \\ a_2 \\ \mid \end{bmatrix} z_2 + \dots + \begin{bmatrix} \mid \\ a_n \\ \mid \end{bmatrix} z_n \\
 \frac{\partial}{\partial z_i} Az&amp; = \begin{bmatrix} \mid \\ a_i \\ \mid \end{bmatrix}
-
-\end{align}\]</span>
-<p>$$ <strong>b.</strong> Is gradient descent invariant to linear reparameterizations? Justify your answer.</p>
+\end{align}
+\]</span> Now for the Hessian, starting again with the dimensions of everything in order to be slightly less confused: <span class="math display">\[
+\begin{align}
+\nabla_z^2 g(z)   &amp; \in \mathbb{R}^{n \times n} &amp; \text{Hessian wrt }z \in \mathbb{R}^n \\
+(\nabla_z g(z))_i &amp; \in \mathbb{R}              &amp; i\text{-th component of the gradient is} \in \mathbb{R} \\
+\nabla_z (\nabla_z g(z))_i &amp; \in \mathbb{R}^n   &amp; \text{gradient wrt }z \in \mathbb{R}^n
+\end{align}
+\]</span></p>
+<!--
+$$
+\begin{align}
+\nabla_z^2 g(z) & = \begin{bmatrix} \nabla_z \left(\nabla_z g(z) \right)_1 & \nabla_z \left(\nabla_z g(z) \right)_2 & \cdots & \nabla_z \left(\nabla_z g(z) \right)_n \end{bmatrix} \\
+                & = \begin{bmatrix} \nabla_z \left( a_1^T \nabla_x f(Az) \right) & \nabla_z \left( a_2^T \nabla_x f(Az) \right) & \cdots & \nabla_z \left( a_n^T \nabla_x f(Az) \right) \end{bmatrix} \\
+                & = \begin{bmatrix}
+                    \frac{\partial}{\partial z_1} a_1^T \frac{\partial f (Az)}{\partial (Az)} & \frac{\partial}{\partial z_1} a_2^T \frac{\partial f (Az)}{\partial (Az)} & \cdots & \frac{\partial}{\partial z_1} a_n^T \frac{\partial f (Az)}{\partial (Az)} \\
+                    \frac{\partial}{\partial z_2} a_1^T \frac{\partial f (Az)}{\partial (Az)} & \frac{\partial}{\partial z_2} a_2^T \frac{\partial f (Az)}{\partial (Az)} & \cdots & \frac{\partial}{\partial z_2} a_n^T \frac{\partial f (Az)}{\partial (Az)} \\
+                    \vdots & \vdots & \ddots & \vdots \\
+                    \frac{\partial}{\partial z_n} a_1^T \frac{\partial f (Az)}{\partial (Az)} & \frac{\partial}{\partial z_n} a_2^T \frac{\partial f (Az)}{\partial (Az)} & \cdots & \frac{\partial}{\partial z_n} a_n^T \frac{\partial f (Az)}{\partial (Az)}
+                    \end{bmatrix} \\
+                & = 
+\end{align}
+$$
+-->
+<p><span class="math display">\[
+\begin{align}
+\nabla_z^2 g(z) &amp; = \begin{bmatrix}
+                    \frac{\partial^2 g(z)}{\partial z_1^2} &amp; \frac{\partial^2 g(z)}{\partial z_1 \partial z_2} &amp; \cdots &amp; \frac{\partial^2 g(z)}{\partial z_1 \partial z_n} \\
+                    \frac{\partial^2 g(z)}{\partial z_2 \partial z_1} &amp; \frac{\partial^2 g(z)}{\partial z_2^2} &amp; \cdots &amp; \frac{\partial^2 g(z)}{\partial z_2 \partial z_n} \\
+                    \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+                    \frac{\partial^2 g(z)}{\partial z_n \partial z_1} &amp; \frac{\partial^2 g(z)}{\partial z_n \partial z_2} &amp; \cdots &amp; \frac{\partial^2 g(z)}{\partial z_n^2}
+                    \end{bmatrix} \\
+                &amp; = \begin{bmatrix}
+                    \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_1} \frac{\partial (Az)}{\partial z_1} &amp; \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_1} \frac{\partial (Az)}{\partial z_2} &amp; \cdots &amp; \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_1} \frac{\partial (Az)}{\partial z_n} \\
+                    \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_2} \frac{\partial (Az)}{\partial z_1} &amp; \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_2} \frac{\partial (Az)}{\partial z_2} &amp; \cdots &amp; \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_2} \frac{\partial (Az)}{\partial z_n} \\
+                    \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+                    \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_n} \frac{\partial (Az)}{\partial z_1} &amp; \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_n} \frac{\partial (Az)}{\partial z_2} &amp; \cdots &amp; \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_n} \frac{\partial (Az)}{\partial z_n}
+                    \end{bmatrix} \hspace{2em} \text{chain rule -- is this legit?}\\
+                &amp; = \begin{bmatrix}
+                    - &amp; a_1^T &amp; - \\
+                    - &amp; a_2^T &amp; - \\
+                      &amp; \vdots &amp;  \\
+                    - &amp; a_n^T &amp; - \\
+                    \end{bmatrix}
+                    \begin{bmatrix}
+                    \frac{\partial^2 f(x)}{\partial x_1^2} &amp; \frac{\partial^2 f(x)}{\partial x_1 \partial x_2} &amp; \cdots  &amp; \frac{\partial^2 f(x)}{\partial x_1 \partial x_n} \\
+                    \frac{\partial^2 f(x)}{\partial x_2 \partial x_1} &amp; \frac{\partial^2 f(x)}{\partial x_2^2} &amp; \cdots  &amp; \frac{\partial^2 f(x)}{\partial x_2 \partial x_n} \\
+                    \vdots  &amp; \vdots  &amp; \ddots  &amp; \vdots  \\
+                    \frac{\partial^2 f(x)}{\partial x_n \partial x_1} &amp; \frac{\partial^2 f(x)}{\partial x_n \partial x_2} &amp; \cdots  &amp; \frac{\partial^2 f(x)}{\partial x_n^2}
+                    \end{bmatrix}
+                    \begin{bmatrix}
+                    \mid  &amp; \mid  &amp;         &amp; \mid  \\
+                    a_1   &amp; a_2   &amp; \cdots  &amp; a_3   \\
+                    \mid  &amp; \mid  &amp;         &amp; \mid
+                    \end{bmatrix} \\
+                &amp; = A^T \left[ \nabla_x^2 f(x) \right] A
+\end{align}
+\]</span></p>
+<p>So, the update rule for Newton’s method:</p>
+<p><span class="math display">\[
+\begin{align}
+z^{(i+1)} &amp; = z^{(i)} - H_g \left(z^{(i)} \right)^{-1} \nabla_z g(z^{(i)}) \\
+          &amp; = z^{(i)} - \left(A^T H_f \left(Az^{(i)} \right)A \right)^{-1} A^T \nabla_x f \left(Az^{(i)} \right) \\
+          &amp; = z^{(i)} - A^{-1} H_f \left(Az^{(i)} \right)^{-1} \left(A^T \right)^{-1} A^T \nabla_x f \left(Az^{(i)} \right) \\
+          &amp; = z^{(i)} - A^{-1} H_f \left(Az^{(i)} \right)^{-1} \nabla_x f \left(Az^{(i)} \right)
+\end{align}
+\]</span></p>
+<p><span class="math display">\[
+\begin{align}
+Az^{(i+1)}  &amp; = A \left(z^{(i)} - A^{-1} H_f \left(Az^{(i)} \right)^{-1} \nabla_x f \left(Az^{(i)} \right) \right) \\
+            &amp; = Az^{(i)} - H_f \left(Az^{(i)} \right)^{-1} \nabla_x f \left(Az^{(i)} \right) \\
+            &amp; = x^{(i)} - H_f \left(x^{(i)} \right)^{-1} \nabla_x f \left(Az^{(i)} \right) \\
+            &amp; = x^{(i + 1)}
+\end{align}
+\]</span></p>
+<p><strong>b.</strong> Is gradient descent invariant to linear reparameterizations? Justify your answer. The update rule: <span class="math display">\[
+\begin{align}
+z^{(i + 1)}   &amp; = z^{(i)} - \alpha A^T \nabla_x f \left(Az^{(i)} \right) \\
+Az^{(i + 1)}  &amp; = Az^{(i)}  - \alpha A A^T \nabla_x f \left(Az^{(i)} \right) \\
+              &amp; = x^{(i)} - \alpha A A^T \nabla_x f \left(Az^{(i)} \right) \quad \text{vs.} \quad x^{(i+1)} = x^{(i)} - \alpha \nabla_x f \left(x^{(i)} \right)
+              \\
+              \therefore &amp; \text{, gradient descent is invariant to linear reparameterizations only if} \\
+              &amp; \qquad AA^T = I \text{, i.e. if }A \text{ is an orthogonal matrix.}
+\end{align}
+\]</span></p>
 </div>
 <div id="regression-for-denoising-quasar-spectra" class="section level3">
 <h3><strong>5. Regression for denoising quasar spectra</strong></h3>

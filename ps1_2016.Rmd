@@ -340,7 +340,7 @@ $$
 \end{align}
 $$
 
-
+<!--
 $$
 \begin{align}
 \nabla_z^2 g(z) & = \begin{bmatrix} \nabla_z \left(\nabla_z g(z) \right)_1 & \nabla_z \left(\nabla_z g(z) \right)_2 & \cdots & \nabla_z \left(\nabla_z g(z) \right)_n \end{bmatrix} \\
@@ -354,6 +354,8 @@ $$
                 & = 
 \end{align}
 $$
+-->
+
 
 $$
 \begin{align}
@@ -368,7 +370,7 @@ $$
                     \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_2} \frac{\partial (Az)}{\partial z_1} & \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_2} \frac{\partial (Az)}{\partial z_2} & \cdots & \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_2} \frac{\partial (Az)}{\partial z_n} \\
                     \vdots & \vdots & \ddots & \vdots \\
                     \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_n} \frac{\partial (Az)}{\partial z_1} & \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_n} \frac{\partial (Az)}{\partial z_2} & \cdots & \frac{\partial^2 f(Az)}{\partial (Az)^2} \frac{\partial(Az)}{\partial z_n} \frac{\partial (Az)}{\partial z_n}
-                    \end{bmatrix} \\
+                    \end{bmatrix} \hspace{2em} \text{chain rule -- is this legit?}\\
                 & = \begin{bmatrix}
                     - & a_1^T & - \\
                     - & a_2^T & - \\
@@ -380,19 +382,48 @@ $$
                     \frac{\partial^2 f(x)}{\partial x_2 \partial x_1} & \frac{\partial^2 f(x)}{\partial x_2^2} & \cdots  & \frac{\partial^2 f(x)}{\partial x_2 \partial x_n} \\
                     \vdots  & \vdots  & \ddots  & \vdots  \\
                     \frac{\partial^2 f(x)}{\partial x_n \partial x_1} & \frac{\partial^2 f(x)}{\partial x_n \partial x_2} & \cdots  & \frac{\partial^2 f(x)}{\partial x_n^2}
-                    
                     \end{bmatrix}
                     \begin{bmatrix}
                     \mid  & \mid  &         & \mid  \\
                     a_1   & a_2   & \cdots  & a_3   \\
                     \mid  & \mid  &         & \mid
-                    \end{bmatrix}
+                    \end{bmatrix} \\
+                & = A^T \left[ \nabla_x^2 f(x) \right] A
 \end{align}
 $$
 
+So, the update rule for Newton's method:
+
+$$
+\begin{align}
+z^{(i+1)} & = z^{(i)} - H_g \left(z^{(i)} \right)^{-1} \nabla_z g(z^{(i)}) \\
+          & = z^{(i)} - \left(A^T H_f \left(Az^{(i)} \right)A \right)^{-1} A^T \nabla_x f \left(Az^{(i)} \right) \\
+          & = z^{(i)} - A^{-1} H_f \left(Az^{(i)} \right)^{-1} \left(A^T \right)^{-1} A^T \nabla_x f \left(Az^{(i)} \right) \\
+          & = z^{(i)} - A^{-1} H_f \left(Az^{(i)} \right)^{-1} \nabla_x f \left(Az^{(i)} \right)
+\end{align}
+$$
+
+$$
+\begin{align}
+Az^{(i+1)}  & = A \left(z^{(i)} - A^{-1} H_f \left(Az^{(i)} \right)^{-1} \nabla_x f \left(Az^{(i)} \right) \right) \\
+            & = Az^{(i)} - H_f \left(Az^{(i)} \right)^{-1} \nabla_x f \left(Az^{(i)} \right) \\
+            & = x^{(i)} - H_f \left(x^{(i)} \right)^{-1} \nabla_x f \left(Az^{(i)} \right) \\
+            & = x^{(i + 1)}
+\end{align}
+$$
 
 **b.** Is gradient descent invariant to linear reparameterizations? Justify your answer.
-
+The update rule:
+$$
+\begin{align}
+z^{(i + 1)}   & = z^{(i)} - \alpha A^T \nabla_x f \left(Az^{(i)} \right) \\
+Az^{(i + 1)}  & = Az^{(i)}  - \alpha A A^T \nabla_x f \left(Az^{(i)} \right) \\
+              & = x^{(i)} - \alpha A A^T \nabla_x f \left(Az^{(i)} \right) \quad \text{vs.} \quad x^{(i+1)} = x^{(i)} - \alpha \nabla_x f \left(x^{(i)} \right)
+              \\
+              \therefore & \text{, gradient descent is invariant to linear reparameterizations only if} \\
+              & \qquad AA^T = I \text{, i.e. if }A \text{ is an orthogonal matrix.}
+\end{align}
+$$
 
 ### **5. Regression for denoising quasar spectra**
 **Introduction**. In this problem, we will apply a supervised learning technique to estimate the light spectrum of *quasars*. Quasars are luminous distant galactic nuclei that are so bright, their light overwhelms that of stars in their galaxies. Understanding properties of the spectrum of light emitted by a quasar is useful for a number of tasks: first, a number of quasar properties can be estimated from the spectra, and second, properties of the regions of the universe through which the light passes can also be evaluated (for example, we can estimate the density of neutral and ionized particles in the universe, which helps cosmologists understand the evolution and fundamental laws governing its structure). The *light spectrum* is a curve that relates the light’s intensity (formally, lumens per square meter), or luminous flux, to its wavelength. Figure 1 shows an example of a quasar light spectrum, where the wavelengths are measured in Angstroms ($\overset{\circ}{A}$), where $1 \overset{\circ}{A} = 10^{-10}$ meters.
