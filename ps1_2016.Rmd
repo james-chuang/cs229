@@ -120,12 +120,12 @@ $$
 \begin{align}
 p\left(y^{(i)} \mid x^{(i)}; \theta \right) & = \frac{1}{y^{(i)}!} \exp \left(\eta^T y^{(i)}-e^{\eta} \right) \\
                                             & = \frac{1}{y^{(i)}!} \exp \left(\left(\theta^Tx \right)^T y^{(i)}-e^{\theta^Tx} \right) \\
-                              \ell(\theta)  & = \log \left[\frac{1}{y^{(i)}!} \exp \left({x^{(i)}}^T\theta y^{(i)}-e^{{x^{(i)}}^T\theta} \right) \right] \\
-                                            & = -\log \left(y^{(i)}! \right) + {x^{(i)}}^T\theta y^{(i)}-e^{{x^{(i)}}^T\theta} \\
-                \nabla_\theta \ell(\theta)  & = {x^{(i)}}^T y^{(i)} - {x^{(i)}}^Te^{{x^{(i)}}^T\theta} \\
+                              \ell(\theta)  & = \log \left[\frac{1}{y^{(i)}!} \exp \left(x^{(i)T}\theta y^{(i)}-e^{x^{(i)T}\theta} \right) \right] \\
+                                            & = -\log \left(y^{(i)}! \right) + x^{(i)T}\theta y^{(i)}-e^{x^{(i)T}\theta} \\
+                \nabla_\theta \ell(\theta)  & = x^{(i)T} y^{(i)} - x^{(i)T}e^{x^{(i)T}\theta} \\
                                             & =  \left(y^{(i)}-e^{\theta^Tx^{(i)}} \right) x^{(i)} \\
                                             \\
-                          \therefore \frac{\partial \ell(\theta)}{\partial \theta_j} & = \left(y^{(i)}-e^{\theta^Tx^{(i)}} \right) x_j^{(i)} \\
+\therefore \frac{\partial \ell(\theta)}{\partial \theta_j} & = \left(y^{(i)}-e^{\theta^Tx^{(i)}} \right) x_j^{(i)}
 \end{align}
 $$
 
@@ -138,6 +138,8 @@ $$
 $$
 
 **d.** Consider using a GLM with a response variable from any member of the exponential family in which $T(y) = y$, and the canonical response function $h(x)$ for the family. Show that stochastic gradient ascent on the log-likelihood $\log p(\vec{y} |X; \theta)$ results in the update rule $\theta_i \gets \theta_i - \alpha(h(x)-y)x_i$.
+
+
 $$
 \begin{align}
 \ell (\theta) & = \log p(y \mid x ; \theta) \\
@@ -150,6 +152,7 @@ $$
 \frac{\partial \ell (\theta)}{\partial \theta_j}  & = \left(y- \frac{\partial a(\eta)}{\partial \eta} \right) x_j
 \end{align}
 $$
+
 
 The stochastic gradient ascent update rule is then:
 $$

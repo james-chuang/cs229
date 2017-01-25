@@ -219,12 +219,12 @@ g(\eta) &amp; = \text{E}\left[y; \eta\right] \\
 \begin{align}
 p\left(y^{(i)} \mid x^{(i)}; \theta \right) &amp; = \frac{1}{y^{(i)}!} \exp \left(\eta^T y^{(i)}-e^{\eta} \right) \\
                                             &amp; = \frac{1}{y^{(i)}!} \exp \left(\left(\theta^Tx \right)^T y^{(i)}-e^{\theta^Tx} \right) \\
-                              \ell(\theta)  &amp; = \log \left[\frac{1}{y^{(i)}!} \exp \left({x^{(i)}}^T\theta y^{(i)}-e^{{x^{(i)}}^T\theta} \right) \right] \\
-                                            &amp; = -\log \left(y^{(i)}! \right) + {x^{(i)}}^T\theta y^{(i)}-e^{{x^{(i)}}^T\theta} \\
-                \nabla_\theta \ell(\theta)  &amp; = {x^{(i)}}^T y^{(i)} - {x^{(i)}}^Te^{{x^{(i)}}^T\theta} \\
+                              \ell(\theta)  &amp; = \log \left[\frac{1}{y^{(i)}!} \exp \left(x^{(i)T}\theta y^{(i)}-e^{x^{(i)T}\theta} \right) \right] \\
+                                            &amp; = -\log \left(y^{(i)}! \right) + x^{(i)T}\theta y^{(i)}-e^{x^{(i)T}\theta} \\
+                \nabla_\theta \ell(\theta)  &amp; = x^{(i)T} y^{(i)} - x^{(i)T}e^{x^{(i)T}\theta} \\
                                             &amp; =  \left(y^{(i)}-e^{\theta^Tx^{(i)}} \right) x^{(i)} \\
                                             \\
-                          \therefore \frac{\partial \ell(\theta)}{\partial \theta_j} &amp; = \left(y^{(i)}-e^{\theta^Tx^{(i)}} \right) x_j^{(i)} \\
+\therefore \frac{\partial \ell(\theta)}{\partial \theta_j} &amp; = \left(y^{(i)}-e^{\theta^Tx^{(i)}} \right) x_j^{(i)}
 \end{align}
 \]</span></p>
 <p>The stochastic gradient ascent update rule: <span class="math display">\[
@@ -233,7 +233,8 @@ p\left(y^{(i)} \mid x^{(i)}; \theta \right) &amp; = \frac{1}{y^{(i)}!} \exp \lef
 \theta &amp; \gets \theta + \alpha \left(y^{(i)}-e^{\theta^Tx^{(i)}} \right) x_j^{(i)}
 \end{align}
 \]</span></p>
-<p><strong>d.</strong> Consider using a GLM with a response variable from any member of the exponential family in which <span class="math inline">\(T(y) = y\)</span>, and the canonical response function <span class="math inline">\(h(x)\)</span> for the family. Show that stochastic gradient ascent on the log-likelihood <span class="math inline">\(\log p(\vec{y} |X; \theta)\)</span> results in the update rule <span class="math inline">\(\theta_i \gets \theta_i - \alpha(h(x)-y)x_i\)</span>. <span class="math display">\[
+<p><strong>d.</strong> Consider using a GLM with a response variable from any member of the exponential family in which <span class="math inline">\(T(y) = y\)</span>, and the canonical response function <span class="math inline">\(h(x)\)</span> for the family. Show that stochastic gradient ascent on the log-likelihood <span class="math inline">\(\log p(\vec{y} |X; \theta)\)</span> results in the update rule <span class="math inline">\(\theta_i \gets \theta_i - \alpha(h(x)-y)x_i\)</span>.</p>
+<p><span class="math display">\[
 \begin{align}
 \ell (\theta) &amp; = \log p(y \mid x ; \theta) \\
               &amp; = \log \left[b(y) \exp \left(\eta^T T(y) - a(\eta) \right) \right] &amp; \text{response variable in exponential family} \\
