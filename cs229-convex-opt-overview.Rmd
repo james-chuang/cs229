@@ -1,0 +1,55 @@
+---
+output:
+  html_document:
+    toc: TRUE
+    fig_width: 4.5
+    css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
+---
+
+My notes on [CS229 Convex Optimization Overview notes](http://cs229.stanford.edu/materials.html) by Zico Kolter and Honglak Lee.
+
+## **1. Intro**
+  - Many situations in machine learning require ***optimization*** of the value of some function
+  - I.e., given $f: \mathbb{R}^n \rightarrow \mathbb{R}$, want to find $x \in \mathbb{R}^n$ that minimizes/maximizes $f(x)$
+  - least-squares, logistic regression, and support vector machines can all be framed as optimization problems
+  - in general, finding the global optimum of a function is very difficult
+      - for a ***convex optimization problems***, we can efficiently find the global solution in many cases
+      
+## **2. Convex Sets**
+
+***Convex sets***:
+  - A set $C$ is convex if, for any $x, y \in C$ and $\theta \in \mathbb{R}$ with $0 \leq \theta \leq 1$,
+  
+  $$
+  \theta x + (1-\theta)y \in C
+  $$
+  
+  - This means that for any two elements in $C$, every point on that line segment also belongs to $C$.
+  - The point $\theta x + (1-\theta) y$ is called a ***convex combination*** of the points $x$ and $y$.
+  - Examples of convex sets:
+      - all of $\mathbb{R}^n$
+      - the non-negative orthant, $\mathbb{R}_+$:
+          - all vectors in $\mathbb{R}^n$ whose elements are all non-negative: $\mathbb{R}_+^n = \left\{x : x_i \geq 0 \hspace{.5em}\forall  \hspace{.5em}i = 1, \dots, n \right\}$
+      - norm balls
+      - affine subspaces and polyhedra
+      - intersections of convex sets
+      - positive semidefinite matrices
+      
+## **3. Convex Functions**
+
+A function $f: \mathbb{R}^n \rightarrow \mathbb{R}$ is ***convex*** if its domain (denoted $\mathcal{D}(f)$) is a convex set, and if, for all $x, y \in \mathcal{D}(f)$ and $\theta \in \mathbb{R}, 0 \geq \theta \geq 1$,
+$$
+f(\theta x + (1-\theta)y) \leq \theta f(x) + (1-\theta)f(y)
+$$
+
+Intuitively, the way to think about this definition is that if we pick any two points on the graph of a convex function and draw a straight line between them, then the portion of the function between these two points will lie below this straight line.
+
+We say a function is ***strictly convex*** if this defition holds with strict inequality for $x \neq y$ and $0 < \theta < 1$. We say that $f$ is ***concave*** if $-f$ is convex, and likewise that $f$ is ***strictly concave*** if $-f$ is strictly convex.
+
+### ** 3.1 First Order Condition for Convexity **
+
+Suppose a function $f : \mathbb{R}^n \rightarrow \mathbb{R}$ is differentiable (i.e., the gradient $\nabla_x f(x)$ exists at all points $x \in \mathcal{D}(f)$). Then $f$ is convex iff $\mathbb{D}(f)$ is a convex set and for all $x,y \in \mathcal{D}(f)$,
+
+$$
+f(y) \geq f(x) + \nabla_x f(x)^T (y-x)
+$$

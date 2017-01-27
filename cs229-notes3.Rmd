@@ -1,0 +1,223 @@
+---
+output:
+  html_document:
+    toc: TRUE
+    fig_width: 4.5
+    css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
+---
+
+My notes on Andrew Ng's [CS229 lecture 3 notes](http://cs229.stanford.edu/materials.html).
+
+# **Support Vector Machines**
+
+## **1. Margins: Intuition**
+
+Consider logistic regression:
+
+  - $p(y = 1 \mid x ; \theta)$ is modeled by $h_\theta(x) = g \left(\theta^Tx \right)$
+    - $h_\theta(x) \geq 0.5$, i.e. $\theta^Tx \geq 0  \rightarrow$ predict "1"
+    - larger $\theta^Tx$, larger $h_\theta(x) = p(y=1 \mid x; w,b)$, higher "confidence" in prediction of label 1
+        - informally, a prediction $y=1$ is a very confident one if $\theta^Tx \gg 0$
+        - similarly, a prediction $y=0$ is a very confident one if $\theta^Tx \ll 0$
+            - therefore, a good fit to the data would be to find $\theta$ such that $\theta^Tx^{(i)} \gg 0$ whenever $y^{(i)}=1$, and $\theta^Tx^{(i)} \ll 0$ whenever $y^{(i)}= 0$.
+    - geometrically, points far away from the ***separating hyperplane*** can be predicted with higher confidence than points close to the separating hyperplane
+    
+## **2. Notation**
+
+Consider a linear classifier for a binary classification problem with labels $y$ and features $x$:
+
+  - $y \in \left\{-1, 1 \right\}$
+  - parameters $w, b$ (treat the bias/intercept $b$ separately from the weights $w$)
+  - write classifier as:
+  
+  $$
+  \begin{align}
+  h_{w,b}(x) & = g(w^Tx + b) \\
+  \\
+  g(z) & =  \begin{cases}
+          1 & \text{if } z \geq 0 \\
+          -1 & \text{otherwise}
+          \end{cases}
+  \end{align}
+  $$
+  Note that from the definition of $g$, this classifier directly predicts either $1$ or $-1$ without first going through the intermediate step of estimating the probability of $y$ being $1$, as in logistic regression.
+  
+## **3. Functional and geometric margins**
+
+##### **Functional margins**
+Given a training example $\left(x^{(i)}, y^{(i)} \right)$, define the **functional margin** $\hat{\gamma}^{(i)}$ of $\left(w,b \right)$ w.r.t. the training example:
+
+$$
+\hat{\gamma}^{(i)} = y^{(i)} \left(w^Tx + b \right)
+$$
+Note:
+$$
+\begin{cases}
+\text{if }y^{(i)} = 1, \text{ then }\hat{\gamma}^{(i)} \gg 0 \hspace{1em}\text{if} \hspace{1em} w^Tx+b \gg 0 \\
+\text{if }y^{(i)} = -1, \text{ then } \hat{\gamma}^{(i)} \gg 0 \hspace{1em}\text{if} \hspace{1em} w^Tx+b \ll 0
+\end{cases}
+$$
+A prediction is correct if $y^{(i)} \left(w^Tx+b \right) > 0$. Large functional margin = a confident and correct prediction.
+
+One property of this classifier needs to be addressed: $g$, and hence $h_{w,b}(x)$ depends on the sign, but *not* on the magnitude of $w^Tx+b$. (E.g., $g(w^Tx+b) = g(2w^Tx+2b)$). Therefore, without an additional normalization condition, the functional margin can be made arbitrarily large by scaling $w$ and $b$. We will come back to the normalization condition later.
+
+Given a training set $S = \left\{\left(x^{(i)}, y^{(i)}\right); i = 1, \dots, m \right\}$, define the ***functional margin*** $\hat{\gamma}$ of $(w,b)$ w.r.t. $S$ to be the smallest of the functional margins of the individual training examples:
+$$
+\hat{\gamma} = \min_{i=1, \dots, m} \hat{\gamma}^{(i)}
+$$
+
+##### **Geometric margins**
+
+The vector $w$ is orthogonal to the separating hyperplane defined by $w^Tx + b = 0$. To see this, consider two points $x_1$ and $x_2$ on the hyperplane (see ESL Ch. 4.5):
+$$
+\begin{align}
+w^Tx_1+b &= w^Tx_2+b = 0 & \text{by def. of the hyperplane} \\
+w^Tx_1 &= w^Tx_2 \\
+w^T(x_1 - x_2) & = 0 \\
+\therefore \quad& w \perp \left\{x: w^Tx+b=0\right\}
+\end{align}
+$$
+The **geometric margin** $\gamma^{(i)}$ is the distance from a training example $\left(x^{(i)}, y^{(i)} \right)$to the separating hyperplane. The projection of $x^{(i)}$ onto the separating hyperplane is the point $x^{(i)}-\gamma^{(i)} \frac{w}{\lVert w \rVert}$ (remember that $\gamma^{(i)} \in \mathbb{R}$ is just a scalar). Since this point is on the decision boundary, it satisfies $w^Tx+b=0$:
+
+$$
+\begin{align}
+w^T \left(x^{(i)}-\gamma^{(i)} \frac{w}{\lVert w \rVert} \right) + b & = 0 \\
+w^Tx^{(i)} - \gamma^{(i)} \frac{1}{\lVert w \rVert} w^T w + b & = 0 \hspace{7em} w^Tw = \lVert w \rVert^2\\
+\gamma^{(i)} \lVert w \rVert & = w^Tx^{(i)} + b \\
+\gamma^{(i)} & = \frac{w^Tx^{(i)} + b}{\lVert w \rVert} \\
+\gamma^{(i)} & = \left(\frac{w}{\lVert w \rVert} \right)^T x^{(i)} + \frac{b}{\lVert w \rVert}
+\end{align}
+$$
+To account for training examples on the other side of the decision boundary, we define the **geometric margin** of $\left(w,b \right)$ w.r.t. a training example $\left(x^{(i)}, y^{(i)} \right)$ to be:
+
+$$
+\gamma^{(i)} = y^{(i)} \left( \left(\frac{w}{\lVert w \rVert} \right)^T x^{(i)} + \frac{b}{\lVert w \rVert} \right)
+$$
+
+The geometric margin with $\lVert w \rVert = 1$ is equal to the functional margin.
+
+The geometric margin is invariant to rescaling of the parameters $w$ and $b$. This means that we can impose an arbitrary scaling constraint on $w$, e.g. $\lVert w \rVert = 1$, $\lvert w_1 \rvert = 5$, or $\lvert w_1 + b \rvert + \lvert w_2\rvert = 2$, and any of these can be satisfied simply by rescaling $w$ and $b$.
+
+Finally, given a training set $S = \left\{ \left(x^{(i)}, y^{(i)} \right); i = 1, \dots, m  \right\}$, we also define the geometric margin of $(w,b)$ w.r.t. $S$ to be the smallest of the geomtric margins on the individual training examples:
+
+$$
+\gamma = \min_{i=1, \dots, m} \gamma^{(i)}
+$$
+
+## **4. The optimal margin classifier**
+
+Given a training set, a natural criterion is to set a decision boundary that maximizes the (geometric) margin, since this reflects a confident set of predictions on the training set.
+
+Assume a training set that is linearly separable, i.e. a separating hyperplane can separate the two classes. Finding the hyperplane that maximizes the geometric margin is an optimization problem:
+
+$$
+\begin{align}
+\max_{\gamma, w, b} \quad & \gamma \\
+\text{s.t.} \quad & y^{(i)} \left(w^Tx^{(i)} + b \right) \geq \gamma, \quad i=1, \dots, m \\
+                  & \lVert w \rVert = 1
+\end{align}
+$$
+
+The above optimization problem is non-convex and therefore difficult to solve (due to the $\lVert w \rVert=1$ constraint). We can transform the problem, remembering that $\gamma$ is the geometric margin and $\hat{\gamma}$ is the functional margin:
+
+$$
+\begin{align}
+\max_{\hat{\gamma}, w, b} \quad  & \frac{\hat{\gamma}}{\lVert w \rVert} \\
+\text{s.t.} \quad & y^{(i)} \left(w^Tx^{(i)} + b \right) \geq \hat{\gamma}, \quad i=1, \dots, m
+\end{align}
+$$
+
+This problem is equivalent since the geometric and functional margins are related by $\gamma = \frac{\hat{\gamma}}{\lVert w \rVert}$. This is better, since the $\lVert w \rVert=1$ constraint is gone, but the problem is still non-convex. To simplify it further, remember that $w$ and $b$ can be arbitrarily scaled without changing anything, and set the scaling constraining that the functional margin of $w,b$ w.r.t. the training set to 1:
+
+$$
+\hat{\gamma} = 1
+$$
+
+$$
+\begin{align}
+\max_{\gamma, w, b} \quad  & \frac{1}{\lVert w \rVert} \\
+= \min_{\gamma, w, b} \quad & \frac{1}{2} \lVert w \rVert^2  \\
+\text{s.t.} \quad & y^{(i)} \left(w^Tx^{(i)} + b \right) \geq 1, \quad i=1, \dots, m
+\end{align}
+$$
+
+This optimization problem has a convex quadratic objective and linear constraints. Solving it (using quadratic programming) gives the ***optimal margin classifier***.
+
+## **5. Digression: Lagrange duality**
+
+Consider the following problem:
+
+$$
+\begin{align}
+\min_w \quad      & f(w) \\
+\text{s.t.} \quad & h_i(w) = 0, \quad i = 1, \dots, l
+\end{align}
+$$
+This can be solved with Lagrange multipliers. Define the ***Lagrangian***:
+
+$$
+\mathcal{L} = f(w) + \sum_{i=1}^\ell \beta_i h_i (w)
+$$
+$\beta_i \rightarrow$ ***Lagrange multipliers***.
+
+To solve the problem, find the partial derivatives of $\mathcal{L}$, set to zero, and solve for $w$ and $\beta$:
+$$
+\frac{\partial \mathcal{L}}{\partial w_i} = 0; \frac{\partial \mathcal{L}}{\partial \beta_i} = 0.
+$$
+This can be generalized to constrained optimization problems with inequality as well as equality constraints. Consider the following, called the ***primal*** optimization problem:
+
+$$
+\begin{align}
+\min_w \quad      & f(w) \\
+\text{s.t.} \quad & g_i(w) \leq 0, \quad i=1, \dots, k \\
+                  & h_i(w) = 0, \quad i=1, \dots, k
+\end{align}
+$$
+To solve it, start by defining the ***generalized Lagrangian***
+
+$$
+\mathcal{L} \left(w, \alpha, \beta \right) = f(w) + \sum_{i=1}^k \alpha_i g_i(w) + \sum_{i=1}^\ell \beta_i h_i(w)
+$$
+Here, the $\alpha_i$'s and $\beta_i$'s are the Lagrange multipliers. Consider the quantity
+
+$$
+\theta_{\mathcal{P}}(w) = \max_{\alpha, \beta :  \alpha_i \geq 0} \mathcal{L} (w, \alpha, \beta),
+$$
+
+where the "$\mathcal{P}$" subscript stands for "primal". Let some $w$ be given. If $w$ violates any of the primal constraints (i.e., $g_i(w) > 0$ or $h_i(w) \neq 0$ for some $i$), then:
+
+$$
+\begin{align}
+\theta_{\mathcal{P}}(w) & = \max_{\alpha, \beta: \alpha_i \geq 0} \left( f(w) + \sum_{i=1}^k \alpha_i g_i(w) + \sum_{i=1}^\ell \beta_i h_i(w) \right)\\
+                        & = \infty
+\end{align}
+$$
+
+Conversely, if the constraints are satisfied for a particular $w$, then $\theta_{\mathcal{P}}(w) = f(w)$. Hence,
+
+$$
+\theta_{\mathcal{P}}(w) = \begin{cases}
+                          f(w) & \text{if } w \text{ satisfies primal constraints} \\
+                          \infty  & \text{otherwise}
+                          \end{cases}
+$$
+
+I.e., $\theta_{\mathcal{P}}$ takes the same value as the objective functino for all values of $w$ that satisfy the primal constraints, and is positive infinity if the constraints are violated. Hence, the minimization problem
+
+$$
+\min_w \theta_{\mathcal{P}}(w) = \min_w \max_{\alpha, \beta: \alpha_i \geq 0} \mathcal{L} (w, \alpha, \beta)
+$$
+
+is the same problem (has the same solutions as) the original, primal problem. We also define the optimal value of the objective to be $p^* = \min_w \theta_{\mathcal{P}}(w)$; we call this the ***value*** of the primal problem.
+
+Now, consider a slightly different problem. Define
+$$
+\theta_{\mathcal{D}}(\alpha, \beta) = \min_w \mathcal{L} (w, \alpha, \beta).
+$$
+
+Here, the "$\mathcal{D}$" subscript stands for "dual". Note that whereas in the definition of $\theta_{\mathcal{P}}$ we optimized w.r.t. $\alpha, \beta$, here we are minimizing w.r.t. $w$.
+
+Now we define the ***dual*** optimization problem:
+$$
+\max_{\alpha, \beta: \alpha_i \geq 0} \theta_{\mathcal{D}}(\alpha, \beta) = \max_{\alpha, \beta: \alpha_i \geq 0} \min_w \mathcal{L} (w, \alpha, \beta).
+$$
