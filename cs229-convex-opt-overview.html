@@ -123,7 +123,17 @@ $(document).ready(function () {
 <ul>
 <li><a href="#intro"><strong>1. Intro</strong></a></li>
 <li><a href="#convex-sets"><strong>2. Convex Sets</strong></a></li>
-<li><a href="#convex-functions"><strong>3. Convex Functions</strong></a></li>
+<li><a href="#convex-functions"><strong>3. Convex Functions</strong></a><ul>
+<li><a href="#first-order-condition-for-convexity"><strong>3.1 First Order Condition for Convexity</strong></a></li>
+<li><a href="#second-order-condition-for-convexity"><strong>3.2 Second Order Condition for Convexity</strong></a></li>
+<li><a href="#jensens-inequality"><strong>3.3 Jensen’s Inequality</strong></a></li>
+<li><a href="#sublevel-sets"><strong>3.4 Sublevel Sets</strong></a></li>
+<li><a href="#examples"><strong>3.5 Examples</strong></a></li>
+</ul></li>
+<li><a href="#convex-optimization-problems"><strong>4. Convex Optimization Problems</strong></a><ul>
+<li><a href="#global-optimality-in-convex-problems"><strong>4.1 Global Optimality in Convex Problems</strong></a></li>
+</ul></li>
+<li><a href="#special-cases-of-convex-problems"><strong>4.2 Special Cases of Convex Problems</strong></a></li>
 </ul>
 </div>
 
@@ -142,12 +152,15 @@ $(document).ready(function () {
 </div>
 <div id="convex-sets" class="section level2">
 <h2><strong>2. Convex Sets</strong></h2>
-<p><strong><em>Convex sets</em></strong>: - A set <span class="math inline">\(C\)</span> is convex if, for any <span class="math inline">\(x, y \in C\)</span> and <span class="math inline">\(\theta \in \mathbb{R}\)</span> with <span class="math inline">\(0 \leq \theta \leq 1\)</span>,</p>
+<p><strong><em>Convex sets</em></strong>:</p>
+<ul>
+<li>A set <span class="math inline">\(C\)</span> is convex if, for any <span class="math inline">\(x, y \in C\)</span> and <span class="math inline">\(\theta \in \mathbb{R}\)</span> with <span class="math inline">\(0 \leq \theta \leq 1\)</span>,</li>
+</ul>
 <p><span class="math display">\[
   \theta x + (1-\theta)y \in C
   \]</span></p>
 <ul>
-<li>This means that for any two elements in <span class="math inline">\(C\)</span>, every point on that line segment also belongs to <span class="math inline">\(C\)</span>.</li>
+<li>This means that for any two elements in <span class="math inline">\(C\)</span>, every point on the line segment between those points also belongs to <span class="math inline">\(C\)</span>.</li>
 <li>The point <span class="math inline">\(\theta x + (1-\theta) y\)</span> is called a <strong><em>convex combination</em></strong> of the points <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>.</li>
 <li>Examples of convex sets:
 <ul>
@@ -169,7 +182,193 @@ $(document).ready(function () {
 f(\theta x + (1-\theta)y) \leq \theta f(x) + (1-\theta)f(y)
 \]</span></p>
 <p>Intuitively, the way to think about this definition is that if we pick any two points on the graph of a convex function and draw a straight line between them, then the portion of the function between these two points will lie below this straight line.</p>
-<p>We say a function is <strong><em>strictly convex</em></strong> if this defition holds with strict inequality for <span class="math inline">\(x \neq y\)</span> and <span class="math inline">\(0 &lt; \theta &lt; 1\)</span>. We say that <span class="math inline">\(f\)</span> is <strong><em>concave</em></strong> if <span class="math inline">\(-f\)</span> is convex, and likewise that <span class="math inline">\(f\)</span> is <strong><em>strictly concave</em></strong> if <span class="math inline">\(-f\)</span> is strictly convex.</p>
+<p>We say a function is <strong><em>strictly convex</em></strong> if this definition holds with strict inequality for <span class="math inline">\(x \neq y\)</span> and <span class="math inline">\(0 &lt; \theta &lt; 1\)</span>. We say that <span class="math inline">\(f\)</span> is <strong><em>concave</em></strong> if <span class="math inline">\(-f\)</span> is convex, and likewise that <span class="math inline">\(f\)</span> is <strong><em>strictly concave</em></strong> if <span class="math inline">\(-f\)</span> is strictly convex.</p>
+<div id="first-order-condition-for-convexity" class="section level3">
+<h3><strong>3.1 First Order Condition for Convexity</strong></h3>
+<p>Suppose a function <span class="math inline">\(f : \mathbb{R}^n \rightarrow \mathbb{R}\)</span> is differentiable (i.e., the gradient <span class="math inline">\(\nabla_x f(x)\)</span> exists at all points <span class="math inline">\(x \in \mathcal{D}(f)\)</span>). Then <span class="math inline">\(f\)</span> is convex iff <span class="math inline">\(\mathbb{D}(f)\)</span> is a convex set and for all <span class="math inline">\(x,y \in \mathcal{D}(f)\)</span>,</p>
+<p><span class="math display">\[
+f(y) \geq f(x) + \nabla_x f(x)^T (y-x)
+\]</span></p>
+<ul>
+<li><span class="math inline">\(f(x) + \nabla_x f(x)^T (y-x) \gets\)</span> <strong><em>first-order approximation</em></strong> of the function <span class="math inline">\(f\)</span> at the point <span class="math inline">\(x\)</span>.
+<ul>
+<li>I.e., the line tangent to <span class="math inline">\(f\)</span> at <span class="math inline">\(x\)</span> is a global underestimator of the function <span class="math inline">\(f\)</span></li>
+</ul></li>
+<li>Similarly, <span class="math inline">\(f\)</span> is:
+<ul>
+<li>strictly convex if this holds w/ strict inequality</li>
+<li>concave if the inequality is reversed
+<ul>
+<li>strictly concave if this reverse inequality is strict</li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+<div id="second-order-condition-for-convexity" class="section level3">
+<h3><strong>3.2 Second Order Condition for Convexity</strong></h3>
+<p>Suppose a function <span class="math inline">\(f: \mathbb{R}^n \to \mathbb{R}\)</span> is twice differentiable (i.e., the Hessian <span class="math inline">\(\nabla_x^2f(s)\)</span> is defined for all points <span class="math inline">\(x\)</span> in the domain of <span class="math inline">\(f\)</span>). Then <span class="math inline">\(f\)</span> is convex iff <span class="math inline">\(\mathcal{D}(f)\)</span> is a convex set and its Hessian is positive semidefinite: i.e., for any <span class="math inline">\(x \in \mathcal{D}(f)\)</span>,</p>
+<p><span class="math display">\[
+\nabla_x^2 f(x) \succeq 0.
+\]</span></p>
+<ul>
+<li>In one dimension, this is equivalent to the condition that the second derivative <span class="math inline">\(f^{\prime\prime}(x)\)</span> always be non-negative</li>
+<li>if Hessian is:
+<ul>
+<li>positive definite, <span class="math inline">\(f\)</span> is strictly convex</li>
+<li>negative semidefinite, <span class="math inline">\(f\)</span> is concave</li>
+<li>negative definite, <span class="math inline">\(f\)</span> is negative definite</li>
+</ul></li>
+</ul>
+</div>
+<div id="jensens-inequality" class="section level3">
+<h3><strong>3.3 Jensen’s Inequality</strong></h3>
+<p>Suppose we start with the inequality in the basic definition of a convex function</p>
+<p><span class="math display">\[
+f(\theta x + \left(1-\theta \right)y) \leq \theta f(x) + \left(1-\theta \right) f(y) \quad \text{for } 0 \leq \theta \leq 1.
+\]</span> This can be extended (by induction) to convex combinations of more than one point,</p>
+<p><span class="math display">\[
+f \left(\sum_{i=1}^k \theta_i x_i \right) \leq \sum_{i=1}^k \theta_i f(x_i) \quad \text{for } \sum_{i=1}^k \theta_i = 1, \theta_i \geq 0 \hspace{.6em}\forall i
+\]</span> This can be further extended to infinite sums or integrals:</p>
+<p><span class="math display">\[
+f \left( \int p(x)x dx \right) \leq \int p(x)f(x) dx \quad \text{for } \int p(x)dx = 1, p(x) \geq 0 \hspace{.6em} \forall x
+\]</span></p>
+<p>Since <span class="math inline">\(\int p(x) dx = 1\)</span>, it can be interpreted as a probability density, in which case the above can be written as expectations:</p>
+<p><span class="math display">\[
+f \left(\text{E} \left[x \right] \right) \leq \text{E} [f(x)].
+\]</span></p>
+<p>This is <strong><em>Jensen’s inequality</em></strong>.</p>
+</div>
+<div id="sublevel-sets" class="section level3">
+<h3><strong>3.4 Sublevel Sets</strong></h3>
+<p>Convex functions give rise to an important of convex set called an <strong><em><span class="math inline">\(\alpha\)</span>-sublevel set</em></strong>. Given a convex function <span class="math inline">\(f : \mathbb{R}^n \to \mathbb{R}\)</span> and a real number <span class="math inline">\(\alpha \in \mathbb{R}\)</span>, the <span class="math inline">\(\alpha\)</span>-sublevel set is defined as</p>
+<p><span class="math display">\[
+\left\{x \in \mathcal{D}(f) : f(x) \leq \alpha \right\}.
+\]</span> I.e., the <span class="math inline">\(\alpha\)</span>-sublevel set is the set of points <span class="math inline">\(x\)</span> s.t. <span class="math inline">\(f(x) \leq \alpha\)</span>.</p>
+</div>
+<div id="examples" class="section level3">
+<h3><strong>3.5 Examples</strong></h3>
+</div>
+</div>
+<div id="convex-optimization-problems" class="section level2">
+<h2><strong>4. Convex Optimization Problems</strong></h2>
+<p>A <strong><em>convex optimization problem</em></strong> is of the form</p>
+<p><span class="math display">\[
+\begin{align}
+\text{minimize} \quad &amp; f(x) \\
+\text{subject to} \quad &amp; x \in C
+\end{align}
+\]</span></p>
+<ul>
+<li><span class="math inline">\(f\)</span>: a convex function</li>
+<li><span class="math inline">\(C\)</span>: a convex set</li>
+<li><span class="math inline">\(x\)</span>: the optimization variable</li>
+</ul>
+<p>The same problem written more explicitly:</p>
+<p><span class="math display">\[
+\begin{align}
+\text{minimize} \quad   &amp; f(x) \\
+\text{subject to} \quad &amp; g_i(x) \leq 0, \quad i = 1, \dots, m \\
+                        &amp; h_i(x) = 0, \quad i = 1, \dots, p
+\end{align}
+\]</span></p>
+<ul>
+<li><span class="math inline">\(f\)</span>: a convex function</li>
+<li><span class="math inline">\(g_i(x)\)</span> are convex functions</li>
+<li><span class="math inline">\(h_i(x)\)</span> are affine functions</li>
+<li><span class="math inline">\(x\)</span>: the optimization variable</li>
+</ul>
+<p>The <strong><em>optimal value</em></strong> of an optimization problem is denoted <span class="math inline">\(p^{*}\)</span> (sometimes <span class="math inline">\(f^*\)</span>) and is equal to the minimum possible value of the objective function in the feasible region</p>
+<p><span class="math display">\[
+p^* = \min \left\{f(x): \hspace{.5em} g_i(x) \leq 0, i=1, \dots, m, \hspace{.5em} h_i(x) = 0, 1, \dots, p \right\}.
+\]</span></p>
+<p><span class="math inline">\(p^*\)</span> can take on the values <span class="math inline">\(+ \infty\)</span> or <span class="math inline">\(- \infty\)</span> when the problem is <em>infeasible</em> (feasible region is empty) or <em>unbounded below</em> (feasible points exist s.t. <span class="math inline">\(f(x) \rightarrow - \infty\)</span>), respectively. We say that <span class="math inline">\(x^*\)</span> is an <strong><em>optimal point</em></strong> if <span class="math inline">\(f(x^*) = p^*\)</span>. Note that there can be more than one optimal point, even when the optimal value is finite.</p>
+<div id="global-optimality-in-convex-problems" class="section level3">
+<h3><strong>4.1 Global Optimality in Convex Problems</strong></h3>
+<p>Intiuitive definitions:</p>
+<ul>
+<li><strong><em>locally optimal</em></strong> - no “nearby” feasible points that have a lower objective value</li>
+<li><strong><em>globally optimal</em></strong> - no feasible points at all that have a lower objective value</li>
+</ul>
+<p>Formal definitions:</p>
+<ul>
+<li>a point <span class="math inline">\(x\)</span> is <strong><em>locally optimal</em></strong> if it is feasible (i.e., satisfies the constrains of the optimization problem) and if there exists some <span class="math inline">\(R &gt; 0\)</span> s.t. all feasible points <span class="math inline">\(z\)</span> with <span class="math inline">\(\lVert x-z\rVert_2 \leq R\)</span>, satisfy <span class="math inline">\(f(x) \leq f(z)\)</span>.</li>
+<li>a point <span class="math inline">\(x\)</span> is <strong><em>globally optimal</em></strong> if it is feasible and for all feasible points <span class="math inline">\(z\)</span>, <span class="math inline">\(f(x) \leq f(z)\)</span>.</li>
+</ul>
+<p>The key idea is that <strong>for a convex optimization problem, all locally optimal points are globally optimal</strong>.</p>
+<p>Proof by contradiction:</p>
+<ul>
+<li>Suppose <span class="math inline">\(x\)</span> is locally optimal but <em>not</em> globally optimal.
+<ul>
+<li>I.e., there exists a feasible point <span class="math inline">\(y\)</span> s.t. <span class="math inline">\(f(x) &gt; f(y)\)</span>.</li>
+<li>By definition of local optimality, there exist no feasible points <span class="math inline">\(z\)</span> s.t. <span class="math inline">\(\lVert x-z \rVert_2 \leq R\)</span> and <span class="math inline">\(f(z) &lt; f(x)\)</span>.</li>
+</ul></li>
+<li>Then, suppose we choose the point</li>
+</ul>
+<p><span class="math display">\[
+  z = \theta y + \left(1-\theta \right)x \quad \text{with} \quad \theta = \frac{R}{2 \lVert x-y \rVert_2}.
+  \]</span></p>
+<ul>
+<li>then,</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  \lVert x-z \rVert_2 &amp; = \left\lVert x - \left(\frac{R}{2 \lVert x-y \rVert_2} y+ \left(1-\frac{R}{2\lVert x-y \rVert_2} \right) x \right) \right\rVert_2 \\
+                      &amp; = \left\lVert \frac{R}{2 \lVert x-y \rVert_2} \left(x-y \right)\right\rVert_2 \\
+                      &amp; = \frac{R}{2} \leq R
+  \end{align}
+  \]</span></p>
+<ul>
+<li>By convexity of <span class="math inline">\(f\)</span>, we have:</li>
+</ul>
+<p><span class="math display">\[
+  f(z) = f(\theta y + (1-\theta)x) \leq \theta f(y) + (1-\theta)f(x) &lt; f(x)
+  \]</span></p>
+<ul>
+<li>the feasible set is a convex set
+<ul>
+<li><span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> are both feasible</li>
+<li>therefore, <span class="math inline">\(z = \theta y + (1-\theta)x\)</span> is also feasible</li>
+</ul></li>
+<li>since <span class="math inline">\(z\)</span> is feasible and:
+<ul>
+<li><span class="math inline">\(\lVert x-z \rVert_2 &lt; R\)</span> (i.e. <span class="math inline">\(z\)</span> is within the radius <span class="math inline">\(R\)</span> neighborhood of <span class="math inline">\(x\)</span>)</li>
+<li><span class="math inline">\(f(z) &lt; f(x)\)</span></li>
+</ul></li>
+<li>therefore, the point <span class="math inline">\(x\)</span> which is not globally optimal, cannot be locally optimal</li>
+</ul>
+</div>
+</div>
+<div id="special-cases-of-convex-problems" class="section level2">
+<h2><strong>4.2 Special Cases of Convex Problems</strong></h2>
+<p>Some special cases of the general convex optimization problem have efficient algorithms to solve very large problems</p>
+<ul>
+<li><strong>Linear Programming</strong>. A convex optimization problem is a <strong>linear program</strong> (LP) if both the objective function <span class="math inline">\(f\)</span> and inequality constraints <span class="math inline">\(g_i\)</span> are affine functions. In other words, these problems have the form</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  \text{minimize} \quad   &amp; c^Tx + d \\
+  \text{subject to} \quad &amp; Gx \preceq h \\
+                          &amp; Ax = b
+  \end{align}
+  \]</span></p>
+<ul>
+<li><span class="math inline">\(x \in \mathbb{R}^n\)</span>: the optimization variable</li>
+<li><span class="math inline">\(c \in \mathbb{R}^n, d \in \mathbb{R}, G \in \mathbb{R}^{m \times n}, h \in \mathbb{R}^m, A \in \mathbb{R}^{p \times n}, b \in \mathbb{R}^p\)</span></li>
+<li><p>‘<span class="math inline">\(\preceq\)</span>’ denotes elementwise inequality</p></li>
+<li><p><strong>Quadratic Programming</strong>. A convex optimiation problem is a <strong>quadratic program</strong> (QP) if the inequality constraints <span class="math inline">\(g_i\)</span> are still all affine, but if the objective function <span class="math inline">\(f\)</span> is a convex quadratic function. In other words, these problems ahve the form</p></li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  \text{minimize} \quad   &amp; \frac{1}{2}x^T P x + c^T x + d \\
+  \text{subject to} \quad &amp; G(x) \preceq h \\
+                          &amp; Ax = b
+  \end{align}
+  \]</span></p>
+<ul>
+<li><span class="math inline">\(x \in \mathbb{R}^n\)</span>: the optimization variable</li>
+<li><span class="math inline">\(c \in \mathbb{R}^n, d \in \mathbb{R}, G \in \mathbb{R}^{m \times n}, h \in \mathbb{R}^m, A \in \mathbb{R}^{p \times n}, b \in \mathbb{R}^p\)</span></li>
+<li><span class="math inline">\(P \in \mathbb{S}_+^n\)</span>, a symmetric positive semidefinite matrix</li>
+</ul>
 </div>
 
 

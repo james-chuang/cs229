@@ -202,7 +202,7 @@ $$
                           \end{cases}
 $$
 
-I.e., $\theta_{\mathcal{P}}$ takes the same value as the objective functino for all values of $w$ that satisfy the primal constraints, and is positive infinity if the constraints are violated. Hence, the minimization problem
+I.e., $\theta_{\mathcal{P}}$ takes the same value as the objective function for all values of $w$ that satisfy the primal constraints, and is positive infinity if the constraints are violated. Hence, the minimization problem
 
 $$
 \min_w \theta_{\mathcal{P}}(w) = \min_w \max_{\alpha, \beta: \alpha_i \geq 0} \mathcal{L} (w, \alpha, \beta)

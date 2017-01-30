@@ -293,11 +293,18 @@ w^Tx^{(i)} - \gamma^{(i)} \frac{1}{\lVert w \rVert} w^T w + b &amp; = 0 \hspace{
                           \infty  &amp; \text{otherwise}
                           \end{cases}
 \]</span></p>
-<p>I.e., <span class="math inline">\(\theta_{\mathcal{P}}\)</span> takes the same value as the objective functino for all values of <span class="math inline">\(w\)</span> that satisfy the primal constraints, and is positive infinity if the constraints are violated. Hence, the minimization problem</p>
+<p>I.e., <span class="math inline">\(\theta_{\mathcal{P}}\)</span> takes the same value as the objective function for all values of <span class="math inline">\(w\)</span> that satisfy the primal constraints, and is positive infinity if the constraints are violated. Hence, the minimization problem</p>
 <p><span class="math display">\[
 \min_w \theta_{\mathcal{P}}(w) = \min_w \max_{\alpha, \beta: \alpha_i \geq 0} \mathcal{L} (w, \alpha, \beta)
 \]</span></p>
-<p>is the same problem (has the same solutions as) the original, primal problem.</p>
+<p>is the same problem (has the same solutions as) the original, primal problem. We also define the optimal value of the objective to be <span class="math inline">\(p^* = \min_w \theta_{\mathcal{P}}(w)\)</span>; we call this the <strong><em>value</em></strong> of the primal problem.</p>
+<p>Now, consider a slightly different problem. Define <span class="math display">\[
+\theta_{\mathcal{D}}(\alpha, \beta) = \min_w \mathcal{L} (w, \alpha, \beta).
+\]</span></p>
+<p>Here, the “<span class="math inline">\(\mathcal{D}\)</span>” subscript stands for “dual”. Note that whereas in the definition of <span class="math inline">\(\theta_{\mathcal{P}}\)</span> we optimized w.r.t. <span class="math inline">\(\alpha, \beta\)</span>, here we are minimizing w.r.t. <span class="math inline">\(w\)</span>.</p>
+<p>Now we define the <strong><em>dual</em></strong> optimization problem: <span class="math display">\[
+\max_{\alpha, \beta: \alpha_i \geq 0} \theta_{\mathcal{D}}(\alpha, \beta) = \max_{\alpha, \beta: \alpha_i \geq 0} \min_w \mathcal{L} (w, \alpha, \beta).
+\]</span></p>
 </div>
 </div>
 
