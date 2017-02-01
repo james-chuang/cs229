@@ -1,0 +1,83 @@
+---
+output:
+  html_document:
+    toc: TRUE
+    fig_width: 4.5
+    css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
+---
+
+# **CS229 Autumn 2016 Problem Set #2**
+
+### **1. Constructing kernels** 
+
+In class, we saw that by choosing a kernel $K(x,z) = \phi(x)^T \phi(z)$, we can implicitly map data to a high dimensional space, and have the SVM algorithm work in that space. One way to generate kernels is to explicitly define the mapping $\phi$ to a higher dimensional space, and then work out the corresponding $K$.
+
+However, in this question we are interested in direct construction of kernels, I.e., suppose we have a function $K(x,z)$ that we think gives an appropriate similarity measure for our learning problem, and we are considering plugging $K$ into the SVM as the kernel function. However, for $K(x,z)$ to be a valid kernel, it must correspond to an inner product in some higher dimensional space resulting from some feature mapping $\phi$. Mercer's theorem tells us that $K(x,z)$ is a (Mercer) kernel iff for any finite set $\left\{x^{(1)}, \dots, x^{(m)} \right\}$, the matrix $K$ is symmetric and positive semidefinite, where the square matrix $K \in \mathbb{R}^{m \times m}$ is given by $K_{ij} = K\left(x^{(i)}, x^{(j)} \right)$.
+
+Now the question: Let $K_1, K_2$ be kernels over $\mathbb{R}^n \times \mathbb{R}^n$, let $a \in \mathbb{R}^+$ be a positive real number, let $f: \mathbb{R}^n \mapsto \mathbb{R}$, let $\phi: \mathbb{R}^n \rightarrow \mathbb{R}^d$, let $K_3$ be a kernel over $\mathbb{R}^d \times \mathbb{R}^d$, and let $p(x)$ be a polynomial over $x$ with *positive* coefficients.
+
+For each of the functions $K$ below, state whether it is necessarily a kernel. If you think it is, prove it; if you think it isn't, give a counter-example.
+
+[Hint: For part (e), the answer is that $K$ *is* indeed a kernel. You still have to prove it, though. (This one may be harder than the rest.) The result may also be useful for another part of the problem.]
+
+**(a)** $K(x,z) = K_1(x,z) + K_2(x,z)$
+
+**(b)** $K(x,z) = K_1(x,z) - K_2(x,z)$
+
+**(c)** $K(x,z) = aK_1(x,z)$
+
+**(d)** $K(x,z) = -aK_1(x,z)$
+
+**(e)** $K(x,z) = K_1(x,z)K_2(x,z)$
+
+**(f)** $K(x,z) = f(x)f(z)$
+
+**(g)** $K(x,z) = K_3(\phi(x), \phi(z))$
+
+**(h)** $K(x,z) = p(K_1(x,z))$
+
+### **2. Kernelizing the Perceptron**
+
+**(a)**
+
+**(b)**
+
+**(c)**
+
+### **3. Spam classification**
+
+**(a)**
+
+**(b)**
+
+**(c)**
+
+**(d)**
+
+**(e)**
+
+### **4. Properties of the VC dimension**
+
+**(a)**
+
+**(b)**
+
+**(c)**
+
+### **5. Training and testing on different distributions**
+
+**(a)**
+
+**(b)**
+
+**(c)**
+
+### **6. Boosting and high energy physics**
+
+**(a)**
+
+**(b)**
+
+**(c)**
+
+**(d)**
