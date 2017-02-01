@@ -127,6 +127,8 @@ $(document).ready(function () {
 <li><a href="#functional-and-geometric-margins"><strong>3. Functional and geometric margins</strong></a></li>
 <li><a href="#the-optimal-margin-classifier"><strong>4. The optimal margin classifier</strong></a></li>
 <li><a href="#digression-lagrange-duality"><strong>5. Digression: Lagrange duality</strong></a></li>
+<li><a href="#optimal-margin-classifiers"><strong>6. Optimal margin classifiers</strong></a></li>
+<li><a href="#kernels"><strong>Kernels</strong></a></li>
 </ul></li>
 </ul>
 </div>
@@ -188,7 +190,7 @@ $(document).ready(function () {
 <p>One property of this classifier needs to be addressed: <span class="math inline">\(g\)</span>, and hence <span class="math inline">\(h_{w,b}(x)\)</span> depends on the sign, but <em>not</em> on the magnitude of <span class="math inline">\(w^Tx+b\)</span>. (E.g., <span class="math inline">\(g(w^Tx+b) = g(2w^Tx+2b)\)</span>). Therefore, without an additional normalization condition, the functional margin can be made arbitrarily large by scaling <span class="math inline">\(w\)</span> and <span class="math inline">\(b\)</span>. We will come back to the normalization condition later.</p>
 <p>Given a training set <span class="math inline">\(S = \left\{\left(x^{(i)}, y^{(i)}\right); i = 1, \dots, m \right\}\)</span>, define the <strong><em>functional margin</em></strong> <span class="math inline">\(\hat{\gamma}\)</span> of <span class="math inline">\((w,b)\)</span> w.r.t. <span class="math inline">\(S\)</span> to be the smallest of the functional margins of the individual training examples: <span class="math display">\[
 \hat{\gamma} = \min_{i=1, \dots, m} \hat{\gamma}^{(i)}
-\]</span></p>
+\]</span> The functional margin simply tells you whether a particular point is properly classified or not. In order to be able to maximize the margin, there needs to be a notion of magnitude. Therefore, we introduce the <strong><em>geometric margin</em></strong>, a scaled version of the functional margin that tells you not only if a point if properly classified or not, but also the magnitude of the distance in units of <span class="math inline">\(\lVert w \rVert\)</span>.</p>
 </div>
 <div id="geometric-margins" class="section level5">
 <h5><strong>Geometric margins</strong></h5>
@@ -238,7 +240,7 @@ w^Tx^{(i)} - \gamma^{(i)} \frac{1}{\lVert w \rVert} w^T w + b &amp; = 0 \hspace{
 \text{s.t.} \quad &amp; y^{(i)} \left(w^Tx^{(i)} + b \right) \geq \hat{\gamma}, \quad i=1, \dots, m
 \end{align}
 \]</span></p>
-<p>This problem is equivalent since the geometric and functional margins are related by <span class="math inline">\(\gamma = \frac{\hat{\gamma}}{\lVert w \rVert}\)</span>. This is better, since the <span class="math inline">\(\lVert w \rVert=1\)</span> constraint is gone, but the problem is still non-convex. To simplify it further, remember that <span class="math inline">\(w\)</span> and <span class="math inline">\(b\)</span> can be arbitrarily scaled without changing anything, and set the scaling constraining that the functional margin of <span class="math inline">\(w,b\)</span> w.r.t. the training set to 1:</p>
+<p>This problem is equivalent since the geometric and functional margins are related by <span class="math inline">\(\gamma = \frac{\hat{\gamma}}{\lVert w \rVert}\)</span>. This is better, since the <span class="math inline">\(\lVert w \rVert=1\)</span> constraint is gone, but the problem is still non-convex. To simplify it further, remember that <span class="math inline">\(w\)</span> and <span class="math inline">\(b\)</span> can be arbitrarily scaled without changing anything, and set the scaling by constraining the geometric margin of <span class="math inline">\(w,b\)</span> w.r.t. the training set to 1:</p>
 <p><span class="math display">\[
 \hat{\gamma} = 1
 \]</span></p>
@@ -249,7 +251,7 @@ w^Tx^{(i)} - \gamma^{(i)} \frac{1}{\lVert w \rVert} w^T w + b &amp; = 0 \hspace{
 \text{s.t.} \quad &amp; y^{(i)} \left(w^Tx^{(i)} + b \right) \geq 1, \quad i=1, \dots, m
 \end{align}
 \]</span></p>
-<p>This optimization problem has a convex quadratic objective and linear constraints. Solving it (using quadratic programming) gives the <strong><em>optimal margin classifier</em></strong>.</p>
+<p>This optimization problem has a convex quadratic objective and linear constraints. Solving it (using quadratic programming) gives the <strong><em>optimal margin classifier</em></strong>. In order to solve this, we will use the method of Lagrange multipliers generalized to include inequality constraints in addition to equality constraints.</p>
 </div>
 <div id="digression-lagrange-duality" class="section level2">
 <h2><strong>5. Digression: Lagrange duality</strong></h2>
@@ -259,10 +261,10 @@ w^Tx^{(i)} - \gamma^{(i)} \frac{1}{\lVert w \rVert} w^T w + b &amp; = 0 \hspace{
 \min_w \quad      &amp; f(w) \\
 \text{s.t.} \quad &amp; h_i(w) = 0, \quad i = 1, \dots, l
 \end{align}
-\]</span> This can be solved with Lagrange multipliers. Define the <strong><em>Lagrangian</em></strong>:</p>
+\]</span> This can be solved with <a href="https://en.wikipedia.org/wiki/Lagrange_multiplier">Lagrange multipliers</a>. Define the <strong><em>Lagrangian</em></strong>:</p>
 <p><span class="math display">\[
 \mathcal{L} = f(w) + \sum_{i=1}^\ell \beta_i h_i (w)
-\]</span> <span class="math inline">\(\beta_i \rightarrow\)</span> <strong><em>Lagrange multipliers</em></strong>.</p>
+\]</span> The <span class="math inline">\(\beta_i\)</span> are the <strong><em>Lagrange multipliers</em></strong>.</p>
 <p>To solve the problem, find the partial derivatives of <span class="math inline">\(\mathcal{L}\)</span>, set to zero, and solve for <span class="math inline">\(w\)</span> and <span class="math inline">\(\beta\)</span>: <span class="math display">\[
 \frac{\partial \mathcal{L}}{\partial w_i} = 0; \frac{\partial \mathcal{L}}{\partial \beta_i} = 0.
 \]</span> This can be generalized to constrained optimization problems with inequality as well as equality constraints. Consider the following, called the <strong><em>primal</em></strong> optimization problem:</p>
@@ -320,6 +322,128 @@ d^* &amp; \leq p^* \\
 <li><span class="math inline">\(\alpha^*, \beta^*\)</span> are the solution to the dual problem</li>
 <li><span class="math inline">\(p^* = d^* = \mathcal{L}(w^*, \alpha^*, \beta^*)\)</span></li>
 </ul>
+<p>If some <span class="math inline">\(w^*, \alpha^*, \beta^*\)</span> satisfy the <strong>Karush-Kuhn-Tucker (KKT) conditions</strong>, then it is also a solution to the primal and dual problems:</p>
+<p><span class="math display">\[
+\begin{align}
+\frac{\partial}{\partial w_i} \mathcal{L}(w^*, \alpha^*, \beta^*)     &amp; = 0, \quad i=1, \dots, n \\
+\frac{\partial}{\partial \beta_i} \mathcal{L}(w^*, \alpha^*, \beta^*) &amp; = 0, \quad i=1, \dots, l \\
+\alpha_i^* g_i (w^*)                                                  &amp; = 0, \quad i=1, \dots, k &amp; \text{the }\textbf{dual complementarity}\text{ condition}\\
+g_i (w^*)                                                             &amp; \leq 0, \quad i=1, \dots, k \\
+\alpha^*                                                              &amp; \geq 0, \quad i=1, \dots, k 
+\end{align}
+\]</span> The <strong>dual complementarity</strong> condition above implies:</p>
+<ul>
+<li>if <span class="math inline">\(\alpha_i^* &gt; 0\)</span>, then <span class="math inline">\(g_i(w^*)=0\)</span>
+<ul>
+<li>i.e, the <span class="math inline">\(g_i(w) \leq 0\)</span> constraint is <strong>active</strong> (holds with equality <span class="math inline">\(g_i(w) = 0\)</span> rather than w/inequality)</li>
+<li>later, this is important for showing that the SVM has only a small number of support vectors</li>
+</ul></li>
+</ul>
+</div>
+<div id="optimal-margin-classifiers" class="section level2">
+<h2><strong>6. Optimal margin classifiers</strong></h2>
+<p>The primal optimization problem for finding the optimal margin classifier, derived in section 4:</p>
+<p><span class="math display">\[
+\begin{align}
+\min_{\gamma, w, b} \quad &amp; \frac{1}{2} \lVert w \rVert^2 \\
+\text{s.t.}         \quad &amp; y^{(i)} \left(w^Tx^{(i)} +b\right) \geq 1, \quad i=1, \dots, m
+\end{align}
+\]</span></p>
+<p>The constraints can be written as: <span class="math display">\[
+g_i(w) = -y^{(i} \left(w^Tx^{(i)} +b \right) + 1 \leq 0
+\]</span> We have one constraint for each training example. From the KKT dual complementarity condition, <span class="math inline">\(\alpha_i &gt; 0\)</span> only for the training examples that have geometric margin exactly equal to one (i.e., the ones corresponding to constraints that hold with equality <span class="math inline">\(g_i(w)=0\)</span>). These training points are exactly the ones closest to the decision boundary, and are called the <strong><em>support vectors</em></strong> of the optimal margin classifier. The fact that the number of support vectors can be much smaller than the size of the training set will be useful later.</p>
+<p>In writing the dual form of the problem, we will write in terms of inner products <span class="math inline">\(\left\langle x^{(i)}, x^{(j)} \right\rangle\)</span> between points in the input feature space. This will allow application of the kernel trick later.</p>
+<p>The Lagrangian for the optimal margin classifier problem: <span class="math display">\[
+\mathcal{L}(w, b, \alpha) = \frac{1}{2} \lVert w \rVert^2 - \sum_{i=1}^m \alpha_i\left[y^{(i)} \left(w^Tx^{(i)}+b \right) -1\right]
+\]</span> Find the dual form <span class="math inline">\(\theta_{\mathcal{D}} = \min_{w,b} \mathcal{L}(w, b, \alpha)\)</span>. Start by taking derivatives w.r.t. <span class="math inline">\(w\)</span> and <span class="math inline">\(b\)</span> and setting to zero:</p>
+<p><span class="math display">\[
+\begin{align}
+\mathcal{L}(w, b, \alpha)           &amp; = \frac{1}{2} \lVert w \rVert^2 - \sum_{i=1}^m \alpha_i \left[y^{(i)} \left(w^Tx^{(i)}+b \right) -1\right] \\
+\nabla_w \mathcal{L}(w, b, \alpha)  &amp; = w - \sum_{i=1}^m \alpha_i y^{(i)}x^{(i)} = 0 \\
+w &amp; = \sum_{i=1}^m \alpha_i y^{(i)}x^{(i)}
+\end{align}
+\]</span></p>
+<p><span class="math display">\[
+\begin{align}
+\mathcal{L}(w, b, \alpha)           &amp; = \frac{1}{2} \lVert w \rVert^2 - \sum_{i=1}^m \alpha_i \left[y^{(i)} \left(w^Tx^{(i)}+b \right) -1\right] \\
+\frac{\partial}{\partial b}\mathcal{L}(w, b, \alpha) &amp; = - \sum_{i=1}^m \alpha_i y^{(i)} = 0 \\
+\sum_{i=1}^m \alpha_i y^{(i)} &amp; = 0
+\end{align}
+\]</span></p>
+<p><span class="math display">\[
+\begin{align}
+\mathcal{L}(w, b, \alpha) &amp; = \frac{1}{2} \lVert w \rVert^2 - \sum_{i=1}^m \alpha_i \left[y^{(i)} \left(w^Tx^{(i)}+b \right) -1\right] &amp; \text{plug in }w \\
+  &amp; = \frac{1}{2} \sum_{i,j=1}^m  y^{(i)} y^{(j)} \alpha_i  \alpha_j \left(x^{(i)} \right)^Tx^{(j)} - \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left(x^{(i)} \right)^T x^{(j)} - b \sum_{i=1}^m \alpha_i y^{(i)} + \sum_{i=1}^m \alpha_i &amp; \sum_{i=1}^m \alpha_i y^{(i)} &amp; = 0 \\
+  &amp; = \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left(x^{(i)} \right)^T x^{(j)}
+\end{align}
+\]</span></p>
+<p>The dual optimization problem: <span class="math display">\[
+\begin{align}
+\max_{\alpha} W(\alpha) &amp; = \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left(x^{(i)} \right)^T x^{(j)} \\
+\text{s.t.} \hspace{.5em} \alpha_i &amp; \geq 0, \quad i = 1, \dots, m \\
+          &amp; \sum_{i=1}^m \alpha_i y^{(i)} = 0 
+\end{align}
+\]</span> The conditions for <span class="math inline">\(p^* = d^*\)</span> and the KKT conditions to hold are satisfied in the above problem. If we solve this maximization problem w.r.t. the <span class="math inline">\(\alpha_i\)</span>’s for the optimal <span class="math inline">\(\alpha_i\)</span>’s, we can solve for the <span class="math inline">\(w\)</span> by the above equation (<span class="math inline">\(w = \sum_{i=1}^m \alpha_i y^{(i)} x^{(i)}\)</span>).</p>
+<p>Then <span class="math inline">\(b^*\)</span> can be solved for (some kind of average?):</p>
+<p><span class="math display">\[
+b^* = - \frac{\max_{i:y^{(i)}=-1} w^{*T} x^{(i)} + \min_{i:y^{(i)}=1 } w^{*T}x^{(i)}}{2}
+\]</span> Suppose the model has been fit to a training set. To make a prediction at a new input point <span class="math inline">\(x\)</span>, calculate <span class="math inline">\(w^Tx+b\)</span>, and predict <span class="math inline">\(y=1\)</span> iff this quantity is bigger than zero.</p>
+<p><span class="math display">\[
+\begin{align}
+w^Tx + b  &amp; = \left( \sum_{i=1}^m \alpha_i y^{(i)} x^{(i)} \right)^Tx + b \\
+          &amp; = \sum_{i=1}^m \alpha_i y^{(i)} \langle x^{(i)}, x\rangle + b
+\end{align}
+\]</span> Hence, if we’ve found the <span class="math inline">\(\alpha_i\)</span>’s, in order to make a prediction, we need to calculate a quantity that only depends on the inner product between <span class="math inline">\(x\)</span> and the points in the training set. Also, the <span class="math inline">\(\alpha_i\)</span>’s will all be zero except for the support vectors. Thus, many of the terms in the sum will be zero, meaning that we only need to find the inner products between <span class="math inline">\(x\)</span> and the support vectors in order to make a prediction.</p>
+<p>By using different kernels, the optimal margin classifier generalizes to the <strong><em>support vector machine</em></strong>, which can learn efficiently in very high dimensional spaces.</p>
+</div>
+<div id="kernels" class="section level2">
+<h2><strong>Kernels</strong></h2>
+<ul>
+<li>def: original input values of problem = <strong><em>attributes</em></strong> (e.g. <span class="math inline">\(x\)</span>, the living area of a house)</li>
+<li>def: the inputs values that are passed to the learning algorithm = <strong><em>features</em></strong> (e.g. <span class="math inline">\(\begin{bmatrix} x &amp; x^2 &amp; x^3\end{bmatrix}^T\)</span>)</li>
+<li>def: the <strong><em>feature mapping</em></strong> <span class="math inline">\(\phi\)</span>, a map from the attributes to the features, e.g.: <span class="math display">\[
+  \phi(x) = \begin{bmatrix}
+        x   \\
+        x^2 \\
+        x^3
+        \end{bmatrix}
+  \]</span></li>
+</ul>
+<p>Rather than applying an SVM using the original input attributes <span class="math inline">\(x\)</span>, we may instead want to learn using some features <span class="math inline">\(\phi(x)\)</span>. Since the SVM algorithm can be written entirely in terms of the inner products <span class="math inline">\(\langle x,z \rangle\)</span>, this entails replacing all those inner products with <span class="math inline">\(\langle \phi(x), \phi(z)\rangle\)</span>. Specifically, given a feature mapping <span class="math inline">\(\phi\)</span>, we define the corresponding <strong><em>kernel</em></strong> to be <span class="math display">\[
+K(x,z) = \phi(x)^T \phi(z)
+\]</span> Then, everywhere where the algorithm had <span class="math inline">\(\langle x,z \rangle\)</span>, we replace it with <span class="math inline">\(K(x,z)\)</span> and the algorithm now learns with the features <span class="math inline">\(\phi\)</span>.</p>
+<p>Often, <span class="math inline">\(K(x,z)\)</span> is inexpensive to calculate, even though <span class="math inline">\(\phi(x)\)</span> itself may be very expensive (or impossible) to calculate (perhaps because it is an extremely high dimensional vector). In such settings, by using an efficient way to calculate <span class="math inline">\(K(x,z)\)</span> in the algorithm, an SVM can learn in the high dimensional feature space given by <span class="math inline">\(\phi\)</span>, but without ever having to explicitly find or represent vectors <span class="math inline">\(\phi(x)\)</span>.</p>
+<p>An example: Suppose <span class="math inline">\(x,z \in \mathbb{R}^n\)</span>, and consider <span class="math display">\[
+K(x,z) = (x^Tz)^2
+\]</span> This can also be written as <span class="math display">\[
+\begin{align}
+K(x,z)  &amp; = \left(\sum_{i=1}^n x_i z_i \right) \left(\sum_{i=1}^n x_i z_i \right) \\
+        &amp; = \sum_{i=1}^n \sum_{j=1}^n x_i x_j z_i z_j \\
+        &amp; = \sum_{i,j=1}^n \left(x_i x_j \right) \left(z_i z_j \right) \\
+        &amp; = \phi(x)^T \phi(z), \hspace{2em} \text{where} \\
+        &amp; &amp; \phi(x) = \begin{bmatrix}
+                      x_1x_1 \\ x_1x_2 \\ x_1x_3 \\ x_2x_1 \\ x_2x_2 \\ x_2x_3 \\ x_3x_1 \\ x_3x_2 \\ x_3x_3
+                      \end{bmatrix}\text{(for } n=3 \text{)} 
+\end{align}
+\]</span></p>
+<p>Calculating the high-dimensional <span class="math inline">\(\phi(x)\)</span> requires <span class="math inline">\(O(n^2)\)</span> time, while calculating <span class="math inline">\(K(x,z)\)</span> requires only <span class="math inline">\(O(n)\)</span> time – linear in the dimension of the input attributes.</p>
+<p>Consider a related kernel, also consider</p>
+<p><span class="math display">\[
+\begin{align}
+K(x,z)  &amp; = \left(x^Tz + c \right)^2 \\
+        &amp; = \left(x^Tz \right)^2 + 2c\left(x^Tz \right) + c^2 \\
+        &amp; = \sum_{i,j=1}^n \left(x_i x_j \right)\left(z_i z_j \right) + \sum_{i=1}^n \left(\sqrt{2c} x_i \right) \left(\sqrt{2c} z_i \right) + c^2 \\
+        &amp; \hspace{5em} \phi(x) =  \begin{bmatrix}
+                                  x_1x_1 \\ x_1x_2 \\ x_1x_2 \\ x_2x_1 \\ x_2x_2 \\ x_2x_3 \\ x_3x_3 \\ \sqrt{2c} x_1 \\ \sqrt{2c} x_2 \\ \sqrt{2c} x_3 \\ c
+                                  \end{bmatrix} \\
+\end{align}
+\]</span></p>
+<p>, where the parameter <span class="math inline">\(c\)</span> controls the relative weighting between the <span class="math inline">\(x_i\)</span> (first order) and the <span class="math inline">\(x_i x_j\)</span> (second order) terms.</p>
+<p>More broadly, the kernel <span class="math inline">\(K(x,z) = \left(x^Tz + c \right)^d\)</span> corresponds to a feature mapping to an <span class="math inline">\(\begin{pmatrix} n+d \\ d\end{pmatrix}\)</span> feature space, corresponding of all monomials of the form <span class="math inline">\(x_{i_2}x_{i_2} \dots x_{i_k}\)</span> that are up to order <span class="math inline">\(d\)</span>. Despite working in <span class="math inline">\(O(n^d)\)</span>-dimensional space, computing <span class="math inline">\(K(x,z)\)</span> still takes only <span class="math inline">\(O(n)\)</span> time, and we never need to explicitly represent feature vectors in the very high dimensional feature space.</p>
+<p>A slightly different view of kernels. Like the dot product, the kernel <span class="math inline">\(K(x,z) = \phi(x)^T \phi(z)\)</span> can be thought of as a similarity measure, i.e. if <span class="math inline">\(\phi(x)\)</span> and <span class="math inline">\(\phi(z)\)</span> are close together, we expect <span class="math inline">\(K(x,z)\)</span> to be large, and if <span class="math inline">\(\phi(x)\)</span> and <span class="math inline">\(\phi(z)\)</span> are far apart, we expect <span class="math inline">\(K(x,z)\)</span> to be small. Therefore, given a learning problem a good kernel to use would be a function represents the similarity of examples. For example, the function <span class="math display">\[
+K(x,z) = \exp \left(- \frac{\lVert x-z \rVert^2}{2 \sigma^2} \right)
+\]</span></p>
+<p>might be a reasonable measure of the similarity of <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span>, as it is near <span class="math inline">\(1\)</span> when <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span> are close, and near <span class="math inline">\(0\)</span> when <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span> are far apart. However, is this a valid function to be used as a kernel? (In this case, yes, as this is the <strong><em>Gaussian kernel</em></strong> corresponding to an infinite-dimensional feature mapping <span class="math inline">\(\phi\)</span>). But more broadly, given a function <span class="math inline">\(K\)</span>, how can we tell if it’s a valid kernel; i.e. is there a feature mapping <span class="math inline">\(\phi\)</span> such that <span class="math inline">\(K(x,z) = \phi(x)^T \phi(z) \hspace{.2em} \forall x,z\)</span></p>
 </div>
 </div>
 

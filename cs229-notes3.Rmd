@@ -65,6 +65,7 @@ Given a training set $S = \left\{\left(x^{(i)}, y^{(i)}\right); i = 1, \dots, m 
 $$
 \hat{\gamma} = \min_{i=1, \dots, m} \hat{\gamma}^{(i)}
 $$
+The functional margin simply tells you whether a particular point is properly classified or not. In order to be able to maximize the margin, there needs to be a notion of magnitude. Therefore, we introduce the ***geometric margin***, a scaled version of the functional margin that tells you not only if a point if properly classified or not, but also the magnitude of the distance in units of $\lVert w \rVert$.
 
 ##### **Geometric margins**
 
@@ -127,7 +128,7 @@ $$
 \end{align}
 $$
 
-This problem is equivalent since the geometric and functional margins are related by $\gamma = \frac{\hat{\gamma}}{\lVert w \rVert}$. This is better, since the $\lVert w \rVert=1$ constraint is gone, but the problem is still non-convex. To simplify it further, remember that $w$ and $b$ can be arbitrarily scaled without changing anything, and set the scaling constraining that the functional margin of $w,b$ w.r.t. the training set to 1:
+This problem is equivalent since the geometric and functional margins are related by $\gamma = \frac{\hat{\gamma}}{\lVert w \rVert}$. This is better, since the $\lVert w \rVert=1$ constraint is gone, but the problem is still non-convex. To simplify it further, remember that $w$ and $b$ can be arbitrarily scaled without changing anything, and set the scaling by constraining the geometric margin of $w,b$ w.r.t. the training set to 1:
 
 $$
 \hat{\gamma} = 1
@@ -141,7 +142,7 @@ $$
 \end{align}
 $$
 
-This optimization problem has a convex quadratic objective and linear constraints. Solving it (using quadratic programming) gives the ***optimal margin classifier***.
+This optimization problem has a convex quadratic objective and linear constraints. Solving it (using quadratic programming) gives the ***optimal margin classifier***. In order to solve this, we will use the method of Lagrange multipliers generalized to include inequality constraints in addition to equality constraints.
 
 ## **5. Digression: Lagrange duality**
 
@@ -153,12 +154,12 @@ $$
 \text{s.t.} \quad & h_i(w) = 0, \quad i = 1, \dots, l
 \end{align}
 $$
-This can be solved with Lagrange multipliers. Define the ***Lagrangian***:
+This can be solved with [Lagrange multipliers](https://en.wikipedia.org/wiki/Lagrange_multiplier). Define the ***Lagrangian***:
 
 $$
 \mathcal{L} = f(w) + \sum_{i=1}^\ell \beta_i h_i (w)
 $$
-$\beta_i \rightarrow$ ***Lagrange multipliers***.
+The $\beta_i$ are the ***Lagrange multipliers***.
 
 To solve the problem, find the partial derivatives of $\mathcal{L}$, set to zero, and solve for $w$ and $\beta$:
 $$
@@ -242,14 +243,159 @@ Under these assumptions, there must exist $w^*, \alpha^*, \beta^*$ such that:
   - $\alpha^*, \beta^*$ are the solution to the dual problem
   - $p^* = d^* = \mathcal{L}(w^*, \alpha^*, \beta^*)$
   
-If some $w^*, \alpha^*, \beta^*$ satisfy the ***Karush-Kuhn-Tucker (KKT) conditions**:
+If some $w^*, \alpha^*, \beta^*$ satisfy the **Karush-Kuhn-Tucker (KKT) conditions**, then it is also a solution to the primal and dual problems:
 
 $$
 \begin{align}
 \frac{\partial}{\partial w_i} \mathcal{L}(w^*, \alpha^*, \beta^*)     & = 0, \quad i=1, \dots, n \\
 \frac{\partial}{\partial \beta_i} \mathcal{L}(w^*, \alpha^*, \beta^*) & = 0, \quad i=1, \dots, l \\
-\alpha_i^* g_i (w^*)                                                  & = 0, \quad i=1, \dots, k \\
+\alpha_i^* g_i (w^*)                                                  & = 0, \quad i=1, \dots, k & \text{the }\textbf{dual complementarity}\text{ condition}\\
 g_i (w^*)                                                             & \leq 0, \quad i=1, \dots, k \\
 \alpha^*                                                              & \geq 0, \quad i=1, \dots, k 
 \end{align}
 $$
+The **dual complementarity** condition above implies:
+
+  - if $\alpha_i^* > 0$, then $g_i(w^*)=0$
+      - i.e, the $g_i(w) \leq 0$ constraint is **active** (holds with equality $g_i(w) = 0$ rather than w/inequality)
+      - later, this is important for showing that the SVM has only a small number of support vectors
+      
+## **6. Optimal margin classifiers**
+
+The primal optimization problem for finding the optimal margin classifier, derived in section 4:
+
+$$
+\begin{align}
+\min_{\gamma, w, b} \quad & \frac{1}{2} \lVert w \rVert^2 \\
+\text{s.t.}         \quad & y^{(i)} \left(w^Tx^{(i)} +b\right) \geq 1, \quad i=1, \dots, m
+\end{align}
+$$
+
+The constraints can be written as:
+$$
+g_i(w) = -y^{(i} \left(w^Tx^{(i)} +b \right) + 1 \leq 0
+$$
+We have one constraint for each training example. From the KKT dual complementarity condition, $\alpha_i > 0$ only for the training examples that have geometric margin exactly equal to one (i.e., the ones corresponding to constraints that hold with equality $g_i(w)=0$). These training points are exactly the ones closest to the decision boundary, and are called the ***support vectors*** of the optimal margin classifier. The fact that the number of support vectors can be much smaller than the size of the training set will be useful later.
+
+In writing the dual form of the problem, we will write in terms of inner products $\left\langle x^{(i)}, x^{(j)} \right\rangle$ between points in the input feature space. This will allow application of the kernel trick later.
+
+The Lagrangian for the optimal margin classifier problem:
+$$
+\mathcal{L}(w, b, \alpha) = \frac{1}{2} \lVert w \rVert^2 - \sum_{i=1}^m \alpha_i\left[y^{(i)} \left(w^Tx^{(i)}+b \right) -1\right]
+$$
+Find the dual form $\theta_{\mathcal{D}} = \min_{w,b} \mathcal{L}(w, b, \alpha)$. Start by taking derivatives w.r.t. $w$ and $b$ and setting to zero:
+
+$$
+\begin{align}
+\mathcal{L}(w, b, \alpha)           & = \frac{1}{2} \lVert w \rVert^2 - \sum_{i=1}^m \alpha_i \left[y^{(i)} \left(w^Tx^{(i)}+b \right) -1\right] \\
+\nabla_w \mathcal{L}(w, b, \alpha)  & = w - \sum_{i=1}^m \alpha_i y^{(i)}x^{(i)} = 0 \\
+w & = \sum_{i=1}^m \alpha_i y^{(i)}x^{(i)}
+\end{align}
+$$
+
+$$
+\begin{align}
+\mathcal{L}(w, b, \alpha)           & = \frac{1}{2} \lVert w \rVert^2 - \sum_{i=1}^m \alpha_i \left[y^{(i)} \left(w^Tx^{(i)}+b \right) -1\right] \\
+\frac{\partial}{\partial b}\mathcal{L}(w, b, \alpha) & = - \sum_{i=1}^m \alpha_i y^{(i)} = 0 \\
+\sum_{i=1}^m \alpha_i y^{(i)} & = 0
+\end{align}
+$$
+
+$$
+\begin{align}
+\mathcal{L}(w, b, \alpha) & = \frac{1}{2} \lVert w \rVert^2 - \sum_{i=1}^m \alpha_i \left[y^{(i)} \left(w^Tx^{(i)}+b \right) -1\right] & \text{plug in }w \\
+  & = \frac{1}{2} \sum_{i,j=1}^m  y^{(i)} y^{(j)} \alpha_i  \alpha_j \left(x^{(i)} \right)^Tx^{(j)} - \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left(x^{(i)} \right)^T x^{(j)} - b \sum_{i=1}^m \alpha_i y^{(i)} + \sum_{i=1}^m \alpha_i & \sum_{i=1}^m \alpha_i y^{(i)} & = 0 \\
+  & = \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left(x^{(i)} \right)^T x^{(j)}
+\end{align}
+$$
+
+The dual optimization problem:
+$$
+\begin{align}
+\max_{\alpha} W(\alpha) & = \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left(x^{(i)} \right)^T x^{(j)} \\
+\text{s.t.} \hspace{.5em} \alpha_i & \geq 0, \quad i = 1, \dots, m \\
+          & \sum_{i=1}^m \alpha_i y^{(i)} = 0 
+\end{align}
+$$
+The conditions for $p^* = d^*$ and the KKT conditions to hold are satisfied in the above problem. If we solve this maximization problem w.r.t. the $\alpha_i$'s for the optimal $\alpha_i$'s, we can solve for the $w$ by the above equation ($w = \sum_{i=1}^m \alpha_i y^{(i)} x^{(i)}$).
+
+Then $b^*$ can be solved for (some kind of average?):
+
+$$
+b^* = - \frac{\max_{i:y^{(i)}=-1} w^{*T} x^{(i)} + \min_{i:y^{(i)}=1 } w^{*T}x^{(i)}}{2}
+$$
+Suppose the model has been fit to a training set. To make a prediction at a new input point $x$, calculate $w^Tx+b$, and predict $y=1$ iff this quantity is bigger than zero.
+
+$$
+\begin{align}
+w^Tx + b  & = \left( \sum_{i=1}^m \alpha_i y^{(i)} x^{(i)} \right)^Tx + b \\
+          & = \sum_{i=1}^m \alpha_i y^{(i)} \langle x^{(i)}, x\rangle + b
+\end{align}
+$$
+Hence, if we've found the $\alpha_i$'s, in order to make a prediction, we need to calculate a quantity that only depends on the inner product between $x$ and the points in the training set. Also, the $\alpha_i$'s will all be zero except for the support vectors. Thus, many of the terms in the sum will be zero, meaning that we only need to find the inner products between $x$ and the support vectors in order to make a prediction.
+
+By using different kernels, the optimal margin classifier generalizes to the ***support vector machine***, which can learn efficiently in very high dimensional spaces.
+
+## **Kernels**
+
+  - def: original input values of problem = ***attributes*** (e.g. $x$, the living area of a house)
+  - def: the inputs values that are passed to the learning algorithm = ***features*** (e.g. $\begin{bmatrix} x & x^2 & x^3\end{bmatrix}^T$)
+  - def: the ***feature mapping*** $\phi$, a map from the attributes to the features, e.g.:
+  $$
+  \phi(x) = \begin{bmatrix}
+            x   \\
+            x^2 \\
+            x^3
+            \end{bmatrix}
+  $$
+
+Rather than applying an SVM using the original input attributes $x$, we may instead want to learn using some features $\phi(x)$. Since the SVM algorithm can be written entirely in terms of the inner products $\langle x,z \rangle$, this entails replacing all those inner products with $\langle \phi(x), \phi(z)\rangle$. Specifically, given a feature mapping $\phi$, we define the corresponding ***kernel*** to be 
+$$
+K(x,z) = \phi(x)^T \phi(z)
+$$
+Then, everywhere where the algorithm had $\langle x,z \rangle$, we replace it with $K(x,z)$ and the algorithm now learns with the features $\phi$.
+
+Often, $K(x,z)$ is inexpensive to calculate, even though $\phi(x)$ itself may be very expensive (or impossible) to calculate (perhaps because it is an extremely high dimensional vector). In such settings, by using an efficient way to calculate $K(x,z)$ in the algorithm, an SVM can learn in the high dimensional feature space given by $\phi$, but without ever having to explicitly find or represent vectors $\phi(x)$.
+
+An example: Suppose $x,z \in \mathbb{R}^n$, and consider
+$$
+K(x,z) = (x^Tz)^2
+$$
+This can also be written as
+$$
+\begin{align}
+K(x,z)  & = \left(\sum_{i=1}^n x_i z_i \right) \left(\sum_{i=1}^n x_i z_i \right) \\
+        & = \sum_{i=1}^n \sum_{j=1}^n x_i x_j z_i z_j \\
+        & = \sum_{i,j=1}^n \left(x_i x_j \right) \left(z_i z_j \right) \\
+        & = \phi(x)^T \phi(z), \hspace{2em} \text{where} \\
+        & & \phi(x) = \begin{bmatrix}
+                      x_1x_1 \\ x_1x_2 \\ x_1x_3 \\ x_2x_1 \\ x_2x_2 \\ x_2x_3 \\ x_3x_1 \\ x_3x_2 \\ x_3x_3
+                      \end{bmatrix}\text{(for } n=3 \text{)} 
+\end{align}
+$$
+
+Calculating the high-dimensional $\phi(x)$ requires $O(n^2)$ time, while calculating $K(x,z)$ requires only $O(n)$ time -- linear in the dimension of the input attributes.
+
+Consider a related kernel, also consider
+
+$$
+\begin{align}
+K(x,z)  & = \left(x^Tz + c \right)^2 \\
+        & = \left(x^Tz \right)^2 + 2c\left(x^Tz \right) + c^2 \\
+        & = \sum_{i,j=1}^n \left(x_i x_j \right)\left(z_i z_j \right) + \sum_{i=1}^n \left(\sqrt{2c} x_i \right) \left(\sqrt{2c} z_i \right) + c^2 \\
+        & \hspace{5em} \phi(x) =  \begin{bmatrix}
+                                  x_1x_1 \\ x_1x_2 \\ x_1x_2 \\ x_2x_1 \\ x_2x_2 \\ x_2x_3 \\ x_3x_3 \\ \sqrt{2c} x_1 \\ \sqrt{2c} x_2 \\ \sqrt{2c} x_3 \\ c
+                                  \end{bmatrix} \\
+\end{align}
+$$
+
+, where the parameter $c$ controls the relative weighting between the $x_i$ (first order) and the $x_i x_j$ (second order) terms.
+
+More broadly, the kernel $K(x,z) = \left(x^Tz + c \right)^d$ corresponds to a feature mapping to an $\begin{pmatrix} n+d \\ d\end{pmatrix}$ feature space, corresponding of all monomials of the form $x_{i_2}x_{i_2} \dots x_{i_k}$ that are up to order $d$. Despite working in $O(n^d)$-dimensional space, computing $K(x,z)$ still takes only $O(n)$ time, and we never need to explicitly represent feature vectors in the very high dimensional feature space.
+
+A slightly different view of kernels. Like the dot product, the kernel $K(x,z) = \phi(x)^T \phi(z)$ can be thought of as a similarity measure, i.e. if $\phi(x)$ and $\phi(z)$ are close together, we expect $K(x,z)$ to be large, and if $\phi(x)$ and $\phi(z)$ are far apart, we expect $K(x,z)$ to be small. Therefore, given a learning problem a good kernel to use would be a function represents the similarity of examples. For example, the function
+$$
+K(x,z) = \exp \left(- \frac{\lVert x-z \rVert^2}{2 \sigma^2} \right)
+$$
+
+might be a reasonable measure of the similarity of $x$ and $z$, as it is near $1$ when $x$ and $z$ are close, and near $0$ when $x$ and $z$ are far apart. However, is this a valid function to be used as a kernel? (In this case, yes, as this is the ***Gaussian kernel*** corresponding to an infinite-dimensional feature mapping $\phi$). But more broadly, given a function $K$, how can we tell if it's a valid kernel; i.e. is there a feature mapping $\phi$ such that $K(x,z) = \phi(x)^T \phi(z) \hspace{.2em} \forall x,z$?
