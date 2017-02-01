@@ -221,3 +221,35 @@ Now we define the ***dual*** optimization problem:
 $$
 \max_{\alpha, \beta: \alpha_i \geq 0} \theta_{\mathcal{D}}(\alpha, \beta) = \max_{\alpha, \beta: \alpha_i \geq 0} \min_w \mathcal{L} (w, \alpha, \beta).
 $$
+
+This is the same as the primal problem, except that the order of the max and min are exchanged. We also define the optimal value of the dual problem's objective to be $d^* = \max_{\alpha, \beta: \alpha \geq 0} \theta_{\mathcal{D}}(w)$.
+
+The primal and dual problems are related in the following way:
+
+$$
+\begin{align}
+d^* & \leq p^* \\
+\max_{\alpha, \beta: \alpha_i \geq 0} \min_w \mathcal{L}(w, \alpha, \beta) & \leq \min_w \max_{\alpha, \beta: \alpha_i \geq 0} \mathcal{L}(w, \alpha, \beta) \hspace{3em} \text{because } \max \min f \leq \min \max f
+\end{align}
+$$
+Under certain conditions, $d^* = p^*$, so that the solution can be found by solving the dual problem instead of the primal problem. What are the conditions?
+
+Suppose $f$ and the $g_i$'s are convex (for this purpose, this is when the Hessian is PSD), and the $h_i$'s are affine (i.e. linear, with an intercept term). Suppose further that the constraints $g_i$ are (strictly) feasible, i.e. there exists some $w$ s.t. $g_i(w) < 0 \hspace{.3em}\forall \hspace{.3em} i$.
+
+Under these assumptions, there must exist $w^*, \alpha^*, \beta^*$ such that:
+
+  - $w^*$ is the solution to the primal problem
+  - $\alpha^*, \beta^*$ are the solution to the dual problem
+  - $p^* = d^* = \mathcal{L}(w^*, \alpha^*, \beta^*)$
+  
+If some $w^*, \alpha^*, \beta^*$ satisfy the ***Karush-Kuhn-Tucker (KKT) conditions**:
+
+$$
+\begin{align}
+\frac{\partial}{\partial w_i} \mathcal{L}(w^*, \alpha^*, \beta^*)     & = 0, \quad i=1, \dots, n \\
+\frac{\partial}{\partial \beta_i} \mathcal{L}(w^*, \alpha^*, \beta^*) & = 0, \quad i=1, \dots, l \\
+\alpha_i^* g_i (w^*)                                                  & = 0, \quad i=1, \dots, k \\
+g_i (w^*)                                                             & \leq 0, \quad i=1, \dots, k \\
+\alpha^*                                                              & \geq 0, \quad i=1, \dots, k 
+\end{align}
+$$

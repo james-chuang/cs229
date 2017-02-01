@@ -305,6 +305,21 @@ w^Tx^{(i)} - \gamma^{(i)} \frac{1}{\lVert w \rVert} w^T w + b &amp; = 0 \hspace{
 <p>Now we define the <strong><em>dual</em></strong> optimization problem: <span class="math display">\[
 \max_{\alpha, \beta: \alpha_i \geq 0} \theta_{\mathcal{D}}(\alpha, \beta) = \max_{\alpha, \beta: \alpha_i \geq 0} \min_w \mathcal{L} (w, \alpha, \beta).
 \]</span></p>
+<p>This is the same as the primal problem, except that the order of the max and min are exchanged. We also define the optimal value of the dual problem’s objective to be <span class="math inline">\(d^* = \max_{\alpha, \beta: \alpha \geq 0} \theta_{\mathcal{D}}(w)\)</span>.</p>
+<p>The primal and dual problems are related in the following way:</p>
+<p><span class="math display">\[
+\begin{align}
+d^* &amp; \leq p^* \\
+\max_{\alpha, \beta: \alpha_i \geq 0} \min_w \mathcal{L}(w, \alpha, \beta) &amp; \leq \min_w \max_{\alpha, \beta: \alpha_i \geq 0} \mathcal{L}(w, \alpha, \beta) \hspace{3em} \text{because } \max \min f \leq \min \max f
+\end{align}
+\]</span> Under certain conditions, <span class="math inline">\(d^* = p^*\)</span>, so that the solution can be found by solving the dual problem instead of the primal problem. What are the conditions?</p>
+<p>Suppose <span class="math inline">\(f\)</span> and the <span class="math inline">\(g_i\)</span>’s are convex (for this purpose, this is when the Hessian is PSD), and the <span class="math inline">\(h_i\)</span>’s are affine (i.e. linear, with an intercept term). Suppose further that the constraints <span class="math inline">\(g_i\)</span> are (strictly) feasible, i.e. there exists some <span class="math inline">\(w\)</span> s.t. <span class="math inline">\(g_i(w) &lt; 0 \hspace{.3em}\forall \hspace{.3em} i\)</span>.</p>
+<p>Under these assumptions, there must exist <span class="math inline">\(w^*, \alpha^*, \beta^*\)</span> such that:</p>
+<ul>
+<li><span class="math inline">\(w^*\)</span> is the solution to the primal problem</li>
+<li><span class="math inline">\(\alpha^*, \beta^*\)</span> are the solution to the dual problem</li>
+<li><span class="math inline">\(p^* = d^* = \mathcal{L}(w^*, \alpha^*, \beta^*)\)</span></li>
+</ul>
 </div>
 </div>
 
