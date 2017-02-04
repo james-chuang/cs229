@@ -128,7 +128,7 @@ $(document).ready(function () {
 <li><a href="#the-optimal-margin-classifier"><strong>4. The optimal margin classifier</strong></a></li>
 <li><a href="#digression-lagrange-duality"><strong>5. Digression: Lagrange duality</strong></a></li>
 <li><a href="#optimal-margin-classifiers"><strong>6. Optimal margin classifiers</strong></a></li>
-<li><a href="#kernels"><strong>Kernels</strong></a></li>
+<li><a href="#kernels"><strong>7. Kernels</strong></a></li>
 </ul></li>
 </ul>
 </div>
@@ -329,7 +329,7 @@ d^* &amp; \leq p^* \\
 \frac{\partial}{\partial \beta_i} \mathcal{L}(w^*, \alpha^*, \beta^*) &amp; = 0, \quad i=1, \dots, l \\
 \alpha_i^* g_i (w^*)                                                  &amp; = 0, \quad i=1, \dots, k &amp; \text{the }\textbf{dual complementarity}\text{ condition}\\
 g_i (w^*)                                                             &amp; \leq 0, \quad i=1, \dots, k \\
-\alpha^*                                                              &amp; \geq 0, \quad i=1, \dots, k 
+\alpha_i^*                                                            &amp; \geq 0, \quad i=1, \dots, k 
 \end{align}
 \]</span> The <strong>dual complementarity</strong> condition above implies:</p>
 <ul>
@@ -397,7 +397,7 @@ w^Tx + b  &amp; = \left( \sum_{i=1}^m \alpha_i y^{(i)} x^{(i)} \right)^Tx + b \\
 <p>By using different kernels, the optimal margin classifier generalizes to the <strong><em>support vector machine</em></strong>, which can learn efficiently in very high dimensional spaces.</p>
 </div>
 <div id="kernels" class="section level2">
-<h2><strong>Kernels</strong></h2>
+<h2><strong>7. Kernels</strong></h2>
 <ul>
 <li>def: original input values of problem = <strong><em>attributes</em></strong> (e.g. <span class="math inline">\(x\)</span>, the living area of a house)</li>
 <li>def: the inputs values that are passed to the learning algorithm = <strong><em>features</em></strong> (e.g. <span class="math inline">\(\begin{bmatrix} x &amp; x^2 &amp; x^3\end{bmatrix}^T\)</span>)</li>
@@ -443,7 +443,51 @@ K(x,z)  &amp; = \left(x^Tz + c \right)^2 \\
 <p>A slightly different view of kernels. Like the dot product, the kernel <span class="math inline">\(K(x,z) = \phi(x)^T \phi(z)\)</span> can be thought of as a similarity measure, i.e. if <span class="math inline">\(\phi(x)\)</span> and <span class="math inline">\(\phi(z)\)</span> are close together, we expect <span class="math inline">\(K(x,z)\)</span> to be large, and if <span class="math inline">\(\phi(x)\)</span> and <span class="math inline">\(\phi(z)\)</span> are far apart, we expect <span class="math inline">\(K(x,z)\)</span> to be small. Therefore, given a learning problem a good kernel to use would be a function represents the similarity of examples. For example, the function <span class="math display">\[
 K(x,z) = \exp \left(- \frac{\lVert x-z \rVert^2}{2 \sigma^2} \right)
 \]</span></p>
-<p>might be a reasonable measure of the similarity of <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span>, as it is near <span class="math inline">\(1\)</span> when <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span> are close, and near <span class="math inline">\(0\)</span> when <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span> are far apart. However, is this a valid function to be used as a kernel? (In this case, yes, as this is the <strong><em>Gaussian kernel</em></strong> corresponding to an infinite-dimensional feature mapping <span class="math inline">\(\phi\)</span>). But more broadly, given a function <span class="math inline">\(K\)</span>, how can we tell if it’s a valid kernel; i.e. is there a feature mapping <span class="math inline">\(\phi\)</span> such that <span class="math inline">\(K(x,z) = \phi(x)^T \phi(z) \hspace{.2em} \forall x,z\)</span></p>
+<p>might be a reasonable measure of the similarity of <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span>, as it is near <span class="math inline">\(1\)</span> when <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span> are close, and near <span class="math inline">\(0\)</span> when <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span> are far apart. However, is this a valid function to be used as a kernel? (In this case, yes, as this is the <strong><em>Gaussian kernel</em></strong> corresponding to an infinite-dimensional feature mapping <span class="math inline">\(\phi\)</span>). But more broadly, given a function <span class="math inline">\(K\)</span>, how can we tell if it’s a valid kernel; i.e. is there a feature mapping <span class="math inline">\(\phi\)</span> such that <span class="math inline">\(K(x,z) = \phi(x)^T \phi(z) \hspace{.2em} \forall x,z\)</span>?</p>
+<ul>
+<li>Suppose that <span class="math inline">\(K\)</span> is a valid kernel corresponding to some feature mapping <span class="math inline">\(\phi\)</span>
+<ul>
+<li>consider some finite set of <span class="math inline">\(m\)</span> points (not necessarily the training set) <span class="math inline">\(\left\{x^{(1)}, \dots, x^{(m)} \right\}\)</span></li>
+<li>define the <strong><em>kernel matrix</em></strong>: a square, <span class="math inline">\(m\)</span>-by-<span class="math inline">\(m\)</span> matrix <span class="math inline">\(K\)</span> s.t. <span class="math display">\[
+  K_{ij} = K \left(x^{(i)}, x^{(j)} \right)
+  \]</span>
+<ul>
+<li>note that the notation <span class="math inline">\(K\)</span> is overloaded to denote both the kernel function <span class="math inline">\(K(x,z)\)</span> and the kernel matrix <span class="math inline">\(K\)</span></li>
+</ul></li>
+<li>if <span class="math inline">\(K\)</span> is a valid kernel, then</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  &amp; \hspace{1.3em} K_{ij} \\
+  &amp; = K \left(x^{(i)}, x^{(j)} \right) \\
+  &amp; = \phi \left(x^{(i)} \right)^T \phi \left(x^{(j)} \right) \\
+  &amp; = \phi \left(x^{(j)} \right)^T \phi \left(x^{(i)} \right) \\
+  &amp; = K \left(x^{(j)}, x^{(i)} \right) \\
+  &amp; = K_{ji}
+  \end{align}
+  \]</span></p>
+<ul>
+<li>therefore, <span class="math inline">\(K\)</span> for a valid kernel is symmetric</li>
+<li>in addition, let <span class="math inline">\(\phi_k(x)\)</span> denote the <span class="math inline">\(k\)</span>-th coordinate of the vector <span class="math inline">\(\phi(x)\)</span>. Then, for any vector <span class="math inline">\(z\)</span>:</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  z^TKz &amp; = \sum_i \sum_j z_i K_{ij} z_j \\
+        &amp; = \sum_i \sum_j z_i \phi \left(x^{(i)} \right)^T \phi \left(x^{(j)} \right) z_j \\
+        &amp; = \sum_i \sum_j z_i \sum_k \phi_k  \left(x^{(i)} \right) \phi_k \left(x^{(j)} \right) z_j \\
+        &amp; = \sum_k \sum_i \sum_j z_i \phi_k  \left(x^{(i)} \right) \phi_k \left(x^{(j)} \right) z_j \\
+        &amp; = \sum_k \left(\sum_i z_i \phi_k \left(x^{(i)} \right)\right)^2 \\
+        &amp; \geq 0
+  \end{align}
+  \]</span></p>
+<ul>
+<li>therefore, if <span class="math inline">\(K\)</span> is a valid kernel (i.e., it corresponds to some feature mapping <span class="math inline">\(\phi\)</span>), then the corresponding Kernel matrix <span class="math inline">\(K \in \mathbb{R}^{m \times m}\)</span> is symemtric positive semidefinite
+<ul>
+<li>this is a necessary and sufficient condition for <span class="math inline">\(K\)</span> to be a valid kernel (aka a Mercer kernel)</li>
+<li>Theorem (Mercer). Let <span class="math inline">\(K : \mathbb{R}^n \times \mathbb{R}^n \mapsto \mathbb{R}\)</span> be given. Then for <span class="math inline">\(K\)</span> to be a valid (Mercer) kernel, it is necessary and sufficient that for any <span class="math inline">\(\left\{x^{(1)}, \dots, x^{(m)} \right\}, (m &lt; \infty)\)</span>, the corresponding kernel matrix is symmetric and positive semi-definite</li>
+</ul></li>
+</ul></li>
+</ul>
 </div>
 </div>
 

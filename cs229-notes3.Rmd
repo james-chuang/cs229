@@ -251,7 +251,7 @@ $$
 \frac{\partial}{\partial \beta_i} \mathcal{L}(w^*, \alpha^*, \beta^*) & = 0, \quad i=1, \dots, l \\
 \alpha_i^* g_i (w^*)                                                  & = 0, \quad i=1, \dots, k & \text{the }\textbf{dual complementarity}\text{ condition}\\
 g_i (w^*)                                                             & \leq 0, \quad i=1, \dots, k \\
-\alpha^*                                                              & \geq 0, \quad i=1, \dots, k 
+\alpha_i^*                                                            & \geq 0, \quad i=1, \dots, k 
 \end{align}
 $$
 The **dual complementarity** condition above implies:
@@ -336,7 +336,7 @@ Hence, if we've found the $\alpha_i$'s, in order to make a prediction, we need t
 
 By using different kernels, the optimal margin classifier generalizes to the ***support vector machine***, which can learn efficiently in very high dimensional spaces.
 
-## **Kernels**
+## **7. Kernels**
 
   - def: original input values of problem = ***attributes*** (e.g. $x$, the living area of a house)
   - def: the inputs values that are passed to the learning algorithm = ***features*** (e.g. $\begin{bmatrix} x & x^2 & x^3\end{bmatrix}^T$)
@@ -399,3 +399,42 @@ K(x,z) = \exp \left(- \frac{\lVert x-z \rVert^2}{2 \sigma^2} \right)
 $$
 
 might be a reasonable measure of the similarity of $x$ and $z$, as it is near $1$ when $x$ and $z$ are close, and near $0$ when $x$ and $z$ are far apart. However, is this a valid function to be used as a kernel? (In this case, yes, as this is the ***Gaussian kernel*** corresponding to an infinite-dimensional feature mapping $\phi$). But more broadly, given a function $K$, how can we tell if it's a valid kernel; i.e. is there a feature mapping $\phi$ such that $K(x,z) = \phi(x)^T \phi(z) \hspace{.2em} \forall x,z$?
+
+  - Suppose that $K$ is a valid kernel corresponding to some feature mapping $\phi$
+      - consider some finite set of $m$ points (not necessarily the training set) $\left\{x^{(1)}, \dots, x^{(m)} \right\}$
+      - define the ***kernel matrix***: a square, $m$-by-$m$ matrix $K$ s.t.
+      $$
+      K_{ij} = K \left(x^{(i)}, x^{(j)} \right)
+      $$
+          - note that the notation $K$ is overloaded to denote both the kernel function $K(x,z)$ and the kernel matrix $K$
+      - if $K$ is a valid kernel, then
+      
+      $$
+      \begin{align}
+      & \hspace{1.3em} K_{ij} \\
+      & = K \left(x^{(i)}, x^{(j)} \right) \\
+      & = \phi \left(x^{(i)} \right)^T \phi \left(x^{(j)} \right) \\
+      & = \phi \left(x^{(j)} \right)^T \phi \left(x^{(i)} \right) \\
+      & = K \left(x^{(j)}, x^{(i)} \right) \\
+      & = K_{ji}
+      \end{align}
+      $$
+      
+      - therefore, $K$ for a valid kernel is symmetric
+      - in addition, let $\phi_k(x)$ denote the $k$-th coordinate of the vector $\phi(x)$. Then, for any vector $z$:
+      
+      $$
+      \begin{align}
+      z^TKz & = \sum_i \sum_j z_i K_{ij} z_j \\
+            & = \sum_i \sum_j z_i \phi \left(x^{(i)} \right)^T \phi \left(x^{(j)} \right) z_j \\
+            & = \sum_i \sum_j z_i \sum_k \phi_k  \left(x^{(i)} \right) \phi_k \left(x^{(j)} \right) z_j \\
+            & = \sum_k \sum_i \sum_j z_i \phi_k  \left(x^{(i)} \right) \phi_k \left(x^{(j)} \right) z_j \\
+            & = \sum_k \left(\sum_i z_i \phi_k \left(x^{(i)} \right)\right)^2 \\
+            & \geq 0
+      \end{align}
+      $$
+      
+      - therefore, if $K$ is a valid kernel (i.e., it corresponds to some feature mapping $\phi$), then the corresponding Kernel matrix $K \in \mathbb{R}^{m \times m}$ is symemtric positive semidefinite
+          - this is a necessary and sufficient condition for $K$ to be a valid kernel (aka a Mercer kernel)
+          - Theorem (Mercer). Let $K : \mathbb{R}^n \times \mathbb{R}^n \mapsto \mathbb{R}$ be given. Then for $K$ to be a valid (Mercer) kernel, it is necessary and sufficient that for any $\left\{x^{(1)}, \dots, x^{(m)} \right\}, (m < \infty)$, the corresponding kernel matrix is symmetric and positive semi-definite
+          
