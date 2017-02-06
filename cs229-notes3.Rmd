@@ -339,7 +339,7 @@ By using different kernels, the optimal margin classifier generalizes to the ***
 ## **7. Kernels**
 
   - def: original input values of problem = ***attributes*** (e.g. $x$, the living area of a house)
-  - def: the inputs values that are passed to the learning algorithm = ***features*** (e.g. $\begin{bmatrix} x & x^2 & x^3\end{bmatrix}^T$)
+  - def: the input values that are passed to the learning algorithm = ***features*** (e.g. $\begin{bmatrix} x & x^2 & x^3\end{bmatrix}^T$)
   - def: the ***feature mapping*** $\phi$, a map from the attributes to the features, e.g.:
   $$
   \phi(x) = \begin{bmatrix}
@@ -376,7 +376,7 @@ $$
 
 Calculating the high-dimensional $\phi(x)$ requires $O(n^2)$ time, while calculating $K(x,z)$ requires only $O(n)$ time -- linear in the dimension of the input attributes.
 
-Consider a related kernel, also consider
+Consider a related kernel,
 
 $$
 \begin{align}
@@ -384,14 +384,14 @@ K(x,z)  & = \left(x^Tz + c \right)^2 \\
         & = \left(x^Tz \right)^2 + 2c\left(x^Tz \right) + c^2 \\
         & = \sum_{i,j=1}^n \left(x_i x_j \right)\left(z_i z_j \right) + \sum_{i=1}^n \left(\sqrt{2c} x_i \right) \left(\sqrt{2c} z_i \right) + c^2 \\
         & \hspace{5em} \phi(x) =  \begin{bmatrix}
-                                  x_1x_1 \\ x_1x_2 \\ x_1x_2 \\ x_2x_1 \\ x_2x_2 \\ x_2x_3 \\ x_3x_3 \\ \sqrt{2c} x_1 \\ \sqrt{2c} x_2 \\ \sqrt{2c} x_3 \\ c
+                                  x_1x_1 \\ x_1x_2 \\ x_1x_3 \\ x_2x_1 \\ x_2x_2 \\ x_2x_3 \\ x_3x_1 \\ x_3x_2 \\ x_3x_3 \\\sqrt{2c} x_1 \\ \sqrt{2c} x_2 \\ \sqrt{2c} x_3 \\ c
                                   \end{bmatrix} \\
 \end{align}
 $$
 
 , where the parameter $c$ controls the relative weighting between the $x_i$ (first order) and the $x_i x_j$ (second order) terms.
 
-More broadly, the kernel $K(x,z) = \left(x^Tz + c \right)^d$ corresponds to a feature mapping to an $\begin{pmatrix} n+d \\ d\end{pmatrix}$ feature space, corresponding of all monomials of the form $x_{i_2}x_{i_2} \dots x_{i_k}$ that are up to order $d$. Despite working in $O(n^d)$-dimensional space, computing $K(x,z)$ still takes only $O(n)$ time, and we never need to explicitly represent feature vectors in the very high dimensional feature space.
+More broadly, the kernel $K(x,z) = \left(x^Tz + c \right)^d$ corresponds to a feature mapping to an $\begin{pmatrix} n+d \\ d\end{pmatrix}$ feature space, corresponding of all monomials of the form $x_{i_1}x_{i_2} \dots x_{i_k}$ that are up to order $d$. Despite working in $O(n^d)$-dimensional space, computing $K(x,z)$ still takes only $O(n)$ time, and we never need to explicitly represent feature vectors in the very high dimensional feature space.
 
 A slightly different view of kernels. Like the dot product, the kernel $K(x,z) = \phi(x)^T \phi(z)$ can be thought of as a similarity measure, i.e. if $\phi(x)$ and $\phi(z)$ are close together, we expect $K(x,z)$ to be large, and if $\phi(x)$ and $\phi(z)$ are far apart, we expect $K(x,z)$ to be small. Therefore, given a learning problem a good kernel to use would be a function represents the similarity of examples. For example, the function
 $$
@@ -426,7 +426,7 @@ might be a reasonable measure of the similarity of $x$ and $z$, as it is near $1
       $$
       \begin{align}
       z^TKz & = \sum_i \sum_j z_i K_{ij} z_j \\
-            & = \sum_i \sum_j z_i \phi \left(x^{(i)} \right)^T \phi \left(x^{(j)} \right) z_j \\
+            & = \sum_i \sum_j z_i \phi \left(x^{(i)} \right)^T \phi \left(x^{(j)} \right) z_j & \text{def. }K\\
             & = \sum_i \sum_j z_i \sum_k \phi_k  \left(x^{(i)} \right) \phi_k \left(x^{(j)} \right) z_j \\
             & = \sum_k \sum_i \sum_j z_i \phi_k  \left(x^{(i)} \right) \phi_k \left(x^{(j)} \right) z_j \\
             & = \sum_k \left(\sum_i z_i \phi_k \left(x^{(i)} \right)\right)^2 \\
@@ -437,4 +437,165 @@ might be a reasonable measure of the similarity of $x$ and $z$, as it is near $1
       - therefore, if $K$ is a valid kernel (i.e., it corresponds to some feature mapping $\phi$), then the corresponding Kernel matrix $K \in \mathbb{R}^{m \times m}$ is symemtric positive semidefinite
           - this is a necessary and sufficient condition for $K$ to be a valid kernel (aka a Mercer kernel)
           - Theorem (Mercer). Let $K : \mathbb{R}^n \times \mathbb{R}^n \mapsto \mathbb{R}$ be given. Then for $K$ to be a valid (Mercer) kernel, it is necessary and sufficient that for any $\left\{x^{(1)}, \dots, x^{(m)} \right\}, (m < \infty)$, the corresponding kernel matrix is symmetric and positive semi-definite
+  - examples of kernels
+      - on the MNIST digit recognition dataset, SVMs with a simple polynomial kernel or the Gaussian kernel performed extremely well
+          - this was surprising, since the input attributes were a 256-dimensional vector of pixel intensity without knowledge of which pixels are adjacent to which other ones
+      - if objects to be classified are strings (e.g. sequence of amino acids), it is hard to construct a reasonable, "small" set of features, especially if different strings have different lengths
+          - consider letting $\phi(x)$ be a feature vector that counts the number of occurrences of each length-$k$ substring in $x$
+              - if considering English letters, there are $26^k$ such strings $\rightarrow \phi(x)$ is $26^k$ dimensional vector (to big to work with efficiently)
+              - however, using (dynamic programming-ish) string matching algorithms, $K(x,z) = \phi(x)^T \phi(z)$ can be efficiently computed
+              - therefore, can implicitly work in $26^k$-dimensional feature space, without ever explicitly computing feature vectors in this space
+  - the kernel trick is applicable beyond SVMs
+      - can be applied to any learning algorithm that can be written in terms of only inner products $\langle x,z \rangle$ between input attribute vectors by replacing the inner product with a kernel $K(x,z)$
+      
+## **8. Regularization and the non-separable case**
+
+  - the derivation of the SVM so far assumes the data is linearly separable
+      - mapping data to a high dimensional feature space via $\phi$ increases the likelihood that the data is separable, but does not guarantee it
+      - also, in some cases, finding a separating hyperplane might not be ideal, since it might be susceptible to outliers
+          - therefore, reformulate the problem using $\ell_1$ (lasso) regularization:
           
+          $$
+          \begin{align}
+          \min_{\gamma, w, b} \quad & \frac{1}{2} \lVert w \rVert^2 + C \sum_{i=1}^m \xi_i \\
+          \text{s.t.}         \quad & y^{(i)} \left(w^T x^{(i)} + b \right) \geq 1- \xi_i, \quad i = 1, \dots, m \\
+                                    & \xi_i \geq 0, \quad i=1, \dots, m
+          \end{align}
+          $$
+          
+          - examples are now permitted to have (functional) margin less than 1:
+              - if an example has functional margin $1- \xi_i \quad (\xi > 0)$, we pay a cost of the objective function being increased by $C \xi_i$
+                  - $C$ controls the weighting between the goals of minimizing $\lVert w \rVert^2$ (which makes the margin large) and of ensuring that most examples have functional margin at least 1
+          - the Lagrangian:
+          
+          $$
+          \mathcal{L} \left(w, b, \xi, \alpha, r \right) = \frac{1}{2} w^T w + C \sum_{i=1}^m \xi_i - \sum_{i=1}^m \alpha_i \left[y^{(i)} \left(x^Tw+b \right) - 1 + \xi_i \right] - \sum_{i=1}^m r_i \xi_i
+          $$
+          
+          - to get the dual form:
+              - set derivatives w.r.t $w$ and $b$ to zero
+              - substitute back in and simplify
+              
+          $$
+          \begin{align}
+          \max_\alpha \quad & W(\alpha) = \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left\langle x^{(i)} x^{(j)}\right\rangle \\
+          \text{s.t.} \quad & 0 \leq \alpha_i \leq C, \quad i=1, \dots, m \\
+                            & \sum_{i=1}^m \alpha_i y^{(i)} = 0
+          \end{align}
+          $$
+          
+          - $w$ in terms of $\alpha_i$'s is the same as the non-regularized case:
+          
+          $$
+          w = \sum_{i=1}^m \alpha_i y^{(i)} x^{(i)},
+          $$
+          so
+          $$
+          w^Tx + b= \sum_{i=1}^m \alpha_i y^{(i)} \left\langle x^{(i)}, x\right\rangle + b
+          $$
+          can still be used to make predictions once the dual problem is solved.
+              - note that adding $\ell_1$ regularization only has the effect of changing $0 \leq \alpha_i$ to $0 \leq \alpha_i \leq C$
+              - the calculation for $b^*$ also has to be modified
+          - the KKT dual-complementarity conditions:
+          
+          $$
+          \begin{align}
+          \alpha_i = 0 & \Longrightarrow y^{(i)} \left(w^T x^{(i)} + b \right) \geq 1 \\
+          \alpha_i = C & \Longrightarrow y^{(i)} \left(w^T x^{(i)} + b \right) \leq 1 \\
+          0 < \alpha_i < C & \Longrightarrow y^{(i)} \left(w^T x^{(i)} + b \right) = 1 \\
+          \end{align}
+          $$
+          
+          To solve the dual problem, we use the ***sequential minimal optimization (SMO) algorithm***.
+          
+## **9. The SMO algorithm**
+
+  - SMO, by John Platt, is an efficient way of solving the dual problem in the derivation of the SVM
+  - first, a digression about coordinate ascent:
+  
+### **9.1 Coordinate ascent**
+
+  - consider the unconstrained optimization problem
+  
+  $$
+  \max_\alpha W(\alpha_1, \alpha_2, \dots, \alpha_m)
+  $$
+  
+  - gradient ascent and Newton's method could both solve this
+  - now we consider ***coordinate ascent***:
+      - Loop until convergence:
+          - For $i = 1, \dots, m$,
+              - $\alpha_i \gets \arg \max_{\hat{\alpha}_i} W \left(\alpha_1, \dots, \alpha_{i=1}, \hat{\alpha}_i, \alpha_{i+1}, \dots, \alpha_m \right)$
+      - in the innermost loop, $W$ is reoptimized w.r.t *just* the parameter $\alpha_i$, holding all other variables fixed
+      - when $W$ is of a form s.t. the $\arg \max$ can be found efficiently, coordinate ascent can be fairly efficient
+      
+### **9.2 SMO**
+
+  - the dual optimization problem for SVM with $\ell_1$ regularization:
+  
+  $$
+  \begin{align}
+  \max_\alpha \quad & W(\alpha) = \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left\langle x^{(i)} x^{(j)}\right\rangle \\
+  \text{s.t.} \quad & 0 \leq \alpha_i \leq C, \quad i=1, \dots, m \\
+                    & \sum_{i=1}^m \alpha_i y^{(i)} = 0
+  \end{align}
+  $$
+  
+  - suppose we have a set of $\alpha_i$'s that satisfy the above constraints
+      - then suppose we want to take a coordinate ascent step optimizing w.r.t $\alpha_1$ holding $\alpha_2, \dots, \alpha_m$ fixed. Progress is not possible, because:
+      
+      $$
+      \begin{align}
+      \alpha_1 y^{(1)}  & = - \sum_{i=2}^m \alpha_i y^{(i)} \\
+      \alpha_1          & = -y^{(1)} \sum_{i=2}^m \alpha_i y^{(i)} & \text{remember } y^{(1)} \in \{-1,1\}
+      \end{align}
+      $$
+      
+      - $\alpha_1$ is uniquely determined by the other $\alpha_i$'s- thus, to update the $\alpha_i$'s, we must update at least two of them simultaneously to keep satisfying the constraints, motivating the SMO algorithm:
+          - repeat until convergence:
+              1. Select some pair $\alpha_i$ and $\alpha_j$ to update next (using some heuristic that tries to pick the two that will allow the biggest progress towards the global max)
+              2. Reoptimize $W(\alpha)$ w.r.t. $\alpha_i$ and $\alpha_j$, holding the other $\alpha_k$'s $(k \neq i,j)$ fixed
+      - suppose we currently have $\alpha_i$'s that satisfy the constraints
+          - suppose we decide to hold $\alpha_3, \dots, \alpha_m$ fixed, and reoptimize $W(\alpha_1, \alpha_2, \dots, \alpha_m)$ w.r.t. $\alpha_1$ and $\alpha_2$
+          
+          $$
+          \begin{align}
+          \alpha_1y^{(1)} + \alpha_2 y^{(2)} & = - \sum_{i=3}^m \alpha_i y^{(i)} & \text{RHS is constant, set to }\zeta \\
+          \alpha_1y^{(1)} + \alpha_2 y^{(2)} & = \zeta
+          \end{align}
+          $$
+          - See the figure in the notes:
+              - $\alpha_1$ and $\alpha_2$ must lie within the box $[0,C] \times [0,C]$
+                  - in order to lie within the box and satisfy $\alpha_1y^{(1)} + \alpha_2 y^{(2)} = \zeta$, $\quad L \leq \alpha_2 \leq H$, where $L$ is a lower bound
+          - get $\alpha_1$ as a function of $\alpha_2$:
+          
+          $$
+          \begin{align}
+          \alpha_1y^{(1)} + \alpha_2 y^{(2)}  & = \zeta  \\
+          \alpha_1y^{(1)}                     & = \zeta - \alpha_2 y^{(2)}  & y^{(1)} \in \{-1,1 \} \\
+          \alpha_1                            & = \left(\zeta - \alpha_2 y^{(2)} \right)y^{(1)}
+          \end{align}
+          $$
+          - substitute back into $W(\alpha)$:
+          
+          $$
+          W(\alpha_1, \alpha_2, \dots, \alpha_m) = W \left(\left(\zeta - \alpha_2 y^{(2)} \right)y^{(1)}, \alpha_2, \dots, \alpha_m \right)
+          $$
+          - this is a quadratic function in $\alpha_2$, i.e. it can be expressed $a\alpha_2^2 + b \alpha_2 + c$
+              - ignoring the "box" constraints, this function can easily be solving by setting the derivative to zero and solving
+              - let $\alpha_2^{\text{new, unclipped}}$ denote the resulting value of $\alpha_2$
+                  - we can find the optimal $\alpha_2$ by "clipping" it to the $[L, H]$ interval specified by the box constraint:
+                  
+                  $$
+                  \alpha_2^{\text{new}} = \begin{cases}
+                                          H                                 & \text{if } \alpha_2^{\text{new, unclipped}} > H \\
+                                          \alpha_2^{\text{new, unclipped}}  & \text{if } L \leq \alpha_2^{\text{new, unclipped}} \leq H \\
+                                          L                                 & \text{if } \alpha_2^{\text{new, unclipped}} < L
+                                          \end{cases}
+                  $$
+                  - having solved for $\alpha_2^{\text{new}}$, solve for $\alpha_1^{\text{new}}$
+                      - $\alpha_1  = \left(\zeta - \alpha_2 y^{(2)} \right)y^{(1)}$
+          - details left unresolved here:
+              - heuristic for choosing next $\alpha_i, \alpha_j$ to update
+              - how to update $b$
+  

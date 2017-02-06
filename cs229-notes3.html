@@ -129,6 +129,11 @@ $(document).ready(function () {
 <li><a href="#digression-lagrange-duality"><strong>5. Digression: Lagrange duality</strong></a></li>
 <li><a href="#optimal-margin-classifiers"><strong>6. Optimal margin classifiers</strong></a></li>
 <li><a href="#kernels"><strong>7. Kernels</strong></a></li>
+<li><a href="#regularization-and-the-non-separable-case"><strong>8. Regularization and the non-separable case</strong></a></li>
+<li><a href="#the-smo-algorithm"><strong>9. The SMO algorithm</strong></a><ul>
+<li><a href="#coordinate-ascent"><strong>9.1 Coordinate ascent</strong></a></li>
+<li><a href="#smo"><strong>9.2 SMO</strong></a></li>
+</ul></li>
 </ul></li>
 </ul>
 </div>
@@ -400,7 +405,7 @@ w^Tx + b  &amp; = \left( \sum_{i=1}^m \alpha_i y^{(i)} x^{(i)} \right)^Tx + b \\
 <h2><strong>7. Kernels</strong></h2>
 <ul>
 <li>def: original input values of problem = <strong><em>attributes</em></strong> (e.g. <span class="math inline">\(x\)</span>, the living area of a house)</li>
-<li>def: the inputs values that are passed to the learning algorithm = <strong><em>features</em></strong> (e.g. <span class="math inline">\(\begin{bmatrix} x &amp; x^2 &amp; x^3\end{bmatrix}^T\)</span>)</li>
+<li>def: the input values that are passed to the learning algorithm = <strong><em>features</em></strong> (e.g. <span class="math inline">\(\begin{bmatrix} x &amp; x^2 &amp; x^3\end{bmatrix}^T\)</span>)</li>
 <li>def: the <strong><em>feature mapping</em></strong> <span class="math inline">\(\phi\)</span>, a map from the attributes to the features, e.g.: <span class="math display">\[
   \phi(x) = \begin{bmatrix}
         x   \\
@@ -427,19 +432,19 @@ K(x,z)  &amp; = \left(\sum_{i=1}^n x_i z_i \right) \left(\sum_{i=1}^n x_i z_i \r
 \end{align}
 \]</span></p>
 <p>Calculating the high-dimensional <span class="math inline">\(\phi(x)\)</span> requires <span class="math inline">\(O(n^2)\)</span> time, while calculating <span class="math inline">\(K(x,z)\)</span> requires only <span class="math inline">\(O(n)\)</span> time – linear in the dimension of the input attributes.</p>
-<p>Consider a related kernel, also consider</p>
+<p>Consider a related kernel,</p>
 <p><span class="math display">\[
 \begin{align}
 K(x,z)  &amp; = \left(x^Tz + c \right)^2 \\
         &amp; = \left(x^Tz \right)^2 + 2c\left(x^Tz \right) + c^2 \\
         &amp; = \sum_{i,j=1}^n \left(x_i x_j \right)\left(z_i z_j \right) + \sum_{i=1}^n \left(\sqrt{2c} x_i \right) \left(\sqrt{2c} z_i \right) + c^2 \\
         &amp; \hspace{5em} \phi(x) =  \begin{bmatrix}
-                                  x_1x_1 \\ x_1x_2 \\ x_1x_2 \\ x_2x_1 \\ x_2x_2 \\ x_2x_3 \\ x_3x_3 \\ \sqrt{2c} x_1 \\ \sqrt{2c} x_2 \\ \sqrt{2c} x_3 \\ c
+                                  x_1x_1 \\ x_1x_2 \\ x_1x_3 \\ x_2x_1 \\ x_2x_2 \\ x_2x_3 \\ x_3x_1 \\ x_3x_2 \\ x_3x_3 \\\sqrt{2c} x_1 \\ \sqrt{2c} x_2 \\ \sqrt{2c} x_3 \\ c
                                   \end{bmatrix} \\
 \end{align}
 \]</span></p>
 <p>, where the parameter <span class="math inline">\(c\)</span> controls the relative weighting between the <span class="math inline">\(x_i\)</span> (first order) and the <span class="math inline">\(x_i x_j\)</span> (second order) terms.</p>
-<p>More broadly, the kernel <span class="math inline">\(K(x,z) = \left(x^Tz + c \right)^d\)</span> corresponds to a feature mapping to an <span class="math inline">\(\begin{pmatrix} n+d \\ d\end{pmatrix}\)</span> feature space, corresponding of all monomials of the form <span class="math inline">\(x_{i_2}x_{i_2} \dots x_{i_k}\)</span> that are up to order <span class="math inline">\(d\)</span>. Despite working in <span class="math inline">\(O(n^d)\)</span>-dimensional space, computing <span class="math inline">\(K(x,z)\)</span> still takes only <span class="math inline">\(O(n)\)</span> time, and we never need to explicitly represent feature vectors in the very high dimensional feature space.</p>
+<p>More broadly, the kernel <span class="math inline">\(K(x,z) = \left(x^Tz + c \right)^d\)</span> corresponds to a feature mapping to an <span class="math inline">\(\begin{pmatrix} n+d \\ d\end{pmatrix}\)</span> feature space, corresponding of all monomials of the form <span class="math inline">\(x_{i_1}x_{i_2} \dots x_{i_k}\)</span> that are up to order <span class="math inline">\(d\)</span>. Despite working in <span class="math inline">\(O(n^d)\)</span>-dimensional space, computing <span class="math inline">\(K(x,z)\)</span> still takes only <span class="math inline">\(O(n)\)</span> time, and we never need to explicitly represent feature vectors in the very high dimensional feature space.</p>
 <p>A slightly different view of kernels. Like the dot product, the kernel <span class="math inline">\(K(x,z) = \phi(x)^T \phi(z)\)</span> can be thought of as a similarity measure, i.e. if <span class="math inline">\(\phi(x)\)</span> and <span class="math inline">\(\phi(z)\)</span> are close together, we expect <span class="math inline">\(K(x,z)\)</span> to be large, and if <span class="math inline">\(\phi(x)\)</span> and <span class="math inline">\(\phi(z)\)</span> are far apart, we expect <span class="math inline">\(K(x,z)\)</span> to be small. Therefore, given a learning problem a good kernel to use would be a function represents the similarity of examples. For example, the function <span class="math display">\[
 K(x,z) = \exp \left(- \frac{\lVert x-z \rVert^2}{2 \sigma^2} \right)
 \]</span></p>
@@ -473,7 +478,7 @@ K(x,z) = \exp \left(- \frac{\lVert x-z \rVert^2}{2 \sigma^2} \right)
 <p><span class="math display">\[
   \begin{align}
   z^TKz &amp; = \sum_i \sum_j z_i K_{ij} z_j \\
-        &amp; = \sum_i \sum_j z_i \phi \left(x^{(i)} \right)^T \phi \left(x^{(j)} \right) z_j \\
+        &amp; = \sum_i \sum_j z_i \phi \left(x^{(i)} \right)^T \phi \left(x^{(j)} \right) z_j &amp; \text{def. }K\\
         &amp; = \sum_i \sum_j z_i \sum_k \phi_k  \left(x^{(i)} \right) \phi_k \left(x^{(j)} \right) z_j \\
         &amp; = \sum_k \sum_i \sum_j z_i \phi_k  \left(x^{(i)} \right) \phi_k \left(x^{(j)} \right) z_j \\
         &amp; = \sum_k \left(\sum_i z_i \phi_k \left(x^{(i)} \right)\right)^2 \\
@@ -487,7 +492,215 @@ K(x,z) = \exp \left(- \frac{\lVert x-z \rVert^2}{2 \sigma^2} \right)
 <li>Theorem (Mercer). Let <span class="math inline">\(K : \mathbb{R}^n \times \mathbb{R}^n \mapsto \mathbb{R}\)</span> be given. Then for <span class="math inline">\(K\)</span> to be a valid (Mercer) kernel, it is necessary and sufficient that for any <span class="math inline">\(\left\{x^{(1)}, \dots, x^{(m)} \right\}, (m &lt; \infty)\)</span>, the corresponding kernel matrix is symmetric and positive semi-definite</li>
 </ul></li>
 </ul></li>
+<li>examples of kernels
+<ul>
+<li>on the MNIST digit recognition dataset, SVMs with a simple polynomial kernel or the Gaussian kernel performed extremely well
+<ul>
+<li>this was surprising, since the input attributes were a 256-dimensional vector of pixel intensity without knowledge of which pixels are adjacent to which other ones</li>
+</ul></li>
+<li>if objects to be classified are strings (e.g. sequence of amino acids), it is hard to construct a reasonable, “small” set of features, especially if different strings have different lengths
+<ul>
+<li>consider letting <span class="math inline">\(\phi(x)\)</span> be a feature vector that counts the number of occurrences of each length-<span class="math inline">\(k\)</span> substring in <span class="math inline">\(x\)</span>
+<ul>
+<li>if considering English letters, there are <span class="math inline">\(26^k\)</span> such strings <span class="math inline">\(\rightarrow \phi(x)\)</span> is <span class="math inline">\(26^k\)</span> dimensional vector (to big to work with efficiently)</li>
+<li>however, using (dynamic programming-ish) string matching algorithms, <span class="math inline">\(K(x,z) = \phi(x)^T \phi(z)\)</span> can be efficiently computed</li>
+<li>therefore, can implicitly work in <span class="math inline">\(26^k\)</span>-dimensional feature space, without ever explicitly computing feature vectors in this space</li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li>the kernel trick is applicable beyond SVMs
+<ul>
+<li>can be applied to any learning algorithm that can be written in terms of only inner products <span class="math inline">\(\langle x,z \rangle\)</span> between input attribute vectors by replacing the inner product with a kernel <span class="math inline">\(K(x,z)\)</span></li>
+</ul></li>
 </ul>
+</div>
+<div id="regularization-and-the-non-separable-case" class="section level2">
+<h2><strong>8. Regularization and the non-separable case</strong></h2>
+<ul>
+<li>the derivation of the SVM so far assumes the data is linearly separable
+<ul>
+<li>mapping data to a high dimensional feature space via <span class="math inline">\(\phi\)</span> increases the likelihood that the data is separable, but does not guarantee it</li>
+<li>also, in some cases, finding a separating hyperplane might not be ideal, since it might be susceptible to outliers
+<ul>
+<li>therefore, reformulate the problem using <span class="math inline">\(\ell_1\)</span> (lasso) regularization:</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  \min_{\gamma, w, b} \quad &amp; \frac{1}{2} \lVert w \rVert^2 + C \sum_{i=1}^m \xi_i \\
+  \text{s.t.}         \quad &amp; y^{(i)} \left(w^T x^{(i)} + b \right) \geq 1- \xi_i, \quad i = 1, \dots, m \\
+                            &amp; \xi_i \geq 0, \quad i=1, \dots, m
+  \end{align}
+  \]</span></p>
+<ul>
+<li>examples are now permitted to have (functional) margin less than 1:
+<ul>
+<li>if an example has functional margin <span class="math inline">\(1- \xi_i \quad (\xi &gt; 0)\)</span>, we pay a cost of the objective function being increased by <span class="math inline">\(C \xi_i\)</span>
+<ul>
+<li><span class="math inline">\(C\)</span> controls the weighting between the goals of minimizing <span class="math inline">\(\lVert w \rVert^2\)</span> (which makes the margin large) and of ensuring that most examples have functional margin at least 1</li>
+</ul></li>
+</ul></li>
+<li>the Lagrangian:</li>
+</ul>
+<p><span class="math display">\[
+  \mathcal{L} \left(w, b, \xi, \alpha, r \right) = \frac{1}{2} w^T w + C \sum_{i=1}^m \xi_i - \sum_{i=1}^m \alpha_i \left[y^{(i)} \left(x^Tw+b \right) - 1 + \xi_i \right] - \sum_{i=1}^m r_i \xi_i
+  \]</span></p>
+<ul>
+<li>to get the dual form:
+<ul>
+<li>set derivatives w.r.t <span class="math inline">\(w\)</span> and <span class="math inline">\(b\)</span> to zero</li>
+<li>substitute back in and simplify</li>
+</ul></li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  \max_\alpha \quad &amp; W(\alpha) = \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left\langle x^{(i)} x^{(j)}\right\rangle \\
+  \text{s.t.} \quad &amp; 0 \leq \alpha_i \leq C, \quad i=1, \dots, m \\
+                    &amp; \sum_{i=1}^m \alpha_i y^{(i)} = 0
+  \end{align}
+  \]</span></p>
+<ul>
+<li><span class="math inline">\(w\)</span> in terms of <span class="math inline">\(\alpha_i\)</span>’s is the same as the non-regularized case:</li>
+</ul>
+<span class="math display">\[
+  w = \sum_{i=1}^m \alpha_i y^{(i)} x^{(i)},
+  \]</span> so <span class="math display">\[
+  w^Tx + b= \sum_{i=1}^m \alpha_i y^{(i)} \left\langle x^{(i)}, x\right\rangle + b
+  \]</span> can still be used to make predictions once the dual problem is solved. - note that adding <span class="math inline">\(\ell_1\)</span> regularization only has the effect of changing <span class="math inline">\(0 \leq \alpha_i\)</span> to <span class="math inline">\(0 \leq \alpha_i \leq C\)</span> - the calculation for <span class="math inline">\(b^*\)</span> also has to be modified
+<ul>
+<li>the KKT dual-complementarity conditions:</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  \alpha_i = 0 &amp; \Longrightarrow y^{(i)} \left(w^T x^{(i)} + b \right) \geq 1 \\
+  \alpha_i = C &amp; \Longrightarrow y^{(i)} \left(w^T x^{(i)} + b \right) \leq 1 \\
+  0 &lt; \alpha_i &lt; C &amp; \Longrightarrow y^{(i)} \left(w^T x^{(i)} + b \right) = 1 \\
+  \end{align}
+  \]</span></p>
+<p>To solve the dual problem, we use the <strong><em>sequential minimal optimization (SMO) algorithm</em></strong>.</p></li>
+</ul></li>
+</ul>
+</div>
+<div id="the-smo-algorithm" class="section level2">
+<h2><strong>9. The SMO algorithm</strong></h2>
+<ul>
+<li>SMO, by John Platt, is an efficient way of solving the dual problem in the derivation of the SVM</li>
+<li>first, a digression about coordinate ascent:</li>
+</ul>
+<div id="coordinate-ascent" class="section level3">
+<h3><strong>9.1 Coordinate ascent</strong></h3>
+<ul>
+<li>consider the unconstrained optimization problem</li>
+</ul>
+<p><span class="math display">\[
+  \max_\alpha W(\alpha_1, \alpha_2, \dots, \alpha_m)
+  \]</span></p>
+<ul>
+<li>gradient ascent and Newton’s method could both solve this</li>
+<li>now we consider <strong><em>coordinate ascent</em></strong>:
+<ul>
+<li>Loop until convergence:
+<ul>
+<li>For <span class="math inline">\(i = 1, \dots, m\)</span>,
+<ul>
+<li><span class="math inline">\(\alpha_i \gets \arg \max_{\hat{\alpha}_i} W \left(\alpha_1, \dots, \alpha_{i=1}, \hat{\alpha}_i, \alpha_{i+1}, \dots, \alpha_m \right)\)</span></li>
+</ul></li>
+</ul></li>
+<li>in the innermost loop, <span class="math inline">\(W\)</span> is reoptimized w.r.t <em>just</em> the parameter <span class="math inline">\(\alpha_i\)</span>, holding all other variables fixed</li>
+<li>when <span class="math inline">\(W\)</span> is of a form s.t. the <span class="math inline">\(\arg \max\)</span> can be found efficiently, coordinate ascent can be fairly efficient</li>
+</ul></li>
+</ul>
+</div>
+<div id="smo" class="section level3">
+<h3><strong>9.2 SMO</strong></h3>
+<ul>
+<li>the dual optimization problem for SVM with <span class="math inline">\(\ell_1\)</span> regularization:</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  \max_\alpha \quad &amp; W(\alpha) = \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left\langle x^{(i)} x^{(j)}\right\rangle \\
+  \text{s.t.} \quad &amp; 0 \leq \alpha_i \leq C, \quad i=1, \dots, m \\
+                    &amp; \sum_{i=1}^m \alpha_i y^{(i)} = 0
+  \end{align}
+  \]</span></p>
+<ul>
+<li>suppose we have a set of <span class="math inline">\(\alpha_i\)</span>’s that satisfy the above constraints
+<ul>
+<li>then suppose we want to take a coordinate ascent step optimizing w.r.t <span class="math inline">\(\alpha_1\)</span> holding <span class="math inline">\(\alpha_2, \dots, \alpha_m\)</span> fixed. Progress is not possible, because:</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  \alpha_1 y^{(1)}  &amp; = - \sum_{i=2}^m \alpha_i y^{(i)} \\
+  \alpha_1          &amp; = -y^{(1)} \sum_{i=2}^m \alpha_i y^{(i)} &amp; \text{remember } y^{(1)} \in \{-1,1\}
+  \end{align}
+  \]</span></p>
+<ul>
+<li><span class="math inline">\(\alpha_1\)</span> is uniquely determined by the other <span class="math inline">\(\alpha_i\)</span>’s- thus, to update the <span class="math inline">\(\alpha_i\)</span>’s, we must update at least two of them simultaneously to keep satisfying the constraints, motivating the SMO algorithm:
+<ul>
+<li>repeat until convergence:
+<ol style="list-style-type: decimal">
+<li>Select some pair <span class="math inline">\(\alpha_i\)</span> and <span class="math inline">\(\alpha_j\)</span> to update next (using some heuristic that tries to pick the two that will allow the biggest progress towards the global max)</li>
+<li>Reoptimize <span class="math inline">\(W(\alpha)\)</span> w.r.t. <span class="math inline">\(\alpha_i\)</span> and <span class="math inline">\(\alpha_j\)</span>, holding the other <span class="math inline">\(\alpha_k\)</span>’s <span class="math inline">\((k \neq i,j)\)</span> fixed</li>
+</ol></li>
+</ul></li>
+<li>suppose we currently have <span class="math inline">\(\alpha_i\)</span>’s that satisfy the constraints
+<ul>
+<li>suppose we decide to hold <span class="math inline">\(\alpha_3, \dots, \alpha_m\)</span> fixed, and reoptimize <span class="math inline">\(W(\alpha_1, \alpha_2, \dots, \alpha_m)\)</span> w.r.t. <span class="math inline">\(\alpha_1\)</span> and <span class="math inline">\(\alpha_2\)</span></li>
+</ul>
+<span class="math display">\[
+  \begin{align}
+  \alpha_1y^{(1)} + \alpha_2 y^{(2)} &amp; = - \sum_{i=3}^m \alpha_i y^{(i)} &amp; \text{RHS is constant, set to }\zeta \\
+  \alpha_1y^{(1)} + \alpha_2 y^{(2)} &amp; = \zeta
+  \end{align}
+  \]</span>
+<ul>
+<li>See the figure in the notes:
+<ul>
+<li><span class="math inline">\(\alpha_1\)</span> and <span class="math inline">\(\alpha_2\)</span> must lie within the box <span class="math inline">\([0,C] \times [0,C]\)</span>
+<ul>
+<li>in order to lie within the box and satisfy <span class="math inline">\(\alpha_1y^{(1)} + \alpha_2 y^{(2)} = \zeta\)</span>, <span class="math inline">\(\quad L \leq \alpha_2 \leq H\)</span>, where <span class="math inline">\(L\)</span> is a lower bound</li>
+</ul></li>
+</ul></li>
+<li>get <span class="math inline">\(\alpha_1\)</span> as a function of <span class="math inline">\(\alpha_2\)</span>:</li>
+</ul>
+<span class="math display">\[
+  \begin{align}
+  \alpha_1y^{(1)} + \alpha_2 y^{(2)}  &amp; = \zeta  \\
+  \alpha_1y^{(1)}                     &amp; = \zeta - \alpha_2 y^{(2)}  &amp; y^{(1)} \in \{-1,1 \} \\
+  \alpha_1                            &amp; = \left(\zeta - \alpha_2 y^{(2)} \right)y^{(1)}
+  \end{align}
+  \]</span>
+<ul>
+<li>substitute back into <span class="math inline">\(W(\alpha)\)</span>:</li>
+</ul>
+<span class="math display">\[
+  W(\alpha_1, \alpha_2, \dots, \alpha_m) = W \left(\left(\zeta - \alpha_2 y^{(2)} \right)y^{(1)}, \alpha_2, \dots, \alpha_m \right)
+  \]</span>
+<ul>
+<li>this is a quadratic function in <span class="math inline">\(\alpha_2\)</span>, i.e. it can be expressed <span class="math inline">\(a\alpha_2^2 + b \alpha_2 + c\)</span>
+<ul>
+<li>ignoring the “box” constraints, this function can easily be solving by setting the derivative to zero and solving</li>
+<li>let <span class="math inline">\(\alpha_2^{\text{new, unclipped}}\)</span> denote the resulting value of <span class="math inline">\(\alpha_2\)</span>
+<ul>
+<li>we can find the optimal <span class="math inline">\(\alpha_2\)</span> by “clipping” it to the <span class="math inline">\([L, H]\)</span> interval specified by the box constraint:</li>
+</ul>
+<span class="math display">\[
+  \alpha_2^{\text{new}} = \begin{cases}
+                          H                                 &amp; \text{if } \alpha_2^{\text{new, unclipped}} &gt; H \\
+                          \alpha_2^{\text{new, unclipped}}  &amp; \text{if } L \leq \alpha_2^{\text{new, unclipped}} \leq H \\
+                          L                                 &amp; \text{if } \alpha_2^{\text{new, unclipped}} &lt; L
+                          \end{cases}
+  \]</span>
+<ul>
+<li>having solved for <span class="math inline">\(\alpha_2^{\text{new}}\)</span>, solve for <span class="math inline">\(\alpha_1^{\text{new}}\)</span>
+<ul>
+<li><span class="math inline">\(\alpha_1 = \left(\zeta - \alpha_2 y^{(2)} \right)y^{(1)}\)</span></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
 </div>
 </div>
 
