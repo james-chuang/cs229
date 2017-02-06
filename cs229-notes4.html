@@ -121,591 +121,149 @@ $(document).ready(function () {
 
 <div id="TOC">
 <ul>
-<li><a href="#support-vector-machines"><strong>Support Vector Machines</strong></a><ul>
-<li><a href="#margins-intuition"><strong>1. Margins: Intuition</strong></a></li>
-<li><a href="#notation"><strong>2. Notation</strong></a></li>
-<li><a href="#functional-and-geometric-margins"><strong>3. Functional and geometric margins</strong></a></li>
-<li><a href="#the-optimal-margin-classifier"><strong>4. The optimal margin classifier</strong></a></li>
-<li><a href="#digression-lagrange-duality"><strong>5. Digression: Lagrange duality</strong></a></li>
-<li><a href="#optimal-margin-classifiers"><strong>6. Optimal margin classifiers</strong></a></li>
-<li><a href="#kernels"><strong>7. Kernels</strong></a></li>
-<li><a href="#regularization-and-the-non-separable-case"><strong>8. Regularization and the non-separable case</strong></a></li>
-<li><a href="#the-smo-algorithm"><strong>9. The SMO algorithm</strong></a><ul>
-<li><a href="#coordinate-ascent"><strong>9.1 Coordinate ascent</strong></a></li>
-<li><a href="#smo"><strong>9.2 SMO</strong></a></li>
-</ul></li>
+<li><a href="#learning-theory"><strong>Learning Theory</strong></a><ul>
+<li><a href="#biasvariance-tradeoff"><strong>1. Bias/variance tradeoff</strong></a></li>
+<li><a href="#preliminaries"><strong>2. Preliminaries</strong></a></li>
+<li><a href="#the-case-of-finite-mathcalh"><strong>3. The case of finite <span class="math inline">\(\mathcal{H}\)</span></strong></a></li>
 </ul></li>
 </ul>
 </div>
 
-<p>My notes on Andrew Ng’s <a href="http://cs229.stanford.edu/materials.html">CS229 lecture 3 notes</a>.</p>
-<div id="support-vector-machines" class="section level1">
-<h1><strong>Support Vector Machines</strong></h1>
-<div id="margins-intuition" class="section level2">
-<h2><strong>1. Margins: Intuition</strong></h2>
-<p>Consider logistic regression:</p>
+<p>My notes on Andrew Ng’s <a href="http://cs229.stanford.edu/materials.html">CS229 lecture 4 notes</a>.</p>
+<div id="learning-theory" class="section level1">
+<h1><strong>Learning Theory</strong></h1>
+<div id="biasvariance-tradeoff" class="section level2">
+<h2><strong>1. Bias/variance tradeoff</strong></h2>
 <ul>
-<li><span class="math inline">\(p(y = 1 \mid x ; \theta)\)</span> is modeled by <span class="math inline">\(h_\theta(x) = g \left(\theta^Tx \right)\)</span>
+<li>also see ESL Ch 2.9 and Ch 7</li>
+<li>is a more complex/flexible/high-capacity model better than a simple/inflexible/low-capacity model?</li>
+<li>some informal definitions:
 <ul>
-<li><span class="math inline">\(h_\theta(x) \geq 0.5\)</span>, i.e. <span class="math inline">\(\theta^Tx \geq 0 \rightarrow\)</span> predict “1”</li>
-<li>larger <span class="math inline">\(\theta^Tx\)</span>, larger <span class="math inline">\(h_\theta(x) = p(y=1 \mid x; w,b)\)</span>, higher “confidence” in prediction of label 1
+<li><strong><em>generalization error</em></strong>: the expected error on samples not necessarily in the training set</li>
+<li><strong><em>bias</em></strong>: the expected generalization error even if a mode were fit to a very (infinitely) large training set
 <ul>
-<li>informally, a prediction <span class="math inline">\(y=1\)</span> is a very confident one if <span class="math inline">\(\theta^Tx \gg 0\)</span></li>
-<li>similarly, a prediction <span class="math inline">\(y=0\)</span> is a very confident one if <span class="math inline">\(\theta^Tx \ll 0\)</span>
-<ul>
-<li>therefore, a good fit to the data would be to find <span class="math inline">\(\theta\)</span> such that <span class="math inline">\(\theta^Tx^{(i)} \gg 0\)</span> whenever <span class="math inline">\(y^{(i)}=1\)</span>, and <span class="math inline">\(\theta^Tx^{(i)} \ll 0\)</span> whenever <span class="math inline">\(y^{(i)}= 0\)</span>.</li>
+<li>large bias corresponds with <strong><em>underfitting</em></strong>: i.e. failing to capture structure exhibited by the data</li>
 </ul></li>
+<li><strong><em>variance</em></strong>: how much the generalization error is expected to change if the training set changes</li>
+<li>there is a <strong><em>bias-variance tradeoff</em></strong>:
+<ul>
+<li>a simple/inflexible/low-capacity model with few parameters may have large bias (but smaller variance)</li>
+<li>a complex/flexible/high-capacity model with many parameters may have large variance (but smaller bias)</li>
 </ul></li>
-<li>geometrically, points far away from the <strong><em>separating hyperplane</em></strong> can be predicted with higher confidence than points close to the separating hyperplane</li>
 </ul></li>
 </ul>
 </div>
-<div id="notation" class="section level2">
-<h2><strong>2. Notation</strong></h2>
-<p>Consider a linear classifier for a binary classification problem with labels <span class="math inline">\(y\)</span> and features <span class="math inline">\(x\)</span>:</p>
+<div id="preliminaries" class="section level2">
+<h2><strong>2. Preliminaries</strong></h2>
 <ul>
-<li><span class="math inline">\(y \in \left\{-1, 1 \right\}\)</span></li>
-<li>parameters <span class="math inline">\(w, b\)</span> (treat the bias/intercept <span class="math inline">\(b\)</span> separately from the weights <span class="math inline">\(w\)</span>)</li>
-<li>write classifier as:</li>
-</ul>
-<p><span class="math display">\[
-  \begin{align}
-  h_{w,b}(x) &amp; = g(w^Tx + b) \\
-  \\
-  g(z) &amp; =  \begin{cases}
-          1 &amp; \text{if } z \geq 0 \\
-          -1 &amp; \text{otherwise}
-          \end{cases}
-  \end{align}
-  \]</span> Note that from the definition of <span class="math inline">\(g\)</span>, this classifier directly predicts either <span class="math inline">\(1\)</span> or <span class="math inline">\(-1\)</span> without first going through the intermediate step of estimating the probability of <span class="math inline">\(y\)</span> being <span class="math inline">\(1\)</span>, as in logistic regression.</p>
-</div>
-<div id="functional-and-geometric-margins" class="section level2">
-<h2><strong>3. Functional and geometric margins</strong></h2>
-<div id="functional-margins" class="section level5">
-<h5><strong>Functional margins</strong></h5>
-<p>Given a training example <span class="math inline">\(\left(x^{(i)}, y^{(i)} \right)\)</span>, define the <strong>functional margin</strong> <span class="math inline">\(\hat{\gamma}^{(i)}\)</span> of <span class="math inline">\(\left(w,b \right)\)</span> w.r.t. the training example:</p>
-<p><span class="math display">\[
-\hat{\gamma}^{(i)} = y^{(i)} \left(w^Tx + b \right)
-\]</span> Note: <span class="math display">\[
-\begin{cases}
-\text{if }y^{(i)} = 1, \text{ then }\hat{\gamma}^{(i)} \gg 0 \hspace{1em}\text{if} \hspace{1em} w^Tx+b \gg 0 \\
-\text{if }y^{(i)} = -1, \text{ then } \hat{\gamma}^{(i)} \gg 0 \hspace{1em}\text{if} \hspace{1em} w^Tx+b \ll 0
-\end{cases}
-\]</span> A prediction is correct if <span class="math inline">\(y^{(i)} \left(w^Tx+b \right) &gt; 0\)</span>. Large functional margin = a confident and correct prediction.</p>
-<p>One property of this classifier needs to be addressed: <span class="math inline">\(g\)</span>, and hence <span class="math inline">\(h_{w,b}(x)\)</span> depends on the sign, but <em>not</em> on the magnitude of <span class="math inline">\(w^Tx+b\)</span>. (E.g., <span class="math inline">\(g(w^Tx+b) = g(2w^Tx+2b)\)</span>). Therefore, without an additional normalization condition, the functional margin can be made arbitrarily large by scaling <span class="math inline">\(w\)</span> and <span class="math inline">\(b\)</span>. We will come back to the normalization condition later.</p>
-<p>Given a training set <span class="math inline">\(S = \left\{\left(x^{(i)}, y^{(i)}\right); i = 1, \dots, m \right\}\)</span>, define the <strong><em>functional margin</em></strong> <span class="math inline">\(\hat{\gamma}\)</span> of <span class="math inline">\((w,b)\)</span> w.r.t. <span class="math inline">\(S\)</span> to be the smallest of the functional margins of the individual training examples: <span class="math display">\[
-\hat{\gamma} = \min_{i=1, \dots, m} \hat{\gamma}^{(i)}
-\]</span> The functional margin simply tells you whether a particular point is properly classified or not. In order to be able to maximize the margin, there needs to be a notion of magnitude. Therefore, we introduce the <strong><em>geometric margin</em></strong>, a scaled version of the functional margin that tells you not only if a point if properly classified or not, but also the magnitude of the distance in units of <span class="math inline">\(\lVert w \rVert\)</span>.</p>
-</div>
-<div id="geometric-margins" class="section level5">
-<h5><strong>Geometric margins</strong></h5>
-<p>The vector <span class="math inline">\(w\)</span> is orthogonal to the separating hyperplane defined by <span class="math inline">\(w^Tx + b = 0\)</span>. To see this, consider two points <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span> on the hyperplane (see ESL Ch. 4.5): <span class="math display">\[
-\begin{align}
-w^Tx_1+b &amp;= w^Tx_2+b = 0 &amp; \text{by def. of the hyperplane} \\
-w^Tx_1 &amp;= w^Tx_2 \\
-w^T(x_1 - x_2) &amp; = 0 \\
-\therefore \quad&amp; w \perp \left\{x: w^Tx+b=0\right\}
-\end{align}
-\]</span> The <strong>geometric margin</strong> <span class="math inline">\(\gamma^{(i)}\)</span> is the distance from a training example <span class="math inline">\(\left(x^{(i)}, y^{(i)} \right)\)</span>to the separating hyperplane. The projection of <span class="math inline">\(x^{(i)}\)</span> onto the separating hyperplane is the point <span class="math inline">\(x^{(i)}-\gamma^{(i)} \frac{w}{\lVert w \rVert}\)</span> (remember that <span class="math inline">\(\gamma^{(i)} \in \mathbb{R}\)</span> is just a scalar). Since this point is on the decision boundary, it satisfies <span class="math inline">\(w^Tx+b=0\)</span>:</p>
-<p><span class="math display">\[
-\begin{align}
-w^T \left(x^{(i)}-\gamma^{(i)} \frac{w}{\lVert w \rVert} \right) + b &amp; = 0 \\
-w^Tx^{(i)} - \gamma^{(i)} \frac{1}{\lVert w \rVert} w^T w + b &amp; = 0 \hspace{7em} w^Tw = \lVert w \rVert^2\\
-\gamma^{(i)} \lVert w \rVert &amp; = w^Tx^{(i)} + b \\
-\gamma^{(i)} &amp; = \frac{w^Tx^{(i)} + b}{\lVert w \rVert} \\
-\gamma^{(i)} &amp; = \left(\frac{w}{\lVert w \rVert} \right)^T x^{(i)} + \frac{b}{\lVert w \rVert}
-\end{align}
-\]</span> To account for training examples on the other side of the decision boundary, we define the <strong>geometric margin</strong> of <span class="math inline">\(\left(w,b \right)\)</span> w.r.t. a training example <span class="math inline">\(\left(x^{(i)}, y^{(i)} \right)\)</span> to be:</p>
-<p><span class="math display">\[
-\gamma^{(i)} = y^{(i)} \left( \left(\frac{w}{\lVert w \rVert} \right)^T x^{(i)} + \frac{b}{\lVert w \rVert} \right)
-\]</span></p>
-<p>The geometric margin with <span class="math inline">\(\lVert w \rVert = 1\)</span> is equal to the functional margin.</p>
-<p>The geometric margin is invariant to rescaling of the parameters <span class="math inline">\(w\)</span> and <span class="math inline">\(b\)</span>. This means that we can impose an arbitrary scaling constraint on <span class="math inline">\(w\)</span>, e.g. <span class="math inline">\(\lVert w \rVert = 1\)</span>, <span class="math inline">\(\lvert w_1 \rvert = 5\)</span>, or <span class="math inline">\(\lvert w_1 + b \rvert + \lvert w_2\rvert = 2\)</span>, and any of these can be satisfied simply by rescaling <span class="math inline">\(w\)</span> and <span class="math inline">\(b\)</span>.</p>
-<p>Finally, given a training set <span class="math inline">\(S = \left\{ \left(x^{(i)}, y^{(i)} \right); i = 1, \dots, m \right\}\)</span>, we also define the geometric margin of <span class="math inline">\((w,b)\)</span> w.r.t. <span class="math inline">\(S\)</span> to be the smallest of the geometric margins on the individual training examples:</p>
-<p><span class="math display">\[
-\gamma = \min_{i=1, \dots, m} \gamma^{(i)}
-\]</span></p>
-</div>
-</div>
-<div id="the-optimal-margin-classifier" class="section level2">
-<h2><strong>4. The optimal margin classifier</strong></h2>
-<p>Given a training set, a natural criterion is to set a decision boundary that maximizes the (geometric) margin, since this reflects a confident set of predictions on the training set.</p>
-<p>Assume a training set that is linearly separable, i.e. a separating hyperplane can separate the two classes. Finding the hyperplane that maximizes the geometric margin is an optimization problem:</p>
-<p><span class="math display">\[
-\begin{align}
-\max_{\gamma, w, b} \quad &amp; \gamma \\
-\text{s.t.} \quad &amp; y^{(i)} \left(w^Tx^{(i)} + b \right) \geq \gamma, \quad i=1, \dots, m \\
-                  &amp; \lVert w \rVert = 1
-\end{align}
-\]</span></p>
-<p>The above optimization problem is non-convex and therefore difficult to solve (due to the <span class="math inline">\(\lVert w \rVert=1\)</span> constraint). We can transform the problem, remembering that <span class="math inline">\(\gamma\)</span> is the geometric margin and <span class="math inline">\(\hat{\gamma}\)</span> is the functional margin:</p>
-<p><span class="math display">\[
-\begin{align}
-\max_{\hat{\gamma}, w, b} \quad  &amp; \frac{\hat{\gamma}}{\lVert w \rVert} \\
-\text{s.t.} \quad &amp; y^{(i)} \left(w^Tx^{(i)} + b \right) \geq \hat{\gamma}, \quad i=1, \dots, m
-\end{align}
-\]</span></p>
-<p>This problem is equivalent since the geometric and functional margins are related by <span class="math inline">\(\gamma = \frac{\hat{\gamma}}{\lVert w \rVert}\)</span>. This is better, since the <span class="math inline">\(\lVert w \rVert=1\)</span> constraint is gone, but the problem is still non-convex. To simplify it further, remember that <span class="math inline">\(w\)</span> and <span class="math inline">\(b\)</span> can be arbitrarily scaled without changing anything, and set the scaling by constraining the geometric margin of <span class="math inline">\(w,b\)</span> w.r.t. the training set to 1:</p>
-<p><span class="math display">\[
-\hat{\gamma} = 1
-\]</span></p>
-<p><span class="math display">\[
-\begin{align}
-\max_{\gamma, w, b} \quad  &amp; \frac{1}{\lVert w \rVert} \\
-= \min_{\gamma, w, b} \quad &amp; \frac{1}{2} \lVert w \rVert^2  \\
-\text{s.t.} \quad &amp; y^{(i)} \left(w^Tx^{(i)} + b \right) \geq 1, \quad i=1, \dots, m
-\end{align}
-\]</span></p>
-<p>This optimization problem has a convex quadratic objective and linear constraints. Solving it (using quadratic programming) gives the <strong><em>optimal margin classifier</em></strong>. In order to solve this, we will use the method of Lagrange multipliers generalized to include inequality constraints in addition to equality constraints.</p>
-</div>
-<div id="digression-lagrange-duality" class="section level2">
-<h2><strong>5. Digression: Lagrange duality</strong></h2>
-<p>Consider the following problem:</p>
-<p><span class="math display">\[
-\begin{align}
-\min_w \quad      &amp; f(w) \\
-\text{s.t.} \quad &amp; h_i(w) = 0, \quad i = 1, \dots, l
-\end{align}
-\]</span> This can be solved with <a href="https://en.wikipedia.org/wiki/Lagrange_multiplier">Lagrange multipliers</a>. Define the <strong><em>Lagrangian</em></strong>:</p>
-<p><span class="math display">\[
-\mathcal{L} = f(w) + \sum_{i=1}^\ell \beta_i h_i (w)
-\]</span> The <span class="math inline">\(\beta_i\)</span> are the <strong><em>Lagrange multipliers</em></strong>.</p>
-<p>To solve the problem, find the partial derivatives of <span class="math inline">\(\mathcal{L}\)</span>, set to zero, and solve for <span class="math inline">\(w\)</span> and <span class="math inline">\(\beta\)</span>: <span class="math display">\[
-\frac{\partial \mathcal{L}}{\partial w_i} = 0; \frac{\partial \mathcal{L}}{\partial \beta_i} = 0.
-\]</span> This can be generalized to constrained optimization problems with inequality as well as equality constraints. Consider the following, called the <strong><em>primal</em></strong> optimization problem:</p>
-<p><span class="math display">\[
-\begin{align}
-\min_w \quad      &amp; f(w) \\
-\text{s.t.} \quad &amp; g_i(w) \leq 0, \quad i=1, \dots, k \\
-                  &amp; h_i(w) = 0, \quad i=1, \dots, k
-\end{align}
-\]</span> To solve it, start by defining the <strong><em>generalized Lagrangian</em></strong></p>
-<p><span class="math display">\[
-\mathcal{L} \left(w, \alpha, \beta \right) = f(w) + \sum_{i=1}^k \alpha_i g_i(w) + \sum_{i=1}^\ell \beta_i h_i(w)
-\]</span> Here, the <span class="math inline">\(\alpha_i\)</span>’s and <span class="math inline">\(\beta_i\)</span>’s are the Lagrange multipliers. Consider the quantity</p>
-<p><span class="math display">\[
-\theta_{\mathcal{P}}(w) = \max_{\alpha, \beta :  \alpha_i \geq 0} \mathcal{L} (w, \alpha, \beta),
-\]</span></p>
-<p>where the “<span class="math inline">\(\mathcal{P}\)</span>” subscript stands for “primal”. Let some <span class="math inline">\(w\)</span> be given. If <span class="math inline">\(w\)</span> violates any of the primal constraints (i.e., <span class="math inline">\(g_i(w) &gt; 0\)</span> or <span class="math inline">\(h_i(w) \neq 0\)</span> for some <span class="math inline">\(i\)</span>), then:</p>
-<p><span class="math display">\[
-\begin{align}
-\theta_{\mathcal{P}}(w) &amp; = \max_{\alpha, \beta: \alpha_i \geq 0} \left( f(w) + \sum_{i=1}^k \alpha_i g_i(w) + \sum_{i=1}^\ell \beta_i h_i(w) \right)\\
-                        &amp; = \infty
-\end{align}
-\]</span></p>
-<p>Conversely, if the constraints are satisfied for a particular <span class="math inline">\(w\)</span>, then <span class="math inline">\(\theta_{\mathcal{P}}(w) = f(w)\)</span>. Hence,</p>
-<p><span class="math display">\[
-\theta_{\mathcal{P}}(w) = \begin{cases}
-                          f(w) &amp; \text{if } w \text{ satisfies primal constraints} \\
-                          \infty  &amp; \text{otherwise}
-                          \end{cases}
-\]</span></p>
-<p>I.e., <span class="math inline">\(\theta_{\mathcal{P}}\)</span> takes the same value as the objective function for all values of <span class="math inline">\(w\)</span> that satisfy the primal constraints, and is positive infinity if the constraints are violated. Hence, the minimization problem</p>
-<p><span class="math display">\[
-\min_w \theta_{\mathcal{P}}(w) = \min_w \max_{\alpha, \beta: \alpha_i \geq 0} \mathcal{L} (w, \alpha, \beta)
-\]</span></p>
-<p>is the same problem (has the same solutions as) the original, primal problem. We also define the optimal value of the objective to be <span class="math inline">\(p^* = \min_w \theta_{\mathcal{P}}(w)\)</span>; we call this the <strong><em>value</em></strong> of the primal problem.</p>
-<p>Now, consider a slightly different problem. Define <span class="math display">\[
-\theta_{\mathcal{D}}(\alpha, \beta) = \min_w \mathcal{L} (w, \alpha, \beta).
-\]</span></p>
-<p>Here, the “<span class="math inline">\(\mathcal{D}\)</span>” subscript stands for “dual”. Note that whereas in the definition of <span class="math inline">\(\theta_{\mathcal{P}}\)</span> we optimized w.r.t. <span class="math inline">\(\alpha, \beta\)</span>, here we are minimizing w.r.t. <span class="math inline">\(w\)</span>.</p>
-<p>Now we define the <strong><em>dual</em></strong> optimization problem: <span class="math display">\[
-\max_{\alpha, \beta: \alpha_i \geq 0} \theta_{\mathcal{D}}(\alpha, \beta) = \max_{\alpha, \beta: \alpha_i \geq 0} \min_w \mathcal{L} (w, \alpha, \beta).
-\]</span></p>
-<p>This is the same as the primal problem, except that the order of the max and min are exchanged. We also define the optimal value of the dual problem’s objective to be <span class="math inline">\(d^* = \max_{\alpha, \beta: \alpha \geq 0} \theta_{\mathcal{D}}(w)\)</span>.</p>
-<p>The primal and dual problems are related in the following way:</p>
-<p><span class="math display">\[
-\begin{align}
-d^* &amp; \leq p^* \\
-\max_{\alpha, \beta: \alpha_i \geq 0} \min_w \mathcal{L}(w, \alpha, \beta) &amp; \leq \min_w \max_{\alpha, \beta: \alpha_i \geq 0} \mathcal{L}(w, \alpha, \beta) \hspace{3em} \text{because } \max \min f \leq \min \max f
-\end{align}
-\]</span> Under certain conditions, <span class="math inline">\(d^* = p^*\)</span>, so that the solution can be found by solving the dual problem instead of the primal problem. What are the conditions?</p>
-<p>Suppose <span class="math inline">\(f\)</span> and the <span class="math inline">\(g_i\)</span>’s are convex (for this purpose, this is when the Hessian is PSD), and the <span class="math inline">\(h_i\)</span>’s are affine (i.e. linear, with an intercept term). Suppose further that the constraints <span class="math inline">\(g_i\)</span> are (strictly) feasible, i.e. there exists some <span class="math inline">\(w\)</span> s.t. <span class="math inline">\(g_i(w) &lt; 0 \hspace{.3em}\forall \hspace{.3em} i\)</span>.</p>
-<p>Under these assumptions, there must exist <span class="math inline">\(w^*, \alpha^*, \beta^*\)</span> such that:</p>
-<ul>
-<li><span class="math inline">\(w^*\)</span> is the solution to the primal problem</li>
-<li><span class="math inline">\(\alpha^*, \beta^*\)</span> are the solution to the dual problem</li>
-<li><span class="math inline">\(p^* = d^* = \mathcal{L}(w^*, \alpha^*, \beta^*)\)</span></li>
-</ul>
-<p>If some <span class="math inline">\(w^*, \alpha^*, \beta^*\)</span> satisfy the <strong>Karush-Kuhn-Tucker (KKT) conditions</strong>, then it is also a solution to the primal and dual problems:</p>
-<p><span class="math display">\[
-\begin{align}
-\frac{\partial}{\partial w_i} \mathcal{L}(w^*, \alpha^*, \beta^*)     &amp; = 0, \quad i=1, \dots, n \\
-\frac{\partial}{\partial \beta_i} \mathcal{L}(w^*, \alpha^*, \beta^*) &amp; = 0, \quad i=1, \dots, l \\
-\alpha_i^* g_i (w^*)                                                  &amp; = 0, \quad i=1, \dots, k &amp; \text{the }\textbf{dual complementarity}\text{ condition}\\
-g_i (w^*)                                                             &amp; \leq 0, \quad i=1, \dots, k \\
-\alpha_i^*                                                            &amp; \geq 0, \quad i=1, \dots, k 
-\end{align}
-\]</span> The <strong>dual complementarity</strong> condition above implies:</p>
-<ul>
-<li>if <span class="math inline">\(\alpha_i^* &gt; 0\)</span>, then <span class="math inline">\(g_i(w^*)=0\)</span>
-<ul>
-<li>i.e, the <span class="math inline">\(g_i(w) \leq 0\)</span> constraint is <strong>active</strong> (holds with equality <span class="math inline">\(g_i(w) = 0\)</span> rather than w/inequality)</li>
-<li>later, this is important for showing that the SVM has only a small number of support vectors</li>
-</ul></li>
-</ul>
-</div>
-<div id="optimal-margin-classifiers" class="section level2">
-<h2><strong>6. Optimal margin classifiers</strong></h2>
-<p>The primal optimization problem for finding the optimal margin classifier, derived in section 4:</p>
-<p><span class="math display">\[
-\begin{align}
-\min_{\gamma, w, b} \quad &amp; \frac{1}{2} \lVert w \rVert^2 \\
-\text{s.t.}         \quad &amp; y^{(i)} \left(w^Tx^{(i)} +b\right) \geq 1, \quad i=1, \dots, m
-\end{align}
-\]</span></p>
-<p>The constraints can be written as: <span class="math display">\[
-g_i(w) = -y^{(i} \left(w^Tx^{(i)} +b \right) + 1 \leq 0
-\]</span> We have one constraint for each training example. From the KKT dual complementarity condition, <span class="math inline">\(\alpha_i &gt; 0\)</span> only for the training examples that have geometric margin exactly equal to one (i.e., the ones corresponding to constraints that hold with equality <span class="math inline">\(g_i(w)=0\)</span>). These training points are exactly the ones closest to the decision boundary, and are called the <strong><em>support vectors</em></strong> of the optimal margin classifier. The fact that the number of support vectors can be much smaller than the size of the training set will be useful later.</p>
-<p>In writing the dual form of the problem, we will write in terms of inner products <span class="math inline">\(\left\langle x^{(i)}, x^{(j)} \right\rangle\)</span> between points in the input feature space. This will allow application of the kernel trick later.</p>
-<p>The Lagrangian for the optimal margin classifier problem: <span class="math display">\[
-\mathcal{L}(w, b, \alpha) = \frac{1}{2} \lVert w \rVert^2 - \sum_{i=1}^m \alpha_i\left[y^{(i)} \left(w^Tx^{(i)}+b \right) -1\right]
-\]</span> Find the dual form <span class="math inline">\(\theta_{\mathcal{D}} = \min_{w,b} \mathcal{L}(w, b, \alpha)\)</span>. Start by taking derivatives w.r.t. <span class="math inline">\(w\)</span> and <span class="math inline">\(b\)</span> and setting to zero:</p>
-<p><span class="math display">\[
-\begin{align}
-\mathcal{L}(w, b, \alpha)           &amp; = \frac{1}{2} \lVert w \rVert^2 - \sum_{i=1}^m \alpha_i \left[y^{(i)} \left(w^Tx^{(i)}+b \right) -1\right] \\
-\nabla_w \mathcal{L}(w, b, \alpha)  &amp; = w - \sum_{i=1}^m \alpha_i y^{(i)}x^{(i)} = 0 \\
-w &amp; = \sum_{i=1}^m \alpha_i y^{(i)}x^{(i)}
-\end{align}
-\]</span></p>
-<p><span class="math display">\[
-\begin{align}
-\mathcal{L}(w, b, \alpha)           &amp; = \frac{1}{2} \lVert w \rVert^2 - \sum_{i=1}^m \alpha_i \left[y^{(i)} \left(w^Tx^{(i)}+b \right) -1\right] \\
-\frac{\partial}{\partial b}\mathcal{L}(w, b, \alpha) &amp; = - \sum_{i=1}^m \alpha_i y^{(i)} = 0 \\
-\sum_{i=1}^m \alpha_i y^{(i)} &amp; = 0
-\end{align}
-\]</span></p>
-<p><span class="math display">\[
-\begin{align}
-\mathcal{L}(w, b, \alpha) &amp; = \frac{1}{2} \lVert w \rVert^2 - \sum_{i=1}^m \alpha_i \left[y^{(i)} \left(w^Tx^{(i)}+b \right) -1\right] &amp; \text{plug in }w \\
-  &amp; = \frac{1}{2} \sum_{i,j=1}^m  y^{(i)} y^{(j)} \alpha_i  \alpha_j \left(x^{(i)} \right)^Tx^{(j)} - \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left(x^{(i)} \right)^T x^{(j)} - b \sum_{i=1}^m \alpha_i y^{(i)} + \sum_{i=1}^m \alpha_i &amp; \sum_{i=1}^m \alpha_i y^{(i)} &amp; = 0 \\
-  &amp; = \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left(x^{(i)} \right)^T x^{(j)}
-\end{align}
-\]</span></p>
-<p>The dual optimization problem: <span class="math display">\[
-\begin{align}
-\max_{\alpha} W(\alpha) &amp; = \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left(x^{(i)} \right)^T x^{(j)} \\
-\text{s.t.} \hspace{.5em} \alpha_i &amp; \geq 0, \quad i = 1, \dots, m \\
-          &amp; \sum_{i=1}^m \alpha_i y^{(i)} = 0 
-\end{align}
-\]</span> The conditions for <span class="math inline">\(p^* = d^*\)</span> and the KKT conditions to hold are satisfied in the above problem. If we solve this maximization problem w.r.t. the <span class="math inline">\(\alpha_i\)</span>’s for the optimal <span class="math inline">\(\alpha_i\)</span>’s, we can solve for the <span class="math inline">\(w\)</span> by the above equation (<span class="math inline">\(w = \sum_{i=1}^m \alpha_i y^{(i)} x^{(i)}\)</span>).</p>
-<p>Then <span class="math inline">\(b^*\)</span> can be solved for (some kind of average?):</p>
-<p><span class="math display">\[
-b^* = - \frac{\max_{i:y^{(i)}=-1} w^{*T} x^{(i)} + \min_{i:y^{(i)}=1 } w^{*T}x^{(i)}}{2}
-\]</span> Suppose the model has been fit to a training set. To make a prediction at a new input point <span class="math inline">\(x\)</span>, calculate <span class="math inline">\(w^Tx+b\)</span>, and predict <span class="math inline">\(y=1\)</span> iff this quantity is bigger than zero.</p>
-<p><span class="math display">\[
-\begin{align}
-w^Tx + b  &amp; = \left( \sum_{i=1}^m \alpha_i y^{(i)} x^{(i)} \right)^Tx + b \\
-          &amp; = \sum_{i=1}^m \alpha_i y^{(i)} \langle x^{(i)}, x\rangle + b
-\end{align}
-\]</span> Hence, if we’ve found the <span class="math inline">\(\alpha_i\)</span>’s, in order to make a prediction, we need to calculate a quantity that only depends on the inner product between <span class="math inline">\(x\)</span> and the points in the training set. Also, the <span class="math inline">\(\alpha_i\)</span>’s will all be zero except for the support vectors. Thus, many of the terms in the sum will be zero, meaning that we only need to find the inner products between <span class="math inline">\(x\)</span> and the support vectors in order to make a prediction.</p>
-<p>By using different kernels, the optimal margin classifier generalizes to the <strong><em>support vector machine</em></strong>, which can learn efficiently in very high dimensional spaces.</p>
-</div>
-<div id="kernels" class="section level2">
-<h2><strong>7. Kernels</strong></h2>
-<ul>
-<li>def: original input values of problem = <strong><em>attributes</em></strong> (e.g. <span class="math inline">\(x\)</span>, the living area of a house)</li>
-<li>def: the input values that are passed to the learning algorithm = <strong><em>features</em></strong> (e.g. <span class="math inline">\(\begin{bmatrix} x &amp; x^2 &amp; x^3\end{bmatrix}^T\)</span>)</li>
-<li>def: the <strong><em>feature mapping</em></strong> <span class="math inline">\(\phi\)</span>, a map from the attributes to the features, e.g.: <span class="math display">\[
-  \phi(x) = \begin{bmatrix}
-        x   \\
-        x^2 \\
-        x^3
-        \end{bmatrix}
-  \]</span></li>
-</ul>
-<p>Rather than applying an SVM using the original input attributes <span class="math inline">\(x\)</span>, we may instead want to learn using some features <span class="math inline">\(\phi(x)\)</span>. Since the SVM algorithm can be written entirely in terms of the inner products <span class="math inline">\(\langle x,z \rangle\)</span>, this entails replacing all those inner products with <span class="math inline">\(\langle \phi(x), \phi(z)\rangle\)</span>. Specifically, given a feature mapping <span class="math inline">\(\phi\)</span>, we define the corresponding <strong><em>kernel</em></strong> to be <span class="math display">\[
-K(x,z) = \phi(x)^T \phi(z)
-\]</span> Then, everywhere where the algorithm had <span class="math inline">\(\langle x,z \rangle\)</span>, we replace it with <span class="math inline">\(K(x,z)\)</span> and the algorithm now learns with the features <span class="math inline">\(\phi\)</span>.</p>
-<p>Often, <span class="math inline">\(K(x,z)\)</span> is inexpensive to calculate, even though <span class="math inline">\(\phi(x)\)</span> itself may be very expensive (or impossible) to calculate (perhaps because it is an extremely high dimensional vector). In such settings, by using an efficient way to calculate <span class="math inline">\(K(x,z)\)</span> in the algorithm, an SVM can learn in the high dimensional feature space given by <span class="math inline">\(\phi\)</span>, but without ever having to explicitly find or represent vectors <span class="math inline">\(\phi(x)\)</span>.</p>
-<p>An example: Suppose <span class="math inline">\(x,z \in \mathbb{R}^n\)</span>, and consider <span class="math display">\[
-K(x,z) = (x^Tz)^2
-\]</span> This can also be written as <span class="math display">\[
-\begin{align}
-K(x,z)  &amp; = \left(\sum_{i=1}^n x_i z_i \right) \left(\sum_{i=1}^n x_i z_i \right) \\
-        &amp; = \sum_{i=1}^n \sum_{j=1}^n x_i x_j z_i z_j \\
-        &amp; = \sum_{i,j=1}^n \left(x_i x_j \right) \left(z_i z_j \right) \\
-        &amp; = \phi(x)^T \phi(z), \hspace{2em} \text{where} \\
-        &amp; &amp; \phi(x) = \begin{bmatrix}
-                      x_1x_1 \\ x_1x_2 \\ x_1x_3 \\ x_2x_1 \\ x_2x_2 \\ x_2x_3 \\ x_3x_1 \\ x_3x_2 \\ x_3x_3
-                      \end{bmatrix}\text{(for } n=3 \text{)} 
-\end{align}
-\]</span></p>
-<p>Calculating the high-dimensional <span class="math inline">\(\phi(x)\)</span> requires <span class="math inline">\(O(n^2)\)</span> time, while calculating <span class="math inline">\(K(x,z)\)</span> requires only <span class="math inline">\(O(n)\)</span> time – linear in the dimension of the input attributes.</p>
-<p>Consider a related kernel,</p>
-<p><span class="math display">\[
-\begin{align}
-K(x,z)  &amp; = \left(x^Tz + c \right)^2 \\
-        &amp; = \left(x^Tz \right)^2 + 2c\left(x^Tz \right) + c^2 \\
-        &amp; = \sum_{i,j=1}^n \left(x_i x_j \right)\left(z_i z_j \right) + \sum_{i=1}^n \left(\sqrt{2c} x_i \right) \left(\sqrt{2c} z_i \right) + c^2 \\
-        &amp; \hspace{5em} \phi(x) =  \begin{bmatrix}
-                                  x_1x_1 \\ x_1x_2 \\ x_1x_3 \\ x_2x_1 \\ x_2x_2 \\ x_2x_3 \\ x_3x_1 \\ x_3x_2 \\ x_3x_3 \\\sqrt{2c} x_1 \\ \sqrt{2c} x_2 \\ \sqrt{2c} x_3 \\ c
-                                  \end{bmatrix} \\
-\end{align}
-\]</span></p>
-<p>, where the parameter <span class="math inline">\(c\)</span> controls the relative weighting between the <span class="math inline">\(x_i\)</span> (first order) and the <span class="math inline">\(x_i x_j\)</span> (second order) terms.</p>
-<p>More broadly, the kernel <span class="math inline">\(K(x,z) = \left(x^Tz + c \right)^d\)</span> corresponds to a feature mapping to an <span class="math inline">\(\begin{pmatrix} n+d \\ d\end{pmatrix}\)</span> feature space, corresponding of all monomials of the form <span class="math inline">\(x_{i_1}x_{i_2} \dots x_{i_k}\)</span> that are up to order <span class="math inline">\(d\)</span>. Despite working in <span class="math inline">\(O(n^d)\)</span>-dimensional space, computing <span class="math inline">\(K(x,z)\)</span> still takes only <span class="math inline">\(O(n)\)</span> time, and we never need to explicitly represent feature vectors in the very high dimensional feature space.</p>
-<p>A slightly different view of kernels. Like the dot product, the kernel <span class="math inline">\(K(x,z) = \phi(x)^T \phi(z)\)</span> can be thought of as a similarity measure, i.e. if <span class="math inline">\(\phi(x)\)</span> and <span class="math inline">\(\phi(z)\)</span> are close together, we expect <span class="math inline">\(K(x,z)\)</span> to be large, and if <span class="math inline">\(\phi(x)\)</span> and <span class="math inline">\(\phi(z)\)</span> are far apart, we expect <span class="math inline">\(K(x,z)\)</span> to be small. Therefore, given a learning problem a good kernel to use would be a function represents the similarity of examples. For example, the function <span class="math display">\[
-K(x,z) = \exp \left(- \frac{\lVert x-z \rVert^2}{2 \sigma^2} \right)
-\]</span></p>
-<p>might be a reasonable measure of the similarity of <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span>, as it is near <span class="math inline">\(1\)</span> when <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span> are close, and near <span class="math inline">\(0\)</span> when <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span> are far apart. However, is this a valid function to be used as a kernel? (In this case, yes, as this is the <strong><em>Gaussian kernel</em></strong> corresponding to an infinite-dimensional feature mapping <span class="math inline">\(\phi\)</span>). But more broadly, given a function <span class="math inline">\(K\)</span>, how can we tell if it’s a valid kernel; i.e. is there a feature mapping <span class="math inline">\(\phi\)</span> such that <span class="math inline">\(K(x,z) = \phi(x)^T \phi(z) \hspace{.2em} \forall x,z\)</span>?</p>
-<ul>
-<li>Suppose that <span class="math inline">\(K\)</span> is a valid kernel corresponding to some feature mapping <span class="math inline">\(\phi\)</span>
-<ul>
-<li>consider some finite set of <span class="math inline">\(m\)</span> points (not necessarily the training set) <span class="math inline">\(\left\{x^{(1)}, \dots, x^{(m)} \right\}\)</span></li>
-<li>define the <strong><em>kernel matrix</em></strong>: a square, <span class="math inline">\(m\)</span>-by-<span class="math inline">\(m\)</span> matrix <span class="math inline">\(K\)</span> s.t. <span class="math display">\[
-  K_{ij} = K \left(x^{(i)}, x^{(j)} \right)
-  \]</span>
-<ul>
-<li>note that the notation <span class="math inline">\(K\)</span> is overloaded to denote both the kernel function <span class="math inline">\(K(x,z)\)</span> and the kernel matrix <span class="math inline">\(K\)</span></li>
-</ul></li>
-<li>if <span class="math inline">\(K\)</span> is a valid kernel, then</li>
-</ul>
-<p><span class="math display">\[
-  \begin{align}
-  &amp; \hspace{1.3em} K_{ij} \\
-  &amp; = K \left(x^{(i)}, x^{(j)} \right) \\
-  &amp; = \phi \left(x^{(i)} \right)^T \phi \left(x^{(j)} \right) \\
-  &amp; = \phi \left(x^{(j)} \right)^T \phi \left(x^{(i)} \right) \\
-  &amp; = K \left(x^{(j)}, x^{(i)} \right) \\
-  &amp; = K_{ji}
-  \end{align}
-  \]</span></p>
-<ul>
-<li>therefore, <span class="math inline">\(K\)</span> for a valid kernel is symmetric</li>
-<li>in addition, let <span class="math inline">\(\phi_k(x)\)</span> denote the <span class="math inline">\(k\)</span>-th coordinate of the vector <span class="math inline">\(\phi(x)\)</span>. Then, for any vector <span class="math inline">\(z\)</span>:</li>
-</ul>
-<p><span class="math display">\[
-  \begin{align}
-  z^TKz &amp; = \sum_i \sum_j z_i K_{ij} z_j \\
-        &amp; = \sum_i \sum_j z_i \phi \left(x^{(i)} \right)^T \phi \left(x^{(j)} \right) z_j &amp; \text{def. }K\\
-        &amp; = \sum_i \sum_j z_i \sum_k \phi_k  \left(x^{(i)} \right) \phi_k \left(x^{(j)} \right) z_j \\
-        &amp; = \sum_k \sum_i \sum_j z_i \phi_k  \left(x^{(i)} \right) \phi_k \left(x^{(j)} \right) z_j \\
-        &amp; = \sum_k \left(\sum_i z_i \phi_k \left(x^{(i)} \right)\right)^2 \\
-        &amp; \geq 0
-  \end{align}
-  \]</span></p>
-<ul>
-<li>therefore, if <span class="math inline">\(K\)</span> is a valid kernel (i.e., it corresponds to some feature mapping <span class="math inline">\(\phi\)</span>), then the corresponding Kernel matrix <span class="math inline">\(K \in \mathbb{R}^{m \times m}\)</span> is symmetric positive semidefinite
-<ul>
-<li>this is a necessary and sufficient condition for <span class="math inline">\(K\)</span> to be a valid kernel (aka a Mercer kernel)</li>
-<li>Theorem (Mercer). Let <span class="math inline">\(K : \mathbb{R}^n \times \mathbb{R}^n \mapsto \mathbb{R}\)</span> be given. Then for <span class="math inline">\(K\)</span> to be a valid (Mercer) kernel, it is necessary and sufficient that for any <span class="math inline">\(\left\{x^{(1)}, \dots, x^{(m)} \right\}, (m &lt; \infty)\)</span>, the corresponding kernel matrix is symmetric and positive semi-definite</li>
-</ul></li>
-</ul></li>
-<li>examples of kernels
-<ul>
-<li>on the MNIST digit recognition dataset, SVMs with a simple polynomial kernel or the Gaussian kernel performed extremely well
-<ul>
-<li>this was surprising, since the input attributes were a 256-dimensional vector of pixel intensity without knowledge of which pixels are adjacent to which other ones</li>
-</ul></li>
-<li>if objects to be classified are strings (e.g. sequence of amino acids), it is hard to construct a reasonable, “small” set of features, especially if different strings have different lengths
-<ul>
-<li>consider letting <span class="math inline">\(\phi(x)\)</span> be a feature vector that counts the number of occurrences of each length-<span class="math inline">\(k\)</span> substring in <span class="math inline">\(x\)</span>
-<ul>
-<li>if considering English letters, there are <span class="math inline">\(26^k\)</span> such strings <span class="math inline">\(\rightarrow \phi(x)\)</span> is <span class="math inline">\(26^k\)</span> dimensional vector (to big to work with efficiently)</li>
-<li>however, using (dynamic programming-ish) string matching algorithms, <span class="math inline">\(K(x,z) = \phi(x)^T \phi(z)\)</span> can be efficiently computed</li>
-<li>therefore, can implicitly work in <span class="math inline">\(26^k\)</span>-dimensional feature space, without ever explicitly computing feature vectors in this space</li>
-</ul></li>
-</ul></li>
-</ul></li>
-<li>the kernel trick is applicable beyond SVMs
-<ul>
-<li>can be applied to any learning algorithm that can be written in terms of only inner products <span class="math inline">\(\langle x,z \rangle\)</span> between input attribute vectors by replacing the inner product with a kernel <span class="math inline">\(K(x,z)\)</span></li>
-</ul></li>
-</ul>
-</div>
-<div id="regularization-and-the-non-separable-case" class="section level2">
-<h2><strong>8. Regularization and the non-separable case</strong></h2>
-<ul>
-<li>the derivation of the SVM so far assumes the data is linearly separable
-<ul>
-<li>mapping data to a high dimensional feature space via <span class="math inline">\(\phi\)</span> increases the likelihood that the data is separable, but does not guarantee it</li>
-<li>also, in some cases, finding a separating hyperplane might not be ideal, since it might be susceptible to outliers
-<ul>
-<li>therefore, reformulate the problem using <span class="math inline">\(\ell_1\)</span> (lasso) regularization:</li>
-</ul>
-<p><span class="math display">\[
-  \begin{align}
-  \min_{\gamma, w, b} \quad &amp; \frac{1}{2} \lVert w \rVert^2 + C \sum_{i=1}^m \xi_i \\
-  \text{s.t.}         \quad &amp; y^{(i)} \left(w^T x^{(i)} + b \right) \geq 1- \xi_i, \quad i = 1, \dots, m \\
-                            &amp; \xi_i \geq 0, \quad i=1, \dots, m
-  \end{align}
-  \]</span></p>
-<ul>
-<li>examples are now permitted to have (functional) margin less than 1:
-<ul>
-<li>if an example has functional margin <span class="math inline">\(1- \xi_i \quad (\xi &gt; 0)\)</span>, we pay a cost of the objective function being increased by <span class="math inline">\(C \xi_i\)</span>
-<ul>
-<li><span class="math inline">\(C\)</span> controls the weighting between the goals of minimizing <span class="math inline">\(\lVert w \rVert^2\)</span> (which makes the margin large) and of ensuring that most examples have functional margin at least 1</li>
-</ul></li>
-</ul></li>
-<li>the Lagrangian:</li>
-</ul>
-<p><span class="math display">\[
-  \mathcal{L} \left(w, b, \xi, \alpha, r \right) = \frac{1}{2} w^T w + C \sum_{i=1}^m \xi_i - \sum_{i=1}^m \alpha_i \left[y^{(i)} \left(x^Tw+b \right) - 1 + \xi_i \right] - \sum_{i=1}^m r_i \xi_i
-  \]</span></p>
-<ul>
-<li>to get the dual form:
-<ul>
-<li>set derivatives w.r.t <span class="math inline">\(w\)</span> and <span class="math inline">\(b\)</span> to zero</li>
-<li>substitute back in and simplify</li>
-</ul></li>
-</ul>
-<p><span class="math display">\[
-  \begin{align}
-  \max_\alpha \quad &amp; W(\alpha) = \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left\langle x^{(i)} x^{(j)}\right\rangle \\
-  \text{s.t.} \quad &amp; 0 \leq \alpha_i \leq C, \quad i=1, \dots, m \\
-                    &amp; \sum_{i=1}^m \alpha_i y^{(i)} = 0
-  \end{align}
-  \]</span></p>
-<ul>
-<li><span class="math inline">\(w\)</span> in terms of <span class="math inline">\(\alpha_i\)</span>’s is the same as the non-regularized case:</li>
-</ul>
-<span class="math display">\[
-  w = \sum_{i=1}^m \alpha_i y^{(i)} x^{(i)},
-  \]</span> so <span class="math display">\[
-  w^Tx + b= \sum_{i=1}^m \alpha_i y^{(i)} \left\langle x^{(i)}, x\right\rangle + b
-  \]</span> can still be used to make predictions once the dual problem is solved. - note that adding <span class="math inline">\(\ell_1\)</span> regularization only has the effect of changing <span class="math inline">\(0 \leq \alpha_i\)</span> to <span class="math inline">\(0 \leq \alpha_i \leq C\)</span> - the calculation for <span class="math inline">\(b^*\)</span> also has to be modified
-<ul>
-<li>the KKT dual-complementarity conditions:</li>
-</ul>
-<p><span class="math display">\[
-  \begin{align}
-  \alpha_i = 0 &amp; \Longrightarrow y^{(i)} \left(w^T x^{(i)} + b \right) \geq 1 \\
-  \alpha_i = C &amp; \Longrightarrow y^{(i)} \left(w^T x^{(i)} + b \right) \leq 1 \\
-  0 &lt; \alpha_i &lt; C &amp; \Longrightarrow y^{(i)} \left(w^T x^{(i)} + b \right) = 1 \\
-  \end{align}
-  \]</span></p>
-<p>To solve the dual problem, we use the <strong><em>sequential minimal optimization (SMO) algorithm</em></strong>.</p></li>
-</ul></li>
-</ul>
-</div>
-<div id="the-smo-algorithm" class="section level2">
-<h2><strong>9. The SMO algorithm</strong></h2>
-<ul>
-<li>SMO, by John Platt, is an efficient way of solving the dual problem in the derivation of the SVM</li>
-<li>first, a digression about coordinate ascent:</li>
-</ul>
-<div id="coordinate-ascent" class="section level3">
-<h3><strong>9.1 Coordinate ascent</strong></h3>
-<ul>
-<li>consider the unconstrained optimization problem</li>
-</ul>
-<p><span class="math display">\[
-  \max_\alpha W(\alpha_1, \alpha_2, \dots, \alpha_m)
-  \]</span></p>
-<ul>
-<li>gradient ascent and Newton’s method could both solve this</li>
-<li>now we consider <strong><em>coordinate ascent</em></strong>:
-<ul>
-<li>Loop until convergence:
-<ul>
-<li>For <span class="math inline">\(i = 1, \dots, m\)</span>,
-<ul>
-<li><span class="math inline">\(\alpha_i \gets \arg \max_{\hat{\alpha}_i} W \left(\alpha_1, \dots, \alpha_{i=1}, \hat{\alpha}_i, \alpha_{i+1}, \dots, \alpha_m \right)\)</span></li>
-</ul></li>
-</ul></li>
-<li>in the innermost loop, <span class="math inline">\(W\)</span> is reoptimized w.r.t <em>just</em> the parameter <span class="math inline">\(\alpha_i\)</span>, holding all other variables fixed</li>
-<li>when <span class="math inline">\(W\)</span> is of a form s.t. the <span class="math inline">\(\arg \max\)</span> can be found efficiently, coordinate ascent can be fairly efficient</li>
-</ul></li>
-</ul>
-</div>
-<div id="smo" class="section level3">
-<h3><strong>9.2 SMO</strong></h3>
-<ul>
-<li>the dual optimization problem for SVM with <span class="math inline">\(\ell_1\)</span> regularization:</li>
-</ul>
-<p><span class="math display">\[
-  \begin{align}
-  \max_\alpha \quad &amp; W(\alpha) = \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left\langle x^{(i)} x^{(j)}\right\rangle \\
-  \text{s.t.} \quad &amp; 0 \leq \alpha_i \leq C, \quad i=1, \dots, m \\
-                    &amp; \sum_{i=1}^m \alpha_i y^{(i)} = 0
-  \end{align}
-  \]</span></p>
-<ul>
-<li>suppose we have a set of <span class="math inline">\(\alpha_i\)</span>’s that satisfy the above constraints
-<ul>
-<li>then suppose we want to take a coordinate ascent step optimizing w.r.t <span class="math inline">\(\alpha_1\)</span> holding <span class="math inline">\(\alpha_2, \dots, \alpha_m\)</span> fixed. Progress is not possible, because:</li>
-</ul>
-<p><span class="math display">\[
-  \begin{align}
-  \alpha_1 y^{(1)}  &amp; = - \sum_{i=2}^m \alpha_i y^{(i)} \\
-  \alpha_1          &amp; = -y^{(1)} \sum_{i=2}^m \alpha_i y^{(i)} &amp; \text{remember } y^{(1)} \in \{-1,1\}
-  \end{align}
-  \]</span></p>
-<ul>
-<li><span class="math inline">\(\alpha_1\)</span> is uniquely determined by the other <span class="math inline">\(\alpha_i\)</span>’s- thus, to update the <span class="math inline">\(\alpha_i\)</span>’s, we must update at least two of them simultaneously to keep satisfying the constraints, motivating the SMO algorithm:
-<ul>
-<li>repeat until convergence:
+<li>things we want to do:
 <ol style="list-style-type: decimal">
-<li>Select some pair <span class="math inline">\(\alpha_i\)</span> and <span class="math inline">\(\alpha_j\)</span> to update next (using some heuristic that tries to pick the two that will allow the biggest progress towards the global max)</li>
-<li>Reoptimize <span class="math inline">\(W(\alpha)\)</span> w.r.t. <span class="math inline">\(\alpha_i\)</span> and <span class="math inline">\(\alpha_j\)</span>, holding the other <span class="math inline">\(\alpha_k\)</span>’s <span class="math inline">\((k \neq i,j)\)</span> fixed</li>
+<li>make the bias/variance tradeoff formal
+<ul>
+<li>this will lead to model selection methods, e.g. for choosing what order polynomial to fit to a training set</li>
+</ul></li>
+<li>relate error on the training set to generalization error
+<ul>
+<li>we care about generalization error, but we train models on training sets</li>
+</ul></li>
+<li>find conditions under which we can prove that learning algorithms will work well?</li>
 </ol></li>
-</ul></li>
-<li>suppose we currently have <span class="math inline">\(\alpha_i\)</span>’s that satisfy the constraints
+<li>two simple but useful lemmas:
 <ul>
-<li>suppose we decide to hold <span class="math inline">\(\alpha_3, \dots, \alpha_m\)</span> fixed, and reoptimize <span class="math inline">\(W(\alpha_1, \alpha_2, \dots, \alpha_m)\)</span> w.r.t. <span class="math inline">\(\alpha_1\)</span> and <span class="math inline">\(\alpha_2\)</span></li>
+<li><strong><em>the union bound</em></strong>
+<ul>
+<li>Let <span class="math inline">\(A_1, A_2, \dots, A_k\)</span> be <span class="math inline">\(k\)</span> different (not necessarily independent) events. Then,</li>
 </ul>
 <span class="math display">\[
-  \begin{align}
-  \alpha_1y^{(1)} + \alpha_2 y^{(2)} &amp; = - \sum_{i=3}^m \alpha_i y^{(i)} &amp; \text{RHS is constant, set to }\zeta \\
-  \alpha_1y^{(1)} + \alpha_2 y^{(2)} &amp; = \zeta
-  \end{align}
+  P\left(A_1 \cup \cdots \cup A_k \right) \leq P(A_1) + \dots + P(A_k).
   \]</span>
 <ul>
-<li>See the figure in the notes:
+<li>in words, the probability of any one of <span class="math inline">\(k\)</span> events happening is at most the sums of the probabilities of the <span class="math inline">\(k\)</span> different events</li>
+</ul></li>
+<li><strong><em>Hoeffding inequality</em></strong> aka the <strong><em>Chernoff bound</em></strong> in learning theory
 <ul>
-<li><span class="math inline">\(\alpha_1\)</span> and <span class="math inline">\(\alpha_2\)</span> must lie within the box <span class="math inline">\([0,C] \times [0,C]\)</span>
+<li>Let <span class="math inline">\(Z_1, \dots, Z_m\)</span> be <span class="math inline">\(m\)</span> i.i.d. random varaibles drawn from a <span class="math inline">\(\text{Bernoulli}(\phi)\)</span> distribution, i.e.</li>
+</ul>
+<p><span class="math display">\[
+  P(Z_i = 1) = \phi \quad \text{and} \quad P(Z_i=0) = 1-\phi
+  \]</span></p>
 <ul>
-<li>in order to lie within the box and satisfy <span class="math inline">\(\alpha_1y^{(1)} + \alpha_2 y^{(2)} = \zeta\)</span>, <span class="math inline">\(\quad L \leq \alpha_2 \leq H\)</span>, where <span class="math inline">\(L\)</span> is a lower bound</li>
+<li>Let <span class="math inline">\(\hat{\phi} = \frac{1}{m} \sum_{i=1}^m Z_i\)</span> be the mean of these random variables</li>
+<li>Let any <span class="math inline">\(\gamma &gt; 0\)</span> be fixed. Then,</li>
+</ul>
+<p><span class="math display">\[
+  P \left(\left\lvert \phi- \hat{\phi}\right\rvert &gt; \gamma \right) \leq 2 \exp \left( -2 \gamma^2m\right)
+  \]</span></p>
+<ul>
+<li>in words, if we take <span class="math inline">\(\hat{\phi}\)</span> – the average of <span class="math inline">\(m \text{Bernoulli}(\phi)\)</span> random variables – to be out estimate of <span class="math inline">\(\phi\)</span>, then the probability of our being far from the true value is small, so long as <span class="math inline">\(m\)</span> is large</li>
+<li>in other words, if you have a biased coin whose chance of landing on heads in <span class="math inline">\(\phi\)</span>, then if you toss in <span class="math inline">\(m\)</span> times and calculate the fraction of time that it came up heads, that will be a good estiamte of <span class="math inline">\(\phi\)</span> with high probaiblity (if <span class="math inline">\(m\)</span> is large)</li>
+</ul></li>
+<li>first, restrict attention to binary classification with labels <span class="math inline">\(y \in \left\{ 0,1 \right\}\)</span>
+<ul>
+<li>note that everything here generalizes to other problems, including regression and multi-class classification</li>
+<li>assume a training set <span class="math inline">\(S = \left\{\left(x^{(i)}, y^{(i)}\right); i = 1, \dots, m \right\}\)</span> of size <span class="math inline">\(m\)</span>, where the training examples <span class="math inline">\(\left(x^{(i)}, y^{(i)} \right)\)</span> are drawn i.i.d. from some probability distribution <span class="math inline">\(\mathcal{D}\)</span></li>
+<li>for a hypothesis <span class="math inline">\(h\)</span>, define the <strong><em>training error</em></strong> (aka the <strong><em>empirical risk</em></strong> or empirical error*** in learning theory): <span class="math display">\[
+\hat{\mathcal{E}}(h) = \frac{1}{m} \sum_{i=1}^m 1 \left\{h\left(x^{(i)} \neq y^{(i)} \right) \right\}
+\]</span></li>
+<li>i.e., the fraction of training examples that <span class="math inline">\(h\)</span> misclassifies
+<ul>
+<li>when we want to make the dependence of <span class="math inline">\(\hat{\mathcal{E}}(h)\)</span> on the training set <span class="math inline">\(S\)</span>, we can write it <span class="math inline">\(\hat{\mathcal{E}}_S(h)\)</span></li>
+</ul></li>
+<li>define the generalization error to be:</li>
+</ul>
+<p><span class="math display">\[
+\mathcal{E}(h) = P_{\left(x,y \right)\sim \mathcal{D} }\left(h(x) \neq y \right)
+\]</span></p>
+<ul>
+<li>i.e., the probability that, if we draw a new example <span class="math inline">\(\left(x,y \right)\)</span> from the distribution <span class="math inline">\(\mathcal{D}\)</span>, it will be misclassified by <span class="math inline">\(h\)</span>
+<ul>
+<li>note the assumption that the training data are drawn from the <em>same</em> distribution <span class="math inline">\(\mathcal{D}\)</span> with which the hypothesis is evaluated
+<ul>
+<li>this is sometimes referred to as one of the <strong><em>PAC</em></strong> (probably approximately correct) assumptions</li>
 </ul></li>
 </ul></li>
-<li>get <span class="math inline">\(\alpha_1\)</span> as a function of <span class="math inline">\(\alpha_2\)</span>:</li>
+<li>consider the setting of linear classification
+<ul>
+<li>let <span class="math inline">\(h_\theta (x) = 1 \left\{\theta^Tx \geq 0 \right\}\)</span>
+<ul>
+<li>what’s a reasonable way of fitting the parameers <span class="math inline">\(\theta\)</span>?
+<ul>
+<li>one approach: minimize the training error by picking:</li>
 </ul>
 <span class="math display">\[
-  \begin{align}
-  \alpha_1y^{(1)} + \alpha_2 y^{(2)}  &amp; = \zeta  \\
-  \alpha_1y^{(1)}                     &amp; = \zeta - \alpha_2 y^{(2)}  &amp; y^{(1)} \in \{-1,1 \} \\
-  \alpha_1                            &amp; = \left(\zeta - \alpha_2 y^{(2)} \right)y^{(1)}
-  \end{align}
-  \]</span>
+\hat{\theta} = \arg \min_{\theta} \hat{\mathcal{E}} \left(h_{\theta} \right)
+\]</span>
 <ul>
-<li>substitute back into <span class="math inline">\(W(\alpha)\)</span>:</li>
+<li>this is called <strong><em>empirical risk minimization</em></strong> (ERM)
+<ul>
+<li>the resulting hypothesis output by the learning algorithm is <span class="math inline">\(\hat{h} = h_{\hat{\theta}}\)</span>
+<ul>
+<li>this is the most “basic” learning algorithm</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li>in our study of learning theory, it will be useful to abstract away from the specific parameterization of hypothesis
+<ul>
+<li>define the <strong><em>hypothesis class</em></strong> <span class="math inline">\(\mathcal{H}\)</span> used by a learning algorithm to be the set of all classifiers considered by it
+<ul>
+<li>e.g., for linear classification, <span class="math inline">\(\mathcal{H} = \left\{h_\theta : h_\theta(x) = 1 \left\{\theta^Tx \geq 0 \right\}, \theta \in \mathbb{R}^{n+1} \right\}\)</span> is the set of all classifiers over <span class="math inline">\(\mathcal{X}\)</span> (the domain of the inputs) where the decision boundary is linear
+<ul>
+<li>most broadly, if we were studying neural networks (for example), then <span class="math inline">\(\mathcal{H}\)</span> would be the set of all classifiers representable by some neural network architecture</li>
+</ul></li>
+</ul></li>
+<li>empirical risk minimization is then a minimization over the class of functions <span class="math inline">\(\mathcal{H}\)</span>, in which the learning algorithm picks the hypothesis:</li>
 </ul>
 <span class="math display">\[
-  W(\alpha_1, \alpha_2, \dots, \alpha_m) = W \left(\left(\zeta - \alpha_2 y^{(2)} \right)y^{(1)}, \alpha_2, \dots, \alpha_m \right)
-  \]</span>
-<ul>
-<li>this is a quadratic function in <span class="math inline">\(\alpha_2\)</span>, i.e. it can be expressed <span class="math inline">\(a\alpha_2^2 + b \alpha_2 + c\)</span>
-<ul>
-<li>ignoring the “box” constraints, this function can easily be solving by setting the derivative to zero and solving</li>
-<li>let <span class="math inline">\(\alpha_2^{\text{new, unclipped}}\)</span> denote the resulting value of <span class="math inline">\(\alpha_2\)</span>
-<ul>
-<li>we can find the optimal <span class="math inline">\(\alpha_2\)</span> by “clipping” it to the <span class="math inline">\([L, H]\)</span> interval specified by the box constraint:</li>
-</ul>
-<span class="math display">\[
-  \alpha_2^{\text{new}} = \begin{cases}
-                          H                                 &amp; \text{if } \alpha_2^{\text{new, unclipped}} &gt; H \\
-                          \alpha_2^{\text{new, unclipped}}  &amp; \text{if } L \leq \alpha_2^{\text{new, unclipped}} \leq H \\
-                          L                                 &amp; \text{if } \alpha_2^{\text{new, unclipped}} &lt; L
-                          \end{cases}
-  \]</span>
-<ul>
-<li>having solved for <span class="math inline">\(\alpha_2^{\text{new}}\)</span>, solve for <span class="math inline">\(\alpha_1^{\text{new}}\)</span>
-<ul>
-<li><span class="math inline">\(\alpha_1 = \left(\zeta - \alpha_2 y^{(2)} \right)y^{(1)}\)</span></li>
-</ul></li>
-</ul></li>
-</ul></li>
-<li>details left unresolved here:
-<ul>
-<li>heuristic for choosing next <span class="math inline">\(\alpha_i, \alpha_j\)</span> to update</li>
-<li>how to update <span class="math inline">\(b\)</span></li>
-</ul></li>
+\hat{h} = \arg \min_{h \in \mathcal{H}}\hat{\mathcal{E}(h)}
+\]</span></li>
 </ul></li>
 </ul></li>
 </ul>
 </div>
+<div id="the-case-of-finite-mathcalh" class="section level2">
+<h2><strong>3. The case of finite <span class="math inline">\(\mathcal{H}\)</span></strong></h2>
 </div>
 </div>
 

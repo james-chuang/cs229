@@ -1,0 +1,104 @@
+---
+output:
+  html_document:
+    toc: TRUE
+    fig_width: 4.5
+    css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
+---
+
+My notes on Andrew Ng's [CS229 lecture 4 notes](http://cs229.stanford.edu/materials.html).
+
+# **Learning Theory**
+
+## **1. Bias/variance tradeoff**
+
+  - also see ESL Ch 2.9 and Ch 7
+  - is a more complex/flexible/high-capacity model better than a simple/inflexible/low-capacity model?
+  - some informal definitions:
+      - ***generalization error***: the expected error on samples not necessarily in the training set
+      - ***bias***: the expected generalization error even if a mode were fit to a very (infinitely) large training set
+          - large bias corresponds with ***underfitting***: i.e. failing to capture structure exhibited by the data
+      - ***variance***: how much the generalization error is expected to change if the training set changes
+      - there is a ***bias-variance tradeoff***:
+          - a simple/inflexible/low-capacity model with few parameters may have large bias (but smaller variance)
+          - a complex/flexible/high-capacity model with many parameters may have large variance (but smaller bias)
+          
+## **2. Preliminaries**
+
+  - things we want to do:
+      1. make the bias/variance tradeoff formal
+          - this will lead to model selection methods, e.g. for choosing what order polynomial to fit to a training set
+      2. relate error on the training set to generalization error
+          - we care about generalization error, but we train models on training sets
+      3. find conditions under which we can prove that learning algorithms will work well?
+  - two simple but useful lemmas:
+      - ***the union bound***
+          - Let $A_1, A_2, \dots, A_k$ be $k$ different (not necessarily independent) events. Then,
+          
+          $$
+          P\left(A_1 \cup \cdots \cup A_k \right) \leq P(A_1) + \dots + P(A_k).
+          $$
+          - in words, the probability of any one of $k$ events happening is at most the sums of the probabilities of the $k$ different events
+      - ***Hoeffding inequality*** aka the ***Chernoff bound*** in learning theory
+          - Let $Z_1, \dots, Z_m$ be $m$ i.i.d. random varaibles drawn from a $\text{Bernoulli}(\phi)$ distribution, i.e.
+          
+          $$
+          P(Z_i = 1) = \phi \quad \text{and} \quad P(Z_i=0) = 1-\phi
+          $$
+          
+          - Let $\hat{\phi} = \frac{1}{m} \sum_{i=1}^m Z_i$ be the mean of these random variables
+          - Let any $\gamma > 0$ be fixed. Then,
+          
+          $$
+          P \left(\left\lvert \phi- \hat{\phi}\right\rvert > \gamma \right) \leq 2 \exp \left( -2 \gamma^2m\right)
+          $$
+          
+          - in words, if we take $\hat{\phi}$ -- the average of $m \text{Bernoulli}(\phi)$ random variables -- to be out estimate of $\phi$, then the probability of our being far from the true value is small, so long as $m$ is large
+          - in other words, if you have a biased coin whose chance of landing on heads in $\phi$, then if you toss in $m$ times and calculate the fraction of time that it came up heads, that will be a good estimate of $\phi$ with high probability (if $m$ is large)
+    - first, restrict attention to binary classification with labels $y \in \left\{ 0,1 \right\}$
+        - note that everything here generalizes to other problems, including regression and multi-class classification
+        - assume a training set $S = \left\{\left(x^{(i)}, y^{(i)}\right); i = 1, \dots, m \right\}$ of size $m$, where the training examples $\left(x^{(i)}, y^{(i)} \right)$ are drawn i.i.d. from some probability distribution $\mathcal{D}$
+        - for a hypothesis $h$, define the ***training error*** (aka the ***empirical risk*** or empirical error*** in learning theory):
+        $$
+        \hat{\mathcal{E}}(h) = \frac{1}{m} \sum_{i=1}^m 1 \left\{h\left(x^{(i)} \neq y^{(i)} \right) \right\}
+        $$
+        - i.e., the fraction of training examples that $h$ misclassifies
+            - when we want to make the dependence of $\hat{\mathcal{E}}(h)$ on the training set $S$, we can write it $\hat{\mathcal{E}}_S(h)$
+        - define the generalization error to be:
+        
+        $$
+        \mathcal{E}(h) = P_{\left(x,y \right)\sim \mathcal{D} }\left(h(x) \neq y \right)
+        $$
+        
+        - i.e., the probability that, if we draw a new example $\left(x,y \right)$ from the distribution $\mathcal{D}$, it will be misclassified by $h$
+            - note the assumption that the training data are drawn from the *same* distribution $\mathcal{D}$ with which the hypothesis is evaluated
+                - this is sometimes referred to as one of the ***PAC*** (probably approximately correct) assumptions
+        - consider the setting of linear classification
+            - let $h_\theta (x) = 1 \left\{\theta^Tx \geq 0 \right\}$
+                - what's a reasonable way of fitting the parameers $\theta$?
+                    - one approach: minimize the training error by picking:
+                    
+                    $$
+                    \hat{\theta} = \arg \min_{\theta} \hat{\mathcal{E}} \left(h_{\theta} \right)
+                    $$
+                    - this is called ***empirical risk minimization*** (ERM)
+                        - the resulting hypothesis output by the learning algorithm is $\hat{h} = h_{\hat{\theta}}$
+                            - this is the most "basic" learning algorithm
+        - in our study of learning theory, it will be useful to abstract away from the specific parameterization of hypothesis
+            - define the ***hypothesis class*** $\mathcal{H}$ used by a learning algorithm to be the set of all classifiers considered by it
+                - e.g., for linear classification, $\mathcal{H} = \left\{h_\theta : h_\theta(x) = 1 \left\{\theta^Tx \geq 0 \right\}, \theta \in \mathbb{R}^{n+1} \right\}$ is the set of all classifiers over $\mathcal{X}$ (the domain of the inputs) where the decision boundary is linear
+                    - most broadly, if we were studying neural networks (for example), then $\mathcal{H}$ would be the set of all classifiers representable by some neural network architecture
+            - empirical risk minimization is then a minimization over the class of functions $\mathcal{H}$, in which the learning algorithm picks the hypothesis:
+            
+            $$
+            \hat{h} = \arg \min_{h \in \mathcal{H}}\hat{\mathcal{E}(h)}
+            $$
+            
+## **3. The case of finite $\mathcal{H}$**
+
+  - Start by considering a learning problem with a finite hypothesis class $\mathcal{H} = \left\{h_1, \dots, h_k \right\}$ consisting of $k$ hypothesis
+      - $\mathcal{H}$ is a set of $k$ functions mapping from $\mathcal{X}$ to $\left\{0,1 \right\}$
+          - empirical risk minimization selects $\hat{h}$ to be whichever of these $k$ functions has the smallest training error
+              - we will 
+
+## **4. The case of infinite $\mathcal{H}$**

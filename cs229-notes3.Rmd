@@ -273,7 +273,7 @@ $$
 
 The constraints can be written as:
 $$
-g_i(w) = -y^{(i} \left(w^Tx^{(i)} +b \right) + 1 \leq 0
+g_i(w) = -y^{(i)} \left(w^Tx^{(i)} +b \right) + 1 \leq 0
 $$
 We have one constraint for each training example. From the KKT dual complementarity condition, $\alpha_i > 0$ only for the training examples that have geometric margin exactly equal to one (i.e., the ones corresponding to constraints that hold with equality $g_i(w)=0$). These training points are exactly the ones closest to the decision boundary, and are called the ***support vectors*** of the optimal margin classifier. The fact that the number of support vectors can be much smaller than the size of the training set will be useful later.
 
@@ -319,7 +319,7 @@ $$
 $$
 The conditions for $p^* = d^*$ and the KKT conditions to hold are satisfied in the above problem. If we solve this maximization problem w.r.t. the $\alpha_i$'s for the optimal $\alpha_i$'s, we can solve for the $w$ by the above equation ($w = \sum_{i=1}^m \alpha_i y^{(i)} x^{(i)}$).
 
-Then $b^*$ can be solved for (some kind of average?):
+Then $b^*$ can be solved for:
 
 $$
 b^* = - \frac{\max_{i:y^{(i)}=-1} w^{*T} x^{(i)} + \min_{i:y^{(i)}=1 } w^{*T}x^{(i)}}{2}
