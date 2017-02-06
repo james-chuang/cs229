@@ -99,7 +99,7 @@ The geometric margin with $\lVert w \rVert = 1$ is equal to the functional margi
 
 The geometric margin is invariant to rescaling of the parameters $w$ and $b$. This means that we can impose an arbitrary scaling constraint on $w$, e.g. $\lVert w \rVert = 1$, $\lvert w_1 \rvert = 5$, or $\lvert w_1 + b \rvert + \lvert w_2\rvert = 2$, and any of these can be satisfied simply by rescaling $w$ and $b$.
 
-Finally, given a training set $S = \left\{ \left(x^{(i)}, y^{(i)} \right); i = 1, \dots, m  \right\}$, we also define the geometric margin of $(w,b)$ w.r.t. $S$ to be the smallest of the geomtric margins on the individual training examples:
+Finally, given a training set $S = \left\{ \left(x^{(i)}, y^{(i)} \right); i = 1, \dots, m  \right\}$, we also define the geometric margin of $(w,b)$ w.r.t. $S$ to be the smallest of the geometric margins on the individual training examples:
 
 $$
 \gamma = \min_{i=1, \dots, m} \gamma^{(i)}
@@ -434,7 +434,7 @@ might be a reasonable measure of the similarity of $x$ and $z$, as it is near $1
       \end{align}
       $$
       
-      - therefore, if $K$ is a valid kernel (i.e., it corresponds to some feature mapping $\phi$), then the corresponding Kernel matrix $K \in \mathbb{R}^{m \times m}$ is symemtric positive semidefinite
+      - therefore, if $K$ is a valid kernel (i.e., it corresponds to some feature mapping $\phi$), then the corresponding Kernel matrix $K \in \mathbb{R}^{m \times m}$ is symmetric positive semidefinite
           - this is a necessary and sufficient condition for $K$ to be a valid kernel (aka a Mercer kernel)
           - Theorem (Mercer). Let $K : \mathbb{R}^n \times \mathbb{R}^n \mapsto \mathbb{R}$ be given. Then for $K$ to be a valid (Mercer) kernel, it is necessary and sufficient that for any $\left\{x^{(1)}, \dots, x^{(m)} \right\}, (m < \infty)$, the corresponding kernel matrix is symmetric and positive semi-definite
   - examples of kernels
