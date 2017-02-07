@@ -141,11 +141,14 @@ $(document).ready(function () {
 <li>some informal definitions:
 <ul>
 <li><strong><em>generalization error</em></strong>: the expected error on samples not necessarily in the training set</li>
-<li><strong><em>bias</em></strong>: the expected generalization error even if a mode were fit to a very (infinitely) large training set
+<li><strong><em>bias</em></strong>: the expected generalization error even if a model were fit to a very (infinitely) large training set
 <ul>
-<li>large bias corresponds with <strong><em>underfitting</em></strong>: i.e. failing to capture structure exhibited by the data</li>
+<li>high bias corresponds with <strong><em>underfitting</em></strong>: i.e. failing to capture structure exhibited by the data</li>
 </ul></li>
-<li><strong><em>variance</em></strong>: how much the generalization error is expected to change if the training set changes</li>
+<li><strong><em>variance</em></strong>: how much the generalization error is expected to change if the training set changes
+<ul>
+<li>high variance corresponds with <strong><em>overfitting</em></strong>: i.e. fitting to the noise in the training set</li>
+</ul></li>
 <li>there is a <strong><em>bias-variance tradeoff</em></strong>:
 <ul>
 <li>a simple/inflexible/low-capacity model with few parameters may have large bias (but smaller variance)</li>
@@ -197,18 +200,18 @@ $(document).ready(function () {
   \]</span></p>
 <ul>
 <li>in words, if we take <span class="math inline">\(\hat{\phi}\)</span> – the average of <span class="math inline">\(m \text{ Bernoulli}(\phi)\)</span> random variables – to be our estimate of <span class="math inline">\(\phi\)</span>, then the probability of our being far from the true value is small, so long as <span class="math inline">\(m\)</span> is large</li>
-<li>in other words, if you have a biased coin whose chance of landing on heads in <span class="math inline">\(\phi\)</span>, then if you toss in <span class="math inline">\(m\)</span> times and calculate the fraction of time that it came up heads, that will be a good estimate of <span class="math inline">\(\phi\)</span> with high probability (if <span class="math inline">\(m\)</span> is large)</li>
+<li>in other words, if you have a biased coin whose chance of landing on heads in <span class="math inline">\(\phi\)</span>, then if you toss it <span class="math inline">\(m\)</span> times and calculate the fraction of time that it came up heads, that will be a good estimate of <span class="math inline">\(\phi\)</span> with high probability (if <span class="math inline">\(m\)</span> is large)</li>
 </ul></li>
 <li>first, restrict attention to binary classification with labels <span class="math inline">\(y \in \left\{ 0,1 \right\}\)</span>
 <ul>
 <li>note that everything here generalizes to other problems, including regression and multi-class classification</li>
 <li>assume a training set <span class="math inline">\(S = \left\{\left(x^{(i)}, y^{(i)}\right); i = 1, \dots, m \right\}\)</span> of size <span class="math inline">\(m\)</span>, where the training examples <span class="math inline">\(\left(x^{(i)}, y^{(i)} \right)\)</span> are drawn i.i.d. from some probability distribution <span class="math inline">\(\mathcal{D}\)</span></li>
-<li>for a hypothesis <span class="math inline">\(h\)</span>, define the <strong><em>training error</em></strong> (aka the <strong><em>empirical risk</em></strong> or empirical error*** in learning theory): <span class="math display">\[
-\hat{\mathcal{E}}(h) = \frac{1}{m} \sum_{i=1}^m 1 \left\{h\left(x^{(i)} \neq y^{(i)} \right) \right\}
+<li>for a hypothesis <span class="math inline">\(h\)</span>, define the <strong><em>training error</em></strong> (aka the <strong><em>empirical risk</em></strong> or <strong><em>empirical error</em></strong> in learning theory): <span class="math display">\[
+\hat{\mathcal{E}}(h) = \frac{1}{m} \sum_{i=1}^m 1 \left\{h\left(x^{(i)} \right)\neq y^{(i)}  \right\}
 \]</span></li>
 <li>i.e., the fraction of training examples that <span class="math inline">\(h\)</span> misclassifies
 <ul>
-<li>when we want to make the dependence of <span class="math inline">\(\hat{\mathcal{E}}(h)\)</span> on the training set <span class="math inline">\(S\)</span>, we can write it <span class="math inline">\(\hat{\mathcal{E}}_S(h)\)</span></li>
+<li>when we want to make clear the dependence of <span class="math inline">\(\hat{\mathcal{E}}(h)\)</span> on the training set <span class="math inline">\(S\)</span>, we can write it <span class="math inline">\(\hat{\mathcal{E}}_S(h)\)</span></li>
 </ul></li>
 <li>define the generalization error to be:</li>
 </ul>
@@ -321,7 +324,7 @@ $(document).ready(function () {
   &amp; \leq \sum_{i=1}^k 2 \exp \left(-2 \gamma^2 m \right) \\
   &amp; \leq 2k \exp \left(-2 \gamma^2 m \right) &amp; \text{subtract both sides from }1 \\
   P\left(\neg \exists \hspace{.2em}h \in \mathcal{H}. \left\lvert \mathcal{E}(h_i) - \hat{\mathcal{E}}(h_i)\right\rvert &gt; \gamma \right) &amp; \leq 1- 2k \exp \left(-2 \gamma^2 m \right) \\
-  P\left(\forall h \in \mathcal{H}. \left\lvert \mathcal{E}(h_i)- \hat{\mathcal{E}}(h_i)\right\rvert \leq \gamma \right) &amp; \leq 1- 2k \exp \left(-2 \gamma^2 m \right)
+  P\left(\forall h \in \mathcal{H}. \left\lvert \mathcal{E}(h_i)- \hat{\mathcal{E}}(h_i)\right\rvert \leq \gamma \right) &amp; \geq 1- 2k \exp \left(-2 \gamma^2 m \right)
   \end{align}
   \]</span>
 <ul>
@@ -340,15 +343,185 @@ $(document).ready(function () {
 <ul>
 <li>each can be bounded in terms of the other two</li>
 <li>e.g., we can ask, “Given <span class="math inline">\(\gamma\)</span> and some <span class="math inline">\(\delta &gt; 0\)</span>, how large must <span class="math inline">\(m\)</span> be before we can guarantee that with probability at least <span class="math inline">\(1-\delta\)</span>, training error will be within <span class="math inline">\(\gamma\)</span> of generalization error?”</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  1- \delta                           &amp; \geq 1- 2k \exp \left(-2 \gamma^2 m \right) \\
+  2k \exp \left(-2 \gamma^2 m \right) &amp; \geq \delta \\
+  \exp \left(-2 \gamma^2 m \right)    &amp; \geq \frac{\delta}{2k} \\
+  - 2 \gamma^2m                       &amp; \geq \log \frac{\delta}{2k} \\
+  m                                   &amp; \leq \frac{1}{2 \gamma^2} \log \frac{\delta}{2k} \\
+  m                                   &amp; \geq \frac{1}{2 \gamma^2} \log \frac{2k}{\delta}
+  \end{align}
+  \]</span></p>
+<ul>
+<li>i.e., with probability at least <span class="math inline">\(1-\delta\)</span>, we have that <span class="math inline">\(\left\lvert \mathcal{E}(h) - \hat{\mathcal{E}}(h)\right\rvert \leq \gamma \hspace{.2em} \forall \hspace{.2em} h \in \mathcal{H}\)</span>
+<ul>
+<li>equivalently, the probability <span class="math inline">\(\left\lvert \mathcal{E}(h) - \hat{\mathcal{E}}(h) &gt; \gamma \right\rvert\)</span> for some <span class="math inline">\(h \in \mathcal{H}\)</span> is at most <span class="math inline">\(\delta\)</span></li>
+<li>this bound tells us how many training examples we need in order to make a guarantee
+<ul>
+<li><strong><em>sample complexity</em></strong>: the training set size <span class="math inline">\(m\)</span> that an algorithm requires to achieve a certain level of performance</li>
+</ul></li>
+<li>key property: the number of training examples needed to make this guarantee is only <em>logarithmic</em> in <span class="math inline">\(k\)</span>, the number of hypotheses in <span class="math inline">\(\mathcal{H}\)</span></li>
+</ul></li>
+<li>similarly, can hold <span class="math inline">\(m\)</span> and <span class="math inline">\(\delta\)</span> fixed and solve for <span class="math inline">\(\gamma\)</span>:</li>
+</ul>
+<span class="math display">\[
+  \begin{align}
+  -2\gamma^2m &amp; \geq \log \frac{\delta}{2k}           \\
+  \gamma^2    &amp; \leq - \frac{1}{2m} \log \frac{d}{2k} \\
+  \gamma^2    &amp; \leq \frac{1}{2m} \log \frac{2k}{d} \\
+  \gamma      &amp; \leq \sqrt{\frac{1}{2m} \log \frac{2k}{d}} \\
+  \left\lvert \hat{\mathcal{E}}(h) - \mathcal{E}(h)\right\rvert &amp; \leq \sqrt{\frac{1}{2m} \log \frac{2k}{d}}
+  \end{align}
+  \]</span>
+<ul>
+<li>assume that uniform convergence holds, i.e. <span class="math inline">\(\left\lvert \mathcal{E}(h) - \hat{\mathcal{E}}(h) \right\rvert \leq \gamma \hspace{.2em} \forall \hspace{.2em} h \in \mathcal{H}\)</span>
+<ul>
+<li>what can we prove about the generalization of our learning algorithm that picked <span class="math inline">\(\hat{h} = \arg \min_{h \in \mathcal{H}} \hat{\mathcal{E}}(h)\)</span>?</li>
+<li>define <span class="math inline">\(h^* = \arg \min_{h \in \mathcal{H}} \mathcal{E}(h)\)</span> to be the best possible hypothesis in <span class="math inline">\(\mathcal{H}\)</span>
+<ul>
+<li><span class="math inline">\(h^*\)</span> is the best hypothesis given <span class="math inline">\(\mathcal{H}\)</span>, so it makes sense to compare performance relative to <span class="math inline">\(h^*\)</span>: <span class="math display">\[
+  \begin{align}
+  \left\lvert \mathcal{E}\left(\hat{h}\right) - \hat{\mathcal{E}}\left(\hat{h} \right)\right\rvert &amp; \leq \gamma \\
+  \mathcal{E}\left(\hat{h}\right) &amp; \leq \hat{\mathcal{E}} \left( \hat{h} \right) + \gamma  \\
+  \mathcal{E}\left(\hat{h}\right) &amp; \leq \hat{\mathcal{E}} \left( h^* \right) + \gamma  &amp;  \hat{\mathcal{E}}\left(\hat{h} \right) \leq \hat{\mathcal{E}}\left(h^* \right) &amp;&amp; \left\lvert \mathcal{E}\left(h^*\right) - \hat{\mathcal{E}}\left(h^* \right)\right\rvert\\
+  \mathcal{E}\left(\hat{h}\right) &amp; \leq \mathcal{E} \left( h^* \right) + 2\gamma &amp;&amp;&amp; \hat{\mathcal{E}}\left(h^* \right) \leq \mathcal{E} \left(h^* \right) + \gamma    \\
+  \end{align}
+  \]</span></li>
+<li>therefore, if uniform convergence occurs, then the generalization error of <span class="math inline">\(\hat{h}\)</span> is at most <span class="math inline">\(2\gamma\)</span> worse than the best possible hypothesis in <span class="math inline">\(\mathcal{H}\)</span>!</li>
 </ul></li>
 </ul></li>
 </ul></li>
 </ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li>theorem:
+<ul>
+<li>Let <span class="math inline">\(\lvert \mathcal{H} \rvert = k\)</span></li>
+<li>let <span class="math inline">\(m\)</span>, <span class="math inline">\(\delta\)</span> be fixed</li>
+<li>then, with probability at least <span class="math inline">\(1 - \delta\)</span>:</li>
+</ul>
+<span class="math display">\[
+  \mathcal{E}\left(\hat{h} \right) \leq \left(\min_{h \in \mathcal{H}} \mathcal{E} \left(h \right) \right) + 2 \sqrt{\frac{1}{2m}\log \frac{2k}{\delta}}
+  \]</span>
+<ul>
+<li>this is proved by:
+<ol style="list-style-type: decimal">
+<li>letting <span class="math inline">\(\gamma\)</span> equal the <span class="math inline">\(\sqrt{\cdot}\)</span> term</li>
+<li>the previous argument that uniform convergence occurs with probability at least <span class="math inline">\(1 - \delta\)</span></li>
+<li>noting that uniform convergence implies that <span class="math inline">\(\mathcal{E}(h)\)</span> is at most <span class="math inline">\(2 \gamma\)</span> higher than <span class="math inline">\(\mathcal{E}(h^*) = \min_{h \in \mathcal{H}} \mathcal{E}(h)\)</span></li>
+</ol></li>
+<li>this quantifies the bias/variance tradeoff in model selection
+<ul>
+<li>specifically, suppose we have some hypothesis class <span class="math inline">\(\mathcal{H}\)</span>, and a much larger hypothesis class <span class="math inline">\(\mathcal{H}^\prime \supseteq \mathcal{H}\)</span></li>
+<li>if we choose <span class="math inline">\(\mathcal{H}^\prime\)</span>:
+<ul>
+<li>the first term <span class="math inline">\(\min_{h \in \mathcal{H}} (h)\)</span> can only decrease, so the bias can only decrease</li>
+<li><span class="math inline">\(k\)</span> (the number of possible hypotheses) increase, so the second term <span class="math inline">\(2 \sqrt{\cdot}\)</span> also increases, corresponding to an increase in variance</li>
+</ul></li>
+</ul></li>
+<li>by holding <span class="math inline">\(\gamma\)</span> and <span class="math inline">\(\delta\)</span> fixed and solving for <span class="math inline">\(m\)</span> as before, we also obtain the following sample complexity bound:
+<ul>
+<li>Let <span class="math inline">\(\lvert \mathcal{H} \rvert = k\)</span></li>
+<li>let <span class="math inline">\(\delta, \gamma\)</span> be fixed</li>
+<li>then, for <span class="math inline">\(\mathcal{E} \left(\hat{h} \right) \leq \min_{h \in \mathcal{H}} \mathcal{E}(h) + 2 \gamma\)</span> to hold with probability at least <span class="math inline">\(1- \delta\)</span>, it suffices that:</li>
+</ul>
+<span class="math display">\[
+  \begin{align}
+  m &amp; \geq \frac{1}{2 \gamma^2} \log \frac{2k}{\delta} \\
+    &amp; = O \left(\frac{1}{\gamma^2} \log \frac{k}{\delta} \right)
+  \end{align}
+  \]</span></li>
 </ul></li>
 </ul>
 </div>
 <div id="the-case-of-infinite-mathcalh" class="section level2">
 <h2><strong>4. The case of infinite <span class="math inline">\(\mathcal{H}\)</span></strong></h2>
+<ul>
+<li>many hypothesis classes contain an infinite number of functions
+<ul>
+<li>includes any parameterized by real numbers, e.g. linear classification</li>
+</ul></li>
+<li>first, an “incorrect” argument:
+<ul>
+<li>suppose we have <span class="math inline">\(\mathcal{H}\)</span> parameterized by <span class="math inline">\(d\)</span> real numbers
+<ul>
+<li>a computer can only use a finite number of bits to represent an real number
+<ul>
+<li>IEEE double-precision floating point (i.e. a <code>double</code> in C) uses 64 bits to represent a floating point number</li>
+<li>thus, the hypothesis class consists of at most <span class="math inline">\(k = 2^{64d}\)</span> different hypotheses
+<ul>
+<li>we therefore find that, to guarantee <span class="math inline">\(\mathcal{E}\left(\hat{h} \right) \leq \mathcal{E}\left(h^* \right) + 2 \gamma\)</span> to hold with probability at least <span class="math inline">\(1- \delta\)</span>, it suffices that:</li>
+</ul>
+<span class="math display">\[
+  \begin{align}
+  m &amp; \geq O \left(\frac{1}{\gamma^2} \log \frac{2^{64d}}{\delta} \right) \\
+  m &amp; \geq O \left(\frac{d}{\gamma^2} \log \frac{1}{d} \right) \\
+  m &amp; \geq O_{\gamma, \delta} \left(d \right) &amp; O_{\gamma, \delta} \text{ indicates that } O \text{ is hiding constants dependent on } \gamma, \delta
+  \end{align}
+  \]</span>
+<ul>
+<li>thus, the number of training examples needed is at most <strong>linear</strong> in the parameters of the model</li>
+<li>this proof is not entirely satisfying since it relies on the precision of 64-bit floating point, but the conclusion is roughly correct: If trying to minimize training error, then in order to learn “well” using a hypothesis class that has <span class="math inline">\(d\)</span> parameters, in general we need on the order of a linear number of training examples in <span class="math inline">\(d\)</span>
+<ul>
+<li>note that this is proven for algorithms that use empirical risk minimization. Good theoretical guarantees on non-ERM learning algorithms are a subject of active research</li>
+</ul></li>
+<li>this proof is also unsatisfying because it relies on the parameterization of <span class="math inline">\(\mathcal{H}\)</span>
+<ul>
+<li>intuitively, the parameterization doesn’t seem like it should matter</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li>in order to derive a more complete argument, we need a few definitions
+<ul>
+<li>Given a set <span class="math inline">\(S = \left\{x^{(i)}, \dots, x^{(d)} \right\}\)</span> (unrelated to the definition of a training set) of points <span class="math inline">\(x^{(i)} \in \mathcal{X}\)</span>:
+<ul>
+<li>we say that <span class="math inline">\(\mathcal{H}\)</span> <strong><em>shatters</em></strong> <span class="math inline">\(\mathcal{S}\)</span> if <span class="math inline">\(\mathcal{H}\)</span> can realize any labeling on <span class="math inline">\(S\)</span>.
+<ul>
+<li>i.e., if for any set of labels <span class="math inline">\(\left\{y^{(i)}, \dots, y^{(d)} \right\}\)</span>, there exists some <span class="math inline">\(h \in \mathcal{H}\)</span> so that <span class="math inline">\(h\left(x^{(i)} \right)= y^{(i)}\)</span> for all <span class="math inline">\(i = 1, \dots, d\)</span></li>
+</ul></li>
+</ul></li>
+<li>Given a hypothesis class <span class="math inline">\(\mathcal{H}\)</span>, define its <strong><em>Vapnik-Chervonenkis dimension</em></strong>, <span class="math inline">\(\text{VC}(\mathcal{H})\)</span> to be the size of the largest set that is shattered by <span class="math inline">\(\mathcal{H}\)</span>
+<ul>
+<li>If <span class="math inline">\(\mathcal{H}\)</span> can shatter arbitrarily large sets, then <span class="math inline">\(\text{VC}(\mathcal{H}) = \infty\)</span></li>
+<li>under the definition of the VC dimension, in order to prove that <span class="math inline">\(\text{VC}(\mathcal{H})\)</span> is at least <span class="math inline">\(d\)</span>, we only need to show that there’s <em>at least</em> one set of size <span class="math inline">\(d\)</span> that <span class="math inline">\(\mathcal{H}\)</span> can shatter</li>
+</ul></li>
+</ul></li>
+<li>the following theorem, due to Vapnik, can then be shown
+<ul>
+<li>arguably the most important theorem in all of learning theory</li>
+<li>Let <span class="math inline">\(\mathcal{H}\)</span> be given</li>
+<li>let <span class="math inline">\(d = \text{VC}(\mathcal{H})\)</span></li>
+<li>then, with probability at least <span class="math inline">\(1-\delta\)</span>, we have that for all <span class="math inline">\(h \in \mathcal{H}\)</span>,</li>
+</ul>
+<span class="math display">\[
+  \left\lvert \mathcal{E}(h) - \hat{\mathcal{E}}(h) \right\rvert \leq O \left(\sqrt{\frac{d}{m} \log \frac{m}{d} + \frac{1}{m} \log \frac{1}{\delta}} \right)
+  \]</span>
+<ul>
+<li>thus, with probability at least <span class="math inline">\(1- \delta\)</span>, we also have that:</li>
+</ul>
+<span class="math display">\[
+  \mathcal{E} \left(\hat{h} \right) \leq \mathcal{E}\left(h^* \right) + O \left(\sqrt{\frac{d}{m} \log \frac{m}{d} + \frac{1}{m} \log \frac{1}{\delta}} \right)
+  \]</span>
+<ul>
+<li>i.e., if a hypothesis class has finite VC dimension, then uniform convergence occurs as <span class="math inline">\(m\)</span> becoems large
+<ul>
+<li>as for the finite case, this allows us to give a bound on <span class="math inline">\(\mathcal{E}(h)\)</span> in terms of <span class="math inline">\(\mathcal{E}\left(h^* \right)\)</span></li>
+</ul></li>
+<li>Corollary: For <span class="math inline">\(\left\lvert \mathcal{E}(h) - \hat{\mathcal{E}}(h) \right\rvert \leq \gamma\)</span> to hold for all <span class="math inline">\(h \in \mathcal{H}\)</span> (and hence <span class="math inline">\(\mathcal{E}\left(\hat{h} \right) \leq \mathcal{E} (h^*) + 2 \gamma\)</span>) with probability at least <span class="math inline">\(1- \delta\)</span>, it suffices that <span class="math inline">\(m= O_{\gamma, \delta}(d)\)</span>.
+<ul>
+<li>i.e., the number of training examples needed to learn “well” using <span class="math inline">\(\mathcal{H}\)</span> is linear in the VC dimension of <span class="math inline">\(\mathcal{H}\)</span>
+<ul>
+<li>for “most” hypothesis classes, the VC dimension (assuming a “reasonable” parameterization) is also roughly linear in the number of parameters</li>
+</ul></li>
+<li>conclusion: for an algorithm that tries to minimize training error, the number of training examples needed is usually roughly linear in the number of parameters of <span class="math inline">\(\mathcal{H}\)</span></li>
+</ul></li>
+</ul></li>
+</ul>
 </div>
 </div>
 
