@@ -40,7 +40,7 @@ My notes on Andrew Ng's [CS229 lecture 4 notes](http://cs229.stanford.edu/materi
           $$
           - in words, the probability of any one of $k$ events happening is at most the sums of the probabilities of the $k$ different events
       - ***Hoeffding inequality*** aka the ***Chernoff bound*** in learning theory
-          - Let $Z_1, \dots, Z_m$ be $m$ i.i.d. random varaibles drawn from a $\text{Bernoulli}(\phi)$ distribution, i.e.
+          - Let $Z_1, \dots, Z_m$ be $m$ i.i.d. random variables drawn from a $\text{Bernoulli}(\phi)$ distribution, i.e.
           
           $$
           P(Z_i = 1) = \phi \quad \text{and} \quad P(Z_i=0) = 1-\phi
@@ -53,7 +53,7 @@ My notes on Andrew Ng's [CS229 lecture 4 notes](http://cs229.stanford.edu/materi
           P \left(\left\lvert \phi- \hat{\phi}\right\rvert > \gamma \right) \leq 2 \exp \left( -2 \gamma^2m\right)
           $$
           
-          - in words, if we take $\hat{\phi}$ -- the average of $m \text{Bernoulli}(\phi)$ random variables -- to be out estimate of $\phi$, then the probability of our being far from the true value is small, so long as $m$ is large
+          - in words, if we take $\hat{\phi}$ -- the average of $m \text{ Bernoulli}(\phi)$ random variables -- to be our estimate of $\phi$, then the probability of our being far from the true value is small, so long as $m$ is large
           - in other words, if you have a biased coin whose chance of landing on heads in $\phi$, then if you toss in $m$ times and calculate the fraction of time that it came up heads, that will be a good estimate of $\phi$ with high probability (if $m$ is large)
     - first, restrict attention to binary classification with labels $y \in \left\{ 0,1 \right\}$
         - note that everything here generalizes to other problems, including regression and multi-class classification
@@ -75,7 +75,7 @@ My notes on Andrew Ng's [CS229 lecture 4 notes](http://cs229.stanford.edu/materi
                 - this is sometimes referred to as one of the ***PAC*** (probably approximately correct) assumptions
         - consider the setting of linear classification
             - let $h_\theta (x) = 1 \left\{\theta^Tx \geq 0 \right\}$
-                - what's a reasonable way of fitting the parameers $\theta$?
+                - what's a reasonable way of fitting the parameters $\theta$?
                     - one approach: minimize the training error by picking:
                     
                     $$
@@ -91,14 +91,57 @@ My notes on Andrew Ng's [CS229 lecture 4 notes](http://cs229.stanford.edu/materi
             - empirical risk minimization is then a minimization over the class of functions $\mathcal{H}$, in which the learning algorithm picks the hypothesis:
             
             $$
-            \hat{h} = \arg \min_{h \in \mathcal{H}}\hat{\mathcal{E}(h)}
+            \hat{h} = \arg \min_{h \in \mathcal{H}}\hat{\mathcal{E}}(h)
             $$
             
 ## **3. The case of finite $\mathcal{H}$**
 
-  - Start by considering a learning problem with a finite hypothesis class $\mathcal{H} = \left\{h_1, \dots, h_k \right\}$ consisting of $k$ hypothesis
+  - Start by considering a learning problem with a finite hypothesis class $\mathcal{H} = \left\{h_1, \dots, h_k \right\}$ consisting of $k$ hypotheses
       - $\mathcal{H}$ is a set of $k$ functions mapping from $\mathcal{X}$ to $\left\{0,1 \right\}$
           - empirical risk minimization selects $\hat{h}$ to be whichever of these $k$ functions has the smallest training error
-              - we will 
-
+              - we will derive some guarantees on the generalization error of $\hat{h}$:
+                  - first, we will show that $\hat{\mathcal{E}}(h)$ is a reliable estimate of $\mathcal{E}(h)$ for all $h$
+                      - second, we will show that this implies an upper-bound on the generalization error of $\hat{h}$
+          - take any one, fixed $h_i \in \mathcal{H}$
+              - consider a Bernoulli random variable $Z$ whose distribution is defined as follows:
+                  - sample $(x,y) \sim D$
+                  - then, set $Z = 1 \left\{h_i(x) \neq y \right\}$
+                      - i.e., draw one example, and let $Z$ indicate whether $h_i$ misclassifies it
+                  - similarly, define $Z_j = 1 \left\{h_i\left(x^{(j)}\right) \neq y^{(j)}\right\}$
+                  - since the training set was drawn iid from $\mathcal{D}$, $Z$ and the $Z_j$'s have the same distribution
+                      - the misclassification probability on a randomly drawn example, i.e. $\mathcal{E}(h)$, is exactly the expected value of $Z$ (and $Z_j$). Moreover, the training error can be written:
+                      
+                      $$
+                      \hat{\mathcal{E}}(h_i) = \frac{1}{m} \sum_{j=1}^m Z_j
+                      $$
+                      - thus, $\hat{\mathcal{E}}(h_i)$ is exactly the mean of the $m$ random variables $Z_j$ that are drawn iid from a Bernoulli distribution with mean $\mathcal{E}(h_i)$
+                          - by the Hoeffding inequality:
+                          
+                          $$
+                          P \left( \left\lvert \mathcal{E}(h_i) - \hat{\mathcal{E}}(h_i)\right\rvert > \gamma\right) \leq 2 \exp(-2\gamma^2m)
+                          $$
+                          - this shows that, for this particular $h_i$, training error will be close to generalization error with high probability, assuming $m$ is large
+                              - to prove that this is simultaneously true for *all* $h \in \mathcal{H}$:
+                                  - let $A_i$ denote the event that $\left\lvert \mathcal{E}(h_i) - \hat{\mathcal{E}} (h_i)\right\rvert$
+                                  - then, the above inequality (for a particular $A_i$) can be written $P(A_i) \leq 2 \exp(-2\gamma^2m)$
+                                  - using the union bound:
+                                  
+                                  $$
+                                  \begin{align}
+                                  P\left(\exists \hspace{.2em}h \in \mathcal{H}. \left\lvert \mathcal{E}(h_i) - \hat{\mathcal{E}}(h_i)\right\rvert > \gamma \right) & = P(A_1 \cup \cdots \cup A_k) \\
+                                  & \leq \sum_{i=1}^k P(A_i) \\
+                                  & \leq \sum_{i=1}^k 2 \exp \left(-2 \gamma^2 m \right) \\
+                                  & \leq 2k \exp \left(-2 \gamma^2 m \right) & \text{subtract both sides from }1 \\
+                                  P\left(\neg \exists \hspace{.2em}h \in \mathcal{H}. \left\lvert \mathcal{E}(h_i) - \hat{\mathcal{E}}(h_i)\right\rvert > \gamma \right) & \leq 1- 2k \exp \left(-2 \gamma^2 m \right) \\
+                                  P\left(\forall h \in \mathcal{H}. \left\lvert \mathcal{E}(h_i)- \hat{\mathcal{E}}(h_i)\right\rvert \leq \gamma \right) & \leq 1- 2k \exp \left(-2 \gamma^2 m \right)
+                                  \end{align}
+                                  $$
+                                - i.e., with probability at least $1-2k\exp\left(-2 \gamma^2 m \right)$, $\mathcal{E}(h)$ will be within $\gamma$ of $\hat{\mathcal{E}}(h)$ for all $h \in \mathcal{H}$.
+                                    - this is a ***uniform convergence*** result because this bound holds simultaneously for *all* $h \in \mathcal{H}$.
+              - what we did above was, given particular values of $m$ and $\gamma$, put a bound on the probability that for some $h \in \mathcal{H}, \left\lvert \mathcal{E}(h) - \hat{\mathcal{E}}(h)\right\rvert > \gamma$
+                  - the three quantities of interest: $m$, $\gamma$, and the probability of error
+                      - each can be bounded in terms of the other two
+                      - e.g., we can ask, "Given $\gamma$ and some $\delta > 0$, how large must $m$ be before we can guarantee that with probability at least $1-\delta$, training error will be within $\gamma$ of generalization error?"
+                          
 ## **4. The case of infinite $\mathcal{H}$**
+

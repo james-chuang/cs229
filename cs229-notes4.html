@@ -125,6 +125,7 @@ $(document).ready(function () {
 <li><a href="#biasvariance-tradeoff"><strong>1. Bias/variance tradeoff</strong></a></li>
 <li><a href="#preliminaries"><strong>2. Preliminaries</strong></a></li>
 <li><a href="#the-case-of-finite-mathcalh"><strong>3. The case of finite <span class="math inline">\(\mathcal{H}\)</span></strong></a></li>
+<li><a href="#the-case-of-infinite-mathcalh"><strong>4. The case of infinite <span class="math inline">\(\mathcal{H}\)</span></strong></a></li>
 </ul></li>
 </ul>
 </div>
@@ -182,7 +183,7 @@ $(document).ready(function () {
 </ul></li>
 <li><strong><em>Hoeffding inequality</em></strong> aka the <strong><em>Chernoff bound</em></strong> in learning theory
 <ul>
-<li>Let <span class="math inline">\(Z_1, \dots, Z_m\)</span> be <span class="math inline">\(m\)</span> i.i.d. random varaibles drawn from a <span class="math inline">\(\text{Bernoulli}(\phi)\)</span> distribution, i.e.</li>
+<li>Let <span class="math inline">\(Z_1, \dots, Z_m\)</span> be <span class="math inline">\(m\)</span> i.i.d. random variables drawn from a <span class="math inline">\(\text{Bernoulli}(\phi)\)</span> distribution, i.e.</li>
 </ul>
 <p><span class="math display">\[
   P(Z_i = 1) = \phi \quad \text{and} \quad P(Z_i=0) = 1-\phi
@@ -195,8 +196,8 @@ $(document).ready(function () {
   P \left(\left\lvert \phi- \hat{\phi}\right\rvert &gt; \gamma \right) \leq 2 \exp \left( -2 \gamma^2m\right)
   \]</span></p>
 <ul>
-<li>in words, if we take <span class="math inline">\(\hat{\phi}\)</span> – the average of <span class="math inline">\(m \text{Bernoulli}(\phi)\)</span> random variables – to be out estimate of <span class="math inline">\(\phi\)</span>, then the probability of our being far from the true value is small, so long as <span class="math inline">\(m\)</span> is large</li>
-<li>in other words, if you have a biased coin whose chance of landing on heads in <span class="math inline">\(\phi\)</span>, then if you toss in <span class="math inline">\(m\)</span> times and calculate the fraction of time that it came up heads, that will be a good estiamte of <span class="math inline">\(\phi\)</span> with high probaiblity (if <span class="math inline">\(m\)</span> is large)</li>
+<li>in words, if we take <span class="math inline">\(\hat{\phi}\)</span> – the average of <span class="math inline">\(m \text{ Bernoulli}(\phi)\)</span> random variables – to be our estimate of <span class="math inline">\(\phi\)</span>, then the probability of our being far from the true value is small, so long as <span class="math inline">\(m\)</span> is large</li>
+<li>in other words, if you have a biased coin whose chance of landing on heads in <span class="math inline">\(\phi\)</span>, then if you toss in <span class="math inline">\(m\)</span> times and calculate the fraction of time that it came up heads, that will be a good estimate of <span class="math inline">\(\phi\)</span> with high probability (if <span class="math inline">\(m\)</span> is large)</li>
 </ul></li>
 <li>first, restrict attention to binary classification with labels <span class="math inline">\(y \in \left\{ 0,1 \right\}\)</span>
 <ul>
@@ -226,7 +227,7 @@ $(document).ready(function () {
 <ul>
 <li>let <span class="math inline">\(h_\theta (x) = 1 \left\{\theta^Tx \geq 0 \right\}\)</span>
 <ul>
-<li>what’s a reasonable way of fitting the parameers <span class="math inline">\(\theta\)</span>?
+<li>what’s a reasonable way of fitting the parameters <span class="math inline">\(\theta\)</span>?
 <ul>
 <li>one approach: minimize the training error by picking:</li>
 </ul>
@@ -256,7 +257,7 @@ $(document).ready(function () {
 <li>empirical risk minimization is then a minimization over the class of functions <span class="math inline">\(\mathcal{H}\)</span>, in which the learning algorithm picks the hypothesis:</li>
 </ul>
 <span class="math display">\[
-\hat{h} = \arg \min_{h \in \mathcal{H}}\hat{\mathcal{E}(h)}
+\hat{h} = \arg \min_{h \in \mathcal{H}}\hat{\mathcal{E}}(h)
 \]</span></li>
 </ul></li>
 </ul></li>
@@ -264,6 +265,90 @@ $(document).ready(function () {
 </div>
 <div id="the-case-of-finite-mathcalh" class="section level2">
 <h2><strong>3. The case of finite <span class="math inline">\(\mathcal{H}\)</span></strong></h2>
+<ul>
+<li>Start by considering a learning problem with a finite hypothesis class <span class="math inline">\(\mathcal{H} = \left\{h_1, \dots, h_k \right\}\)</span> consisting of <span class="math inline">\(k\)</span> hypotheses
+<ul>
+<li><span class="math inline">\(\mathcal{H}\)</span> is a set of <span class="math inline">\(k\)</span> functions mapping from <span class="math inline">\(\mathcal{X}\)</span> to <span class="math inline">\(\left\{0,1 \right\}\)</span>
+<ul>
+<li>empirical risk minimization selects <span class="math inline">\(\hat{h}\)</span> to be whichever of these <span class="math inline">\(k\)</span> functions has the smallest training error
+<ul>
+<li>we will derive some guarantees on the generalization error of <span class="math inline">\(\hat{h}\)</span>:
+<ul>
+<li>first, we will show that <span class="math inline">\(\hat{\mathcal{E}}(h)\)</span> is a reliable estimate of <span class="math inline">\(\mathcal{E}(h)\)</span> for all <span class="math inline">\(h\)</span>
+<ul>
+<li>second, we will show that this implies an upper-bound on the generalization error of <span class="math inline">\(\hat{h}\)</span></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li>take any one, fixed <span class="math inline">\(h_i \in \mathcal{H}\)</span>
+<ul>
+<li>consider a Bernoulli random variable <span class="math inline">\(Z\)</span> whose distribution is defined as follows:
+<ul>
+<li>sample <span class="math inline">\((x,y) \sim D\)</span></li>
+<li>then, set <span class="math inline">\(Z = 1 \left\{h_i(x) \neq y \right\}\)</span>
+<ul>
+<li>i.e., draw one example, and let <span class="math inline">\(Z\)</span> indicate whether <span class="math inline">\(h_i\)</span> misclassifies it</li>
+</ul></li>
+<li>similarly, define <span class="math inline">\(Z_j = 1 \left\{h_i\left(x^{(j)}\right) \neq y^{(j)}\right\}\)</span></li>
+<li>since the training set was drawn iid from <span class="math inline">\(\mathcal{D}\)</span>, <span class="math inline">\(Z\)</span> and the <span class="math inline">\(Z_j\)</span>’s have the same distribution
+<ul>
+<li>the misclassification probability on a randomly drawn example, i.e. <span class="math inline">\(\mathcal{E}(h)\)</span>, is exactly the expected value of <span class="math inline">\(Z\)</span> (and <span class="math inline">\(Z_j\)</span>). Moreover, the training error can be written:</li>
+</ul>
+<span class="math display">\[
+  \hat{\mathcal{E}}(h_i) = \frac{1}{m} \sum_{j=1}^m Z_j
+  \]</span>
+<ul>
+<li>thus, <span class="math inline">\(\hat{\mathcal{E}}(h_i)\)</span> is exactly the mean of the <span class="math inline">\(m\)</span> random variables <span class="math inline">\(Z_j\)</span> that are drawn iid from a Bernoulli distribution with mean <span class="math inline">\(\mathcal{E}(h_i)\)</span>
+<ul>
+<li>by the Hoeffding inequality:</li>
+</ul>
+<span class="math display">\[
+  P \left( \left\lvert \mathcal{E}(h_i) - \hat{\mathcal{E}}(h_i)\right\rvert &gt; \gamma\right) \leq 2 \exp(-2\gamma^2m)
+  \]</span>
+<ul>
+<li>this shows that, for this particular <span class="math inline">\(h_i\)</span>, training error will be close to generalization error with high probability, assuming <span class="math inline">\(m\)</span> is large
+<ul>
+<li>to prove that this is simultaneously true for <em>all</em> <span class="math inline">\(h \in \mathcal{H}\)</span>:
+<ul>
+<li>let <span class="math inline">\(A_i\)</span> denote the event that <span class="math inline">\(\left\lvert \mathcal{E}(h_i) - \hat{\mathcal{E}} (h_i)\right\rvert\)</span></li>
+<li>then, the above inequality (for a particular <span class="math inline">\(A_i\)</span>) can be written <span class="math inline">\(P(A_i) \leq 2 \exp(-2\gamma^2m)\)</span></li>
+<li>using the union bound:</li>
+</ul>
+<span class="math display">\[
+  \begin{align}
+  P\left(\exists \hspace{.2em}h \in \mathcal{H}. \left\lvert \mathcal{E}(h_i) - \hat{\mathcal{E}}(h_i)\right\rvert &gt; \gamma \right) &amp; = P(A_1 \cup \cdots \cup A_k) \\
+  &amp; \leq \sum_{i=1}^k P(A_i) \\
+  &amp; \leq \sum_{i=1}^k 2 \exp \left(-2 \gamma^2 m \right) \\
+  &amp; \leq 2k \exp \left(-2 \gamma^2 m \right) &amp; \text{subtract both sides from }1 \\
+  P\left(\neg \exists \hspace{.2em}h \in \mathcal{H}. \left\lvert \mathcal{E}(h_i) - \hat{\mathcal{E}}(h_i)\right\rvert &gt; \gamma \right) &amp; \leq 1- 2k \exp \left(-2 \gamma^2 m \right) \\
+  P\left(\forall h \in \mathcal{H}. \left\lvert \mathcal{E}(h_i)- \hat{\mathcal{E}}(h_i)\right\rvert \leq \gamma \right) &amp; \leq 1- 2k \exp \left(-2 \gamma^2 m \right)
+  \end{align}
+  \]</span>
+<ul>
+<li>i.e., with probability at least <span class="math inline">\(1-2k\exp\left(-2 \gamma^2 m \right)\)</span>, <span class="math inline">\(\mathcal{E}(h)\)</span> will be within <span class="math inline">\(\gamma\)</span> of <span class="math inline">\(\hat{\mathcal{E}}(h)\)</span> for all <span class="math inline">\(h \in \mathcal{H}\)</span>.
+<ul>
+<li>this is a <strong><em>uniform convergence</em></strong> result because this bound holds simultaneously for <em>all</em> <span class="math inline">\(h \in \mathcal{H}\)</span>.</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li>what we did above was, given particular values of <span class="math inline">\(m\)</span> and <span class="math inline">\(\gamma\)</span>, put a bound on the probability that for some <span class="math inline">\(h \in \mathcal{H}, \left\lvert \mathcal{E}(h) - \hat{\mathcal{E}}(h)\right\rvert &gt; \gamma\)</span>
+<ul>
+<li>the three quantities of interest: <span class="math inline">\(m\)</span>, <span class="math inline">\(\gamma\)</span>, and the probability of error
+<ul>
+<li>each can be bounded in terms of the other two</li>
+<li>e.g., we can ask, “Given <span class="math inline">\(\gamma\)</span> and some <span class="math inline">\(\delta &gt; 0\)</span>, how large must <span class="math inline">\(m\)</span> be before we can guarantee that with probability at least <span class="math inline">\(1-\delta\)</span>, training error will be within <span class="math inline">\(\gamma\)</span> of generalization error?”</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+<div id="the-case-of-infinite-mathcalh" class="section level2">
+<h2><strong>4. The case of infinite <span class="math inline">\(\mathcal{H}\)</span></strong></h2>
 </div>
 </div>
 

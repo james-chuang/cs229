@@ -277,7 +277,7 @@ g_i(w) = -y^{(i)} \left(w^Tx^{(i)} +b \right) + 1 \leq 0
 $$
 We have one constraint for each training example. From the KKT dual complementarity condition, $\alpha_i > 0$ only for the training examples that have geometric margin exactly equal to one (i.e., the ones corresponding to constraints that hold with equality $g_i(w)=0$). These training points are exactly the ones closest to the decision boundary, and are called the ***support vectors*** of the optimal margin classifier. The fact that the number of support vectors can be much smaller than the size of the training set will be useful later.
 
-In writing the dual form of the problem, we will write in terms of inner products $\left\langle x^{(i)}, x^{(j)} \right\rangle$ between points in the input feature space. This will allow application of the kernel trick later.
+**We recast the optimization problem as the dual form of the problem, because the solution will be in terms of inner products** $\left\langle x^{(i)}, x^{(j)} \right\rangle$ between points in the input feature space. This will allow application of the kernel trick later.
 
 The Lagrangian for the optimal margin classifier problem:
 $$
