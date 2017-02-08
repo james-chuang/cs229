@@ -22,15 +22,59 @@ For each of the functions $K$ below, state whether it is necessarily a kernel. I
 
 **(a)** $K(x,z) = K_1(x,z) + K_2(x,z)$
 
-**(b)** $K(x,z) = K_1(x,z) - K_2(x,z)$
+The kernel matrix corresponding to $K(x,z)$ is symmetric since it is the sum of the two valid kernel matrices (i.e. symmetric matrices) $K_1$ and $K_2$. Therefore, $K(x,z)$ is PSD and therefore a valid kernel if $\forall \hspace{.2em}z, z^TKz \geq 0$:
+$$
+\begin{align}
+& \qquad z^TKz \\
+& = z^T \left(K_1 + K_2 \right)z \\
+& = z^TK_1z + z^TK_2z && \text{matrix mult. distributive over addition} \\
+& \geq 0  && z^TK_1z \geq 0, \quad z^TK_2z \geq 0 \text{ since they are valid kernels} \\
+& \therefore K \text{ is a valid kernel}
+\end{align}
+$$
+
+
+**(b)** $K(x,z) = K_1(x,z) - K_2(x,z)$:
+
+Similar to 1a, $K(x,z)$ is symmetric since it is the difference of two symmetric matrices.
+$$
+\begin{align}
+& \qquad z^TKz \\
+& = z^T \left(K_1 - K_2 \right) z \\
+& = z^T K_1z - z^TK_2z &\text{matrix mult. distributive over addition} \\
+& \geq 0 \quad \text{only if } z^TK_1z > z^TK_2z \\
+& \therefore K \text{ is not a valid kernel}
+\end{align}
+$$
 
 **(c)** $K(x,z) = aK_1(x,z)$
 
+$K(x,z)$ is symmetric because it is a symmetric matrix $K_1$ scaled by a scalar $a$.
+
+$$
+\begin{align}
+& \qquad z^TKz \\
+& = z^T\left(aK_1 \right)z \\
+& = az^TK_1z \\
+& \geq 0 & a \in \mathbb{R}^+,\quad z^TK_1z \geq 0 \hspace{.5em}\forall z \\
+& \therefore K \text{ is a valid kernel}
+\end{align}
+$$
+
 **(d)** $K(x,z) = -aK_1(x,z)$
+
+By the same logic as 1c, $K$ is not a valid kernel.
 
 **(e)** $K(x,z) = K_1(x,z)K_2(x,z)$
 
+
+
 **(f)** $K(x,z) = f(x)f(z)$
+
+$K(x,z)$ is symmetric since scalar multiplication is commutative.
+
+$$
+$$
 
 **(g)** $K(x,z) = K_3(\phi(x), \phi(z))$
 
@@ -65,6 +109,10 @@ For each of the functions $K$ below, state whether it is necessarily a kernel. I
 **(c)**
 
 ### **5. Training and testing on different distributions**
+
+In the discussion in class about learning theory, a key assumption was that we trained and tested our learning algorithms on the same distribution $\mathcal{D}$. In this problem, we'll investigate one special case of training and testing on different distributions. Specifically, we will consider what happens when the training examples are *noisy*, but the test labels are not.
+
+Consider a binary classification problem with labels $y \in \left\{0,1 \right\}$, and let $\mathcal{D}$ be a distribution over $(x,y)$, that we'll think of as the original, "clean" or "uncorrupted" distribution. Define $\mathcal{D}_{\mathcal{T}}$ to be a "corrupted" distribution over $(x,y)$ which is the same as $\mathcal{D}$, except that the labels $y$ have some probability $0 \leq \mathcal{T} < 0.5$ of being flipped. Thus, to sample from $\mathcal{D}_{\mathcal{T}}$, we would first sample $(x,y)$ from $\mathcal{D}$
 
 **(a)**
 

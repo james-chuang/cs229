@@ -123,6 +123,11 @@ $(document).ready(function () {
 <ul>
 <li><a href="#cs229-autumn-2016-problem-set-2"><strong>CS229 Autumn 2016 Problem Set #2</strong></a><ul>
 <li><a href="#constructing-kernels"><strong>1. Constructing kernels</strong></a></li>
+<li><a href="#kernelizing-the-perceptron"><strong>2. Kernelizing the Perceptron</strong></a></li>
+<li><a href="#spam-classification"><strong>3. Spam classification</strong></a></li>
+<li><a href="#properties-of-the-vc-dimension"><strong>4. Properties of the VC dimension</strong></a></li>
+<li><a href="#training-and-testing-on-different-distributions"><strong>5. Training and testing on different distributions</strong></a></li>
+<li><a href="#boosting-and-high-energy-physics"><strong>6. Boosting and high energy physics</strong></a></li>
 </ul></li>
 </ul>
 </div>
@@ -135,14 +140,80 @@ $(document).ready(function () {
 <p>However, in this question we are interested in direct construction of kernels, I.e., suppose we have a function <span class="math inline">\(K(x,z)\)</span> that we think gives an appropriate similarity measure for our learning problem, and we are considering plugging <span class="math inline">\(K\)</span> into the SVM as the kernel function. However, for <span class="math inline">\(K(x,z)\)</span> to be a valid kernel, it must correspond to an inner product in some higher dimensional space resulting from some feature mapping <span class="math inline">\(\phi\)</span>. Mercer’s theorem tells us that <span class="math inline">\(K(x,z)\)</span> is a (Mercer) kernel iff for any finite set <span class="math inline">\(\left\{x^{(1)}, \dots, x^{(m)} \right\}\)</span>, the matrix <span class="math inline">\(K\)</span> is symmetric and positive semidefinite, where the square matrix <span class="math inline">\(K \in \mathbb{R}^{m \times m}\)</span> is given by <span class="math inline">\(K_{ij} = K\left(x^{(i)}, x^{(j)} \right)\)</span>.</p>
 <p>Now the question: Let <span class="math inline">\(K_1, K_2\)</span> be kernels over <span class="math inline">\(\mathbb{R}^n \times \mathbb{R}^n\)</span>, let <span class="math inline">\(a \in \mathbb{R}^+\)</span> be a positive real number, let <span class="math inline">\(f: \mathbb{R}^n \mapsto \mathbb{R}\)</span>, let <span class="math inline">\(\phi: \mathbb{R}^n \rightarrow \mathbb{R}^d\)</span>, let <span class="math inline">\(K_3\)</span> be a kernel over <span class="math inline">\(\mathbb{R}^d \times \mathbb{R}^d\)</span>, and let <span class="math inline">\(p(x)\)</span> be a polynomial over <span class="math inline">\(x\)</span> with <em>positive</em> coefficients.</p>
 <p>For each of the functions <span class="math inline">\(K\)</span> below, state whether it is necessarily a kernel. If you think it is, prove it; if you think it isn’t, give a counter-example.</p>
+<p>[Hint: For part (e), the answer is that <span class="math inline">\(K\)</span> <em>is</em> indeed a kernel. You still have to prove it, though. (This one may be harder than the rest.) The result may also be useful for another part of the problem.]</p>
 <p><strong>(a)</strong> <span class="math inline">\(K(x,z) = K_1(x,z) + K_2(x,z)\)</span></p>
-<p><strong>(b)</strong> <span class="math inline">\(K(x,z) = K_1(x,z) - K_2(x,z)\)</span></p>
+<p>The kernel matrix corresponding to <span class="math inline">\(K(x,z)\)</span> is symmetric since it is the sum of the two valid kernel matrices (i.e. symmetric matrices) <span class="math inline">\(K_1\)</span> and <span class="math inline">\(K_2\)</span>. Therefore, <span class="math inline">\(K(x,z)\)</span> is PSD and therefore a valid kernel if <span class="math inline">\(\forall \hspace{.2em}z, z^TKz \geq 0\)</span>: <span class="math display">\[
+\begin{align}
+&amp; \qquad z^TKz \\
+&amp; = z^T \left(K_1 + K_2 \right)z \\
+&amp; = z^TK_1z + z^TK_2z &amp;&amp; \text{matrix mult. distributive over addition} \\
+&amp; \geq 0  &amp;&amp; z^TK_1z \geq 0, \quad z^TK_2z \geq 0 \text{ since they are valid kernels} \\
+&amp; \therefore K \text{ is a valid kernel}
+\end{align}
+\]</span></p>
+<p><strong>(b)</strong> <span class="math inline">\(K(x,z) = K_1(x,z) - K_2(x,z)\)</span>:</p>
+<p>Similar to 1a, <span class="math inline">\(K(x,z)\)</span> is symmetric since it is the difference of two symmetric matrices. <span class="math display">\[
+\begin{align}
+&amp; \qquad z^TKz \\
+&amp; = z^T \left(K_1 - K_2 \right) z \\
+&amp; = z^T K_1z - z^TK_2z &amp;\text{matrix mult. distributive over addition} \\
+&amp; \geq 0 \quad \text{only if } z^TK_1z &gt; z^TK_2z \\
+&amp; \therefore K \text{ is not a valid kernel}
+\end{align}
+\]</span></p>
 <p><strong>(c)</strong> <span class="math inline">\(K(x,z) = aK_1(x,z)\)</span></p>
+<p><span class="math inline">\(K(x,z)\)</span> is symmetric because it is a symmetric matrix <span class="math inline">\(K_1\)</span> scaled by a scalar <span class="math inline">\(a\)</span>.</p>
+<p><span class="math display">\[
+\begin{align}
+&amp; \qquad z^TKz \\
+&amp; = z^T\left(aK_1 \right)z \\
+&amp; = az^TK_1z \\
+&amp; \geq 0 &amp; a \in \mathbb{R}^+,\quad z^TK_1z \geq 0 \hspace{.5em}\forall z \\
+&amp; \therefore K \text{ is a valid kernel}
+\end{align}
+\]</span></p>
 <p><strong>(d)</strong> <span class="math inline">\(K(x,z) = -aK_1(x,z)\)</span></p>
+<p>By the same logic as 1c, <span class="math inline">\(K\)</span> is not a valid kernel.</p>
 <p><strong>(e)</strong> <span class="math inline">\(K(x,z) = K_1(x,z)K_2(x,z)\)</span></p>
 <p><strong>(f)</strong> <span class="math inline">\(K(x,z) = f(x)f(z)\)</span></p>
+<p><span class="math inline">\(K(x,z)\)</span> is symmetric since scalar multiplication is commutative.</p>
+<p><span class="math display">\[
+\]</span></p>
 <p><strong>(g)</strong> <span class="math inline">\(K(x,z) = K_3(\phi(x), \phi(z))\)</span></p>
 <p><strong>(h)</strong> <span class="math inline">\(K(x,z) = p(K_1(x,z))\)</span></p>
+</div>
+<div id="kernelizing-the-perceptron" class="section level3">
+<h3><strong>2. Kernelizing the Perceptron</strong></h3>
+<p><strong>(a)</strong></p>
+<p><strong>(b)</strong></p>
+<p><strong>(c)</strong></p>
+</div>
+<div id="spam-classification" class="section level3">
+<h3><strong>3. Spam classification</strong></h3>
+<p><strong>(a)</strong></p>
+<p><strong>(b)</strong></p>
+<p><strong>(c)</strong></p>
+<p><strong>(d)</strong></p>
+<p><strong>(e)</strong></p>
+</div>
+<div id="properties-of-the-vc-dimension" class="section level3">
+<h3><strong>4. Properties of the VC dimension</strong></h3>
+<p><strong>(a)</strong></p>
+<p><strong>(b)</strong></p>
+<p><strong>(c)</strong></p>
+</div>
+<div id="training-and-testing-on-different-distributions" class="section level3">
+<h3><strong>5. Training and testing on different distributions</strong></h3>
+<p><strong>(a)</strong></p>
+<p><strong>(b)</strong></p>
+<p><strong>(c)</strong></p>
+</div>
+<div id="boosting-and-high-energy-physics" class="section level3">
+<h3><strong>6. Boosting and high energy physics</strong></h3>
+<p><strong>(a)</strong></p>
+<p><strong>(b)</strong></p>
+<p><strong>(c)</strong></p>
+<p><strong>(d)</strong></p>
 </div>
 </div>
 
