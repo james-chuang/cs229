@@ -355,9 +355,9 @@ g_i (w^*)                                                             &amp; \leq
 \end{align}
 \]</span></p>
 <p>The constraints can be written as: <span class="math display">\[
-g_i(w) = -y^{(i} \left(w^Tx^{(i)} +b \right) + 1 \leq 0
+g_i(w) = -y^{(i)} \left(w^Tx^{(i)} +b \right) + 1 \leq 0
 \]</span> We have one constraint for each training example. From the KKT dual complementarity condition, <span class="math inline">\(\alpha_i &gt; 0\)</span> only for the training examples that have geometric margin exactly equal to one (i.e., the ones corresponding to constraints that hold with equality <span class="math inline">\(g_i(w)=0\)</span>). These training points are exactly the ones closest to the decision boundary, and are called the <strong><em>support vectors</em></strong> of the optimal margin classifier. The fact that the number of support vectors can be much smaller than the size of the training set will be useful later.</p>
-<p>In writing the dual form of the problem, we will write in terms of inner products <span class="math inline">\(\left\langle x^{(i)}, x^{(j)} \right\rangle\)</span> between points in the input feature space. This will allow application of the kernel trick later.</p>
+<p><strong>We recast the optimization problem as the dual form of the problem, because the solution will be in terms of inner products</strong> <span class="math inline">\(\left\langle x^{(i)}, x^{(j)} \right\rangle\)</span> between points in the input feature space. This will allow application of the kernel trick later.</p>
 <p>The Lagrangian for the optimal margin classifier problem: <span class="math display">\[
 \mathcal{L}(w, b, \alpha) = \frac{1}{2} \lVert w \rVert^2 - \sum_{i=1}^m \alpha_i\left[y^{(i)} \left(w^Tx^{(i)}+b \right) -1\right]
 \]</span> Find the dual form <span class="math inline">\(\theta_{\mathcal{D}} = \min_{w,b} \mathcal{L}(w, b, \alpha)\)</span>. Start by taking derivatives w.r.t. <span class="math inline">\(w\)</span> and <span class="math inline">\(b\)</span> and setting to zero:</p>
@@ -389,7 +389,7 @@ w &amp; = \sum_{i=1}^m \alpha_i y^{(i)}x^{(i)}
           &amp; \sum_{i=1}^m \alpha_i y^{(i)} = 0 
 \end{align}
 \]</span> The conditions for <span class="math inline">\(p^* = d^*\)</span> and the KKT conditions to hold are satisfied in the above problem. If we solve this maximization problem w.r.t. the <span class="math inline">\(\alpha_i\)</span>’s for the optimal <span class="math inline">\(\alpha_i\)</span>’s, we can solve for the <span class="math inline">\(w\)</span> by the above equation (<span class="math inline">\(w = \sum_{i=1}^m \alpha_i y^{(i)} x^{(i)}\)</span>).</p>
-<p>Then <span class="math inline">\(b^*\)</span> can be solved for (some kind of average?):</p>
+<p>Then <span class="math inline">\(b^*\)</span> can be solved for:</p>
 <p><span class="math display">\[
 b^* = - \frac{\max_{i:y^{(i)}=-1} w^{*T} x^{(i)} + \min_{i:y^{(i)}=1 } w^{*T}x^{(i)}}{2}
 \]</span> Suppose the model has been fit to a training set. To make a prediction at a new input point <span class="math inline">\(x\)</span>, calculate <span class="math inline">\(w^Tx+b\)</span>, and predict <span class="math inline">\(y=1\)</span> iff this quantity is bigger than zero.</p>
