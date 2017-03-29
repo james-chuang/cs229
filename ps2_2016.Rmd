@@ -67,28 +67,82 @@ By the same logic as 1c, $K$ is not a valid kernel.
 
 **(e)** $K(x,z) = K_1(x,z)K_2(x,z)$
 
+$K(x,z)$ is symmetric since scalar multiplication is commutative.
+
+$$
+\begin{align}
+        &&& K_1 \text{ is a kernel, so } \exists \hspace{.3em} \phi^{(1)} \text{ such that } K_1(x,z) = \left(\phi^{(1)}(x)\right)^T \left(\phi^{(1)}(z) \right)\\
+K(x,z)  & = K_1(x,z) K_2 (x,z) && K_2 \text{ is a kernel, so } \exists \hspace{.3em} \phi^{(2)} \text{ such that } K_2(x,z) = \left(\phi^{(2)}(x)\right)^T \left(\phi^{(2)}(z) \right) \\
+        & = \sum_i \phi_i^{(1)}(x) \phi_i^{(1)}(z) \sum_j \phi_j^{(2)} (x) \phi_j^{(2)}(z) \\
+        & = \sum_i \sum_j \phi_i^{(1)}(x) \phi_i^{(1)}(z) \phi_j^{(2)} (x) \phi_j^{(2)}(z) \\
+        & = \sum_i \sum_j \left[\phi_i^{(1)}(x) \phi_j^{(2)}(x) \right] \left[\phi_i^{(1)}(z) \phi_j^{(2)}(z) \right] && \text{def } \psi (\cdot) = \phi^{(1)}(\cdot) \phi^{(2)} (\cdot) \\
+        & = \sum_{(i,j)} \psi_{i,j}(x) \psi_{i,j}(z) \\
+K(x,z)  & = \psi(x)^T \psi(z), \quad \therefore K \text{ is a valid kernel}.
+\end{align}
+$$
+
 
 
 **(f)** $K(x,z) = f(x)f(z)$
 
 $K(x,z)$ is symmetric since scalar multiplication is commutative.
 
-$$
-$$
+Let $f(x) = \psi(x)$ as in 1e., then $K$ is a valid kernel.
 
 **(g)** $K(x,z) = K_3(\phi(x), \phi(z))$
 
+$K_3$ is a valid kernel for any finite set $\left\{x^{(1)}, \dots, x^{(m)} \right\}$. This includes the set $\left\{\phi\left(x^{(1)} \right), \dots, \phi \left(x^{(m)} \right) \right\}$, so K is also a valid kernel.
+
 **(h)** $K(x,z) = p(K_1(x,z))$
+
+Combining the results from 1a (sum), 1c (scalar product), 1e (powers), and 1f (constant term), any polynomial of a kernel $K_1$ will also be a kernel.
 
 ### **2. Kernelizing the Perceptron**
 
+Let there be a binary classification problem with $y \in \left\{-1,1 \right\}$. The perceptron uses hypotheses of the form $h_\theta(x) = g \left(\theta^T x\right)$, where $g(z) = \text{sign}(z) = 1$ if $z \geq 0, -1$ otherwise.
+
+In this problem we will consider a stochastic gradient descent-like implementation of the perceptron algorithm where each update to the parameters $\theta$ is made by using only one training example. However, unlike stochastic gradient descent, the perceptron algorithm will only make one pass through the entire training set. The update rule for this version of the perceptron algorithm is given by
+
+$$
+\theta^{(i+1)} := \begin{cases}
+                  \theta^{(i)} + \alpha y^{(i+1)}x^{(i+1)} & \text{if } h_\theta\left(x^{(i+1)}\right) y^{(i+1)} < 0 \\
+                  \theta^{(i)} & \text{otherwise,}
+                  \end{cases}
+$$
+where $\theta^{(i)}$ is the value of the parameters after the algorithm has seen the first $i$ training examples. Prior to seeing any training examples, $\theta^{(0)}$ is initialized to $\vec{0}$.
+
+Let $K$ be a Mercer kernel corresponding to some very high-dimensional feature mapping $\phi$. Suppose $\phi$ is so high-dimensional (say $\infty$-dimensional) that it's infeasible to ever represent $\phi(x)$ explicitly. Describe how you would apply the "kernel trick" to the perceptron to make it work in the high-dimensional feature space $\phi$, but without ever explicitly computing $\phi(x)$. [Note: You don't have to worry about the intercept term. If you like, think of $\phi$ as having the property that $\phi_0(x)=1$ so that this is taken care of.] Your description should specify
+
 **(a)**
+
+How you will (implicitly) represent the high-dimensional parameter vector $\theta^{(i)}$, including how the initial value $\theta^{(0)} = \vec{0}$ is represented (note that $\theta^{(i)}$ is now a vector whose dimension is the same as the feature vectors $\phi(x)$);
 
 **(b)**
 
+How you will efficiently make a prediction on a new input $x^{(i+1)}$. I.e., how you will computer $h_{\theta^{(i)}} \left(x^{(i+1)} \right) = g \left(\theta^{(i)T} \phi \left(x^{(i+1)} \right) \right)$, using your representation of $\theta^{(i)}$; and
+
 **(c)**
 
+How you will modify the update rule given above to perform an update to $\theta$ on a new training example $\left(x^{(i+1)}, y^{(i+1)} \right)$; i.e., using the update rule corresponding to the feature mapping $\phi$:
+
+$$
+\theta^{(i+1)} := \theta^{(i)} + \alpha \mathbf{1} \left\{\theta^{(i)T}\phi \left(x^{(i+1)} \right)y^{(i+1)} < 0 \right\} y^{(i+1)} \phi \left(x^{(i+1)} \right)
+$$
+[Hint: our discussion of the representer theorem may be useful.]
+
 ### **3. Spam classification**
+
+In this problem, we will use the naive Bayes algorithm and an SVM to build a spam classifier.
+
+In recent years, spam on electronic newsgroups has been an increasing problem. Here, we'll build a classifier to distinguish between "real" newsgroup messages, and spam messages. For this experiment, we obtained a set of spam emails, and a set of genuine newsgroup messages. Using only the subject line and body of each message, we'll learn to distinguish between the spam and the non-spam.
+
+In order to get the text emails into a form usable by naive Bayes, we've already done some preprocessing on the messages. You can look at two sample spam emails in the files `spam_sample_original*`, and their preprocessed forms in the files `spam_sample_preprocessed*`. The first line in the preprocessed format is just the label and is not part of the message. The proprocessing ensures that only the message body and subject remain in teh dataset; email addresses (EMAILADDR), web addresses (HTTPADDR), currency (DOLLAR), and numbers (NUMBER) were also replaced by the special tokens to allow them to be considered properly in the classification process. (In this problem, we'll call the features "tokens" rather than "words", since some of the features will correspond to special values like EMAILADDR. You don't have to worry about the distinction.) The files `news_sample_original` and `news_sample_preprocessed` also give an example of a non-spam mail.
+
+The work to extract feature vectors out of the documents has also been done for you, so you can just load in the design matrices (called document-word matrices in text classification) containing all the data. In a document-word matrix, the $i$-th row represents the $i$-th document/email, and the $j$-th column represents the $j$-th distinct token. This, the $(i,j)$-entry of this matrix represents the numbers of occurrences of the $j$th token in the $i$th document.
+
+For this problem, we've chosen as our set of tokens considered (i.e., as our vocabulary) only the medium frequency tokens. The intuition is that tokens that occur too often or too rarely do not have much classification value. (Example tokens that occur very often are words like "the", "and", and "of", which occur in so many emails and are sufficiently content-free that they aren't worth modeling.) Also, words were stemmed using a standard stemming algorithm; basically, this means that "price", "prices", and "priced" have all been replaed with "price", so that they can be treated as the same word. For a list of the tokens used, see the file `TOKENS_LIST`.
+
+Since the document-word matrix is extremely sparse (has lots of zero entries), we have stored it in our own efficient format to save space. You don't have to worry about this format. The file `readMatrix.m` provides the `readMatrix` function that reads in the document-word matrix and the correct class labels for the various docuemnts. Code in `nb_train.m` and `nb_test.m` shows how `readMatrix` should be called. The documentation at the top of these two fields will tell you all you need to know about the setup.
 
 **(a)**
 
