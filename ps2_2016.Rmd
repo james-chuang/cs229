@@ -150,17 +150,37 @@ Since the document-word matrix is extremely sparse (has lots of zero entries), w
 
 **(c)**
 
-**(d)**
+**(d)** Train an SVM on this dataset using stochastic gradient descent and the radial basis function (also known as the Gaussian) kernel, which sets
+$$
+K(x,z) = \exp\left(- \frac{1}{2 \tau^2} \lVert x-z \rVert_2^2 \right).
+$$
+In this case, recall that (as proved in class) the objective with kernel matrix $K= \left[K^{(1)} \cdots K^{(m)} \right] \in \mathbb{R}^{m \times m}$ is given by
+
+$$
+J(\alpha) = \frac{1}{m} \sum_{i=1}^m \left[1-y^{(i)} K^{(i)T} \alpha \right]_{+} + \frac{\lambda}{2} \alpha^T K \alpha
+$$
+where $\left[t \right]_+ = \max \left\{t,0\right\}$ is the positive part function. In this case, the gradient (actually, this is known as the *subgradient*) of the individual loss terms is
+
+$$
+\nabla_\alpha \left[1-y^{(i)} K^{(i)} \alpha \right]_+ =  \begin{cases}  -y^{(i)} K^{(i)} & \text{if } y^{(i)}K^{(i)T}\alpha < 1 \\
+                                                                        0 &\text{otherwise.}
+                                                          \end{cases}
+$$
+In your SVM training, you should perform stochastic gradient descent, where in each iteration you choose an index $i \in \{1, \dots, m \}$ uniformly at random, for a total of $40 \cdot m$ steps, where $m$ is the training set size, and your kernel should use $\tau = 8$ and regularization multiplier $\lambda = \frac{1}{64m}$. For this part of the problem, you shoudl also replace each training or test point $x^{(i)}$ with a zero-one vector $z^{(i)}$, where $z^{(i)} = 1$ if $x_j^{(i)} > 0$ and $z^{(i)} = 0$ if $x^{(i)} = 0$. Initialize your SGD procedure at $\alpha = 0$.
+
+The output of your training code, which you should implement in `svm_test.m`, should be the $\alpha$ vector that is the *average* of all the $\alpha$ vectors that your iteration updates. At iteraction $t$ of stochastic gradient descent you should use stepsize $1/\sqrt{t}$.
 
 **(e)**
 
 ### **4. Properties of the VC dimension**
 
-**(a)**
+In this problem, we investigate a few properties of the Vapnik-Chervonenkis dimension, mostly relating to how $\text{VC}(H)$ increases as the set $H$ increases. For each part of this problem, you should state whether the given statement is true, and justify your answer with either a formal proof or a counter-example.
 
-**(b)**
+**(a)** Let two hypothesis classes $H_1$ and $H_2$ satisfy $H_1 \subseteq H_2$. Prove or disprove: $\text{VC}\left(H_1 \right) \leq \text{VC}\left(H_2 \right)$.
 
-**(c)**
+**(b)** Let $H_1 = H_2 \cup \left\{h_1, \dots, h_k \right\}$. (I.e., $H_1$ is the union of $H_2$ and some set of $k$ additional hypotheses.) Prove or disprove: $\text{VC}\left(H_1\right) \leq \text{VC} \left(H_2 \right) + k$. [Hint: You might want to start by considering the case of $k=1$.]
+
+**(c)** Let $H_1 = H_2 \cup H_3$. Prove or disprove: $\text{VC} \left(H_1 \right) \leq \text{VC} \left(H_2 \right) + \text{VC} \left(H_3 \right)$.
 
 ### **5. Training and testing on different distributions**
 
