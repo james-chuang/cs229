@@ -121,15 +121,20 @@ $(document).ready(function () {
 
 <div id="TOC">
 <ul>
-<li><a href="#binary-classification"><strong>Binary classification</strong></a></li>
-<li><a href="#logistic-regression"><strong>Logistic Regression</strong></a></li>
-<li><a href="#general-loss-functions"><strong>General loss functions</strong></a></li>
+<li><a href="#binary-classification"><strong>binary classification</strong></a></li>
+<li><a href="#logistic-regression"><strong>logistic regression</strong></a></li>
+<li><a href="#general-loss-functions"><strong>general loss functions</strong></a></li>
+<li><a href="#the-representer-theorem"><strong>the representer theorem</strong></a></li>
+<li><a href="#nonlinear-features-and-kernels"><strong>nonlinear features and kernels</strong></a></li>
+<li><a href="#stochastic-gradient-descent-for-kernelized-machine-learning"><strong>stochastic gradient descent for kernelized machine learning</strong></a></li>
+<li><a href="#support-vector-machines"><strong>support vector machines</strong></a></li>
+<li><a href="#gaussianrbf-kernel-example"><strong>gaussian/RBF kernel example</strong></a></li>
 </ul>
 </div>
 
 <p>My notes on John Duchi’s <a href="http://cs229.stanford.edu/materials.html">CS229 binary classification and general loss function supplemental notes</a>.</p>
 <div id="binary-classification" class="section level2">
-<h2><strong>Binary classification</strong></h2>
+<h2><strong>binary classification</strong></h2>
 <ul>
 <li><strong>binary classification</strong>
 <ul>
@@ -166,7 +171,7 @@ y \theta^T x &gt; 0
 \]</span></p>
 <ul>
 <li><span class="math inline">\(y \theta^T x\)</span> is called the <strong>margin</strong> for the example <span class="math inline">\((x,y)\)</span></li>
-<li>often (not always), <span class="math inline">\(h_\theta(x) = x^T \theta\)</span> is interepreted as a measure of the confidence with which the parameter vector <span class="math inline">\(\theta\)</span> assigns a label for the point <span class="math inline">\(x\)</span>
+<li>often (not always), <span class="math inline">\(h_\theta(x) = x^T \theta\)</span> is interpreted as a measure of the confidence with which the parameter vector <span class="math inline">\(\theta\)</span> assigns a label for the point <span class="math inline">\(x\)</span>
 <ul>
 <li><span class="math inline">\(x^T \theta\)</span> very negative (positive), then we more strongly believe that the label <span class="math inline">\(y\)</span> is negative (positive)</li>
 </ul></li>
@@ -254,7 +259,7 @@ J(\theta) = \frac{1}{m} \sum_{i=1}^m \varphi \left(y^{(i)} \theta^T x^{(i)} \rig
 </ul>
 </div>
 <div id="logistic-regression" class="section level2">
-<h2><strong>Logistic Regression</strong></h2>
+<h2><strong>logistic regression</strong></h2>
 <ul>
 <li>use binary labels <span class="math inline">\(y \in \{-1, 1 \}\)</span></li>
 <li>use logistic loss:</li>
@@ -344,7 +349,7 @@ J(\theta) = \frac{1}{m} \sum_{i=1}^m \varphi \left(y^{(i)} \theta^T x^{(i)} \rig
   \end{align}
   \]</span></p>
 <ul>
-<li>thus, a stochastic gradient procedure for minimizing <span class="math inline">\(J(\theta)\)</span> iteratively performs the following for iterations <span class="math inline">\(t = 1, 2, \dots\)</span>, where <span class="math inline">\(\alpha_t\)</span> is a stepsize at time <span class="math inline">\(t\)</span>:
+<li>thus, a stochastic gradient procedure for minimizing <span class="math inline">\(J(\theta)\)</span> iteratively performs the following for iterations <span class="math inline">\(t = 1, 2, \dots\)</span>, where <span class="math inline">\(\alpha_t\)</span> is a step size at time <span class="math inline">\(t\)</span>:
 <ol style="list-style-type: decimal">
 <li>Choose an example <span class="math inline">\(i \in \left\{1, \dots, m \right\}\)</span> uniformly at random</li>
 <li>Perform the gradient update</li>
@@ -373,7 +378,7 @@ J(\theta) = \frac{1}{m} \sum_{i=1}^m \varphi \left(y^{(i)} \theta^T x^{(i)} \rig
 </ul>
 </div>
 <div id="general-loss-functions" class="section level2">
-<h2><strong>General loss functions</strong></h2>
+<h2><strong>general loss functions</strong></h2>
 <ul>
 <li>supervised learning:
 <ol style="list-style-type: decimal">
@@ -391,9 +396,243 @@ J(\theta) = \frac{1}{m} \sum_{i=1}^m \varphi \left(y^{(i)} \theta^T x^{(i)} \rig
 <ul>
 <li>make predictions based on <span class="math inline">\(\theta^Tx\)</span> for some vector <span class="math inline">\(\theta\)</span></li>
 <li>construct a loss function <span class="math inline">\(\mathcal{L}: \mathbb{R} \times \mathcal{Y} \rightarrow \mathbb{R}\)</span></li>
+<li>given a training set of pairs <span class="math inline">\(\left\{x^{(i)}, y^{(i)} \right\}\)</span>, choose <span class="math inline">\(\theta\)</span> by minimizing the empirical risk</li>
+</ul>
+<span class="math display">\[
+  J(\theta) = \frac{1}{m} \sum_{i=1}^m \mathcal{L} \left(\theta^T x^{(i)}, y^{(i)} \right)
+  \]</span></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+<div id="the-representer-theorem" class="section level2">
+<h2><strong>the representer theorem</strong></h2>
+<ul>
+<li>consider an empirical risk with <span class="math inline">\(\ell_2\)</span>-regularization, i.e. the <strong>regularized risk</strong></li>
+</ul>
+<p><span class="math display">\[
+  J_\lambda (\theta) = \frac{1}{m} \sum_{i=1}^m \mathcal{L} \left(\theta^T x^{(i)}, y^{(i)} \right) + \frac{\lambda}{2} \lVert \theta \rVert_2^2
+  \]</span></p>
+<ul>
+<li>consider the structure of any <span class="math inline">\(\theta\)</span> that minimizes the risk
+<ul>
+<li>assume that for each fixed target <span class="math inline">\(y \in \mathcal{Y}\)</span>, the loss <span class="math inline">\(\mathcal{L}(z,y)\)</span> is convex in <span class="math inline">\(z\)</span>
+<ul>
+<li>this is true for linear regression, binary/multiclass logistic regression, and many other losses we will consider</li>
+<li>under these assumptions, the solution (i.e. the <span class="math inline">\(\theta\)</span> that minimizes the risk) can always be written as a <em>linear combination</em> of the input variables <span class="math inline">\(x^{(i)}\)</span></li>
+<li>this is the <strong>representer theorem</strong>:
+<ul>
+<li>Suppose in the definition of the regularized risk that <span class="math inline">\(\lambda \geq 0\)</span>. Then there is a minimizer of the regularized risk that can be written</li>
+</ul>
+<p><span class="math display">\[
+  \theta = \sum_{i=1}^m \alpha_i x^{(i)}
+  \]</span></p>
+<ul>
+<li>where <span class="math inline">\(\alpha_i\)</span> are real-valued weights</li>
+<li>an informal proof
+<ul>
+<li>assume that <span class="math inline">\(\mathcal{L}(z,y)\)</span> is differentiable w.r.t. <span class="math inline">\(z\)</span>, and <span class="math inline">\(\lambda &gt; 0\)</span></li>
+</ul>
+<span class="math display">\[
+  \begin{align}
+  J_\lambda (\theta) &amp; = \frac{1}{m} \sum_{i=1}^m \mathcal{L} \left(\theta^T x^{(i)}, y^{(i)} \right) + \frac{\lambda}{2} \lVert \theta \rVert_2^2 &amp;&amp; \text{the regularized risk} \\
+  \nabla J_\lambda(\theta) &amp; = \frac{1}{m} \sum_{i=1}^m\nabla_\theta \mathcal{L} \left(\theta^T x^{(i)}, y^{(i)} \right) + \lambda \nabla_\theta \frac{1}{2} \lVert \theta \rVert_2^2 \\
+  \nabla J_\lambda(\theta) &amp; = \frac{1}{m} \sum_{i=1}^m \mathcal{L}^\prime \left(\theta^T x^{(i)}, y^{(i)} \right) x^{(i)} + \lambda \theta = \vec{0} &amp;&amp; \nabla J_\lambda(\theta) = 0 \text{ at the minimum} \\
+  \vec{0} &amp; = \frac{1}{m} \sum_{i=1}^m w_i x^{(i)} + \lambda \theta  &amp;&amp; \text{let } w_i = \mathcal{L}^\prime \left(\theta^T x^{(i)}, y^{(i)} \right) \\
+  \theta &amp; = -\frac{1}{\lambda m} \sum_{i=1}^m w_i x^{(i)} \\
+  \theta &amp; = \sum_{i=1}^m \alpha_i x^{(i)} &amp;&amp; \text{let } \alpha_i = - \frac{w_i}{\lambda m}
+  \end{align}
+  \]</span></li>
 </ul></li>
 </ul></li>
 </ul></li>
+</ul>
+</div>
+<div id="nonlinear-features-and-kernels" class="section level2">
+<h2><strong>nonlinear features and kernels</strong></h2>
+<ul>
+<li>the representer theorem means that the parameter vector <span class="math inline">\(\theta\)</span> can always be written as a linear combination of the data <span class="math inline">\(\left\{x^{(i)} \right\}_{i=1}^m\)</span>
+<ul>
+<li>this means we can <strong>always</strong> make predictions</li>
+</ul>
+<p><span class="math display">\[
+  \theta^T x = x^T \theta = \sum_{i=1}^m \alpha_i x^T x^{(i)}
+  \]</span></p>
+<ul>
+<li>i.e., in <strong>any</strong> learning algorithm, we can replace all appearances of <span class="math inline">\(\theta^Tx\)</span> with <span class="math inline">\(\sum_{i=1}^m \alpha_i x^{(i)T}x\)</span>, and then minimize directly over <span class="math inline">\(\alpha \in \mathbb{R}^m\)</span>
+<ul>
+<li>consider this idea in more generality:
+<ul>
+<li>“original” input values = <strong>attributes</strong></li>
+<li>quantities passed to the learning algorithm = <strong>features</strong></li>
+<li><span class="math inline">\(\phi\)</span> = the <strong>feature mapping</strong> from the attributes to the features
+<ul>
+<li>to learn with features <span class="math inline">\(\phi(x)\)</span>, simply replace <span class="math inline">\(x\)</span> everywhere in the algorithm with <span class="math inline">\(\phi(x)\)</span></li>
+<li>write the algorithm entirely in terms of inner products <span class="math inline">\(\langle x, z \rangle\)</span>, and simply replace the inner products with <span class="math inline">\(\langle \phi(x), \phi(z) \rangle\)</span></li>
+<li>define the corresponding <strong>kernel</strong> to be</li>
+</ul>
+<p><span class="math display">\[
+  K(x,z) = \phi(x)^T \phi(z)
+  \]</span></p>
+<ul>
+<li>then, replace <span class="math inline">\(\langle x,z \rangle\)</span> with <span class="math inline">\(K(x,z)\)</span></li>
+<li>kernelizing the regularized risk</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  J_\lambda (\theta) &amp; = \frac{1}{m} \sum_{i=1}^m \mathcal{L} \left(\theta^T x^{(i)}, y^{(i)} \right) + \frac{\lambda}{2} \left\lVert \theta \right\rVert_2^2 &amp;&amp; \text{the regularized risk} \\
+  J_\lambda (\alpha) &amp; = \frac{1}{m} \sum_{i=1}^m \mathcal{L} \left(\phi \left(x^{(i)} \right)^T \sum_{j=1}^m \alpha_j \phi \left(x^{(j)} \right), y^{(i)} \right) + \frac{\lambda}{2} \left\lVert \alpha_i \phi \left(x^{(i)} \right) \right\rVert_2^2 &amp;&amp; \theta = \sum_{i=1}^m \alpha_i \phi \left(x^{(i)} \right) \\
+                    &amp; = \frac{1}{m} \sum_{i=1}^m \mathcal{L} \left( \sum_{j=1}^m \alpha_j \phi \left(x^{(i)} \right)^T \phi \left(x^{(j)} \right), y^{(i)} \right) + \frac{\lambda}{2} \sum_{i=1}^m \sum_{j=1}^m \alpha_i \alpha_j \phi \left(x^{(i)} \right)^T \phi \left(x^{(j)} \right) \\
+                    &amp; = \frac{1}{m} \sum_{i=1}^m \mathcal{L} \left(\sum_{j=1}^m \alpha_j K \left(x^{(i)}, x^{(j)} \right), y^{(i)} \right) + \frac{\lambda}{2} \sum_{i,j} \alpha_i \alpha_j K \left(x^{(i)}, x^{(j)} \right)
+  \end{align}
+  \]</span></p>
+<ul>
+<li>i.e., we can write the entire loss function to be minimized in terms of the kernel matrix</li>
+</ul>
+<p><span class="math display">\[
+  K = \left[K \left(x^{(i)}, x^{(j)} \right) \right]_{i,j=1}^m \in \mathbb{R}^{m \times m}
+  \]</span></p>
+<ul>
+<li>we could compute <span class="math inline">\(K(x,z)\)</span> by finding <span class="math inline">\(\phi(x)\)</span> and <span class="math inline">\(\phi(z)\)</span> and taking their inner product
+<ul>
+<li>however, <span class="math inline">\(K(x,z)\)</span> may be very inexpensive to calculate, even though <span class="math inline">\(\phi(x)\)</span> may be very expensive or impossible to calculate</li>
+<li>by using an efficient way to calculate <span class="math inline">\(K(x,z)\)</span>, we can learn in the high dimensional feature space given by <span class="math inline">\(\phi\)</span>, but without ever having to explicitly calculate or represent vectors <span class="math inline">\(\phi(x)\)</span> (this is the <strong>kernel trick</strong>)</li>
+</ul></li>
+<li>examples of kernels:
+<ul>
+<li><strong>Gaussian/Radial Basis Function (RBF)</strong> kernel:</li>
+</ul>
+<p><span class="math display">\[
+  K(x,z) = \exp \left(- \frac{1}{2 \tau^2} \lVert x-z \rVert_2^2 \right)
+  \]</span></p>
+<ul>
+<li>min-kernel (applicable when <span class="math inline">\(x \in \mathbb{R}\)</span>)</li>
+</ul>
+<p><span class="math display">\[
+  K(x,z) = \min \{x,z\}
+  \]</span></p></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+<div id="stochastic-gradient-descent-for-kernelized-machine-learning" class="section level2">
+<h2><strong>stochastic gradient descent for kernelized machine learning</strong></h2>
+<ul>
+<li>let <span class="math inline">\(K \in \mathbb{R}^{m \times m}\)</span> denote the kernel matrix</li>
+<li>for shorthand, define the vectors</li>
+</ul>
+<p><span class="math display">\[
+  K^{(i)} = \begin{bmatrix}
+            K \left(x^{(i)}, x^{(1)} \right) \\
+            K \left(x^{(i)}, x^{(2)} \right) \\
+            \vdots \\
+            K \left(x^{(i)}, x^{(m)} \right)
+            \end{bmatrix}
+  \]</span></p>
+<ul>
+<li>then,</li>
+</ul>
+<p><span class="math display">\[
+  K = \begin{bmatrix}
+      \mid    &amp; \mid    &amp;         &amp;  \mid \\
+      K^{(1)} &amp; K^{(2)} &amp; \cdots  &amp; K^{(m)} \\
+      \mid    &amp; \mid    &amp;         &amp;  \mid
+      \end{bmatrix}
+  \]</span></p>
+<ul>
+<li>so the regularized risk can be written as:</li>
+</ul>
+<p><span class="math display">\[
+  J_\lambda(\alpha) = \frac{1}{m} \sum_{i=1}^m \mathcal{L} \left(K^{(i)T} \alpha, y^{(i)} \right) + \frac{\lambda}{2} \alpha^T K \alpha
+  \]</span></p>
+<ul>
+<li>consider taking a stochastic gradient of this risk:</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  J_\lambda(\alpha)                 &amp; = \frac{1}{m} \sum_{i=1}^m \mathcal{L} \left(K^{(i)T} \alpha, y^{(i)} \right) + \frac{\lambda}{2} \alpha^T K \alpha \\
+  \nabla_\alpha J_\lambda (\alpha)  &amp; = \frac{1}{m} \sum_{i=1}^m \nabla_\alpha \mathcal{L} \left(K^{(i)T} \alpha, y^{(i)} \right) + \lambda \nabla_\alpha \left[\frac{1}{2} \alpha^T K \alpha \right] \\
+                                    &amp; = \frac{1}{m} \sum_{i=1}^m \mathcal{L}^\prime \left(K^{(i)T} \alpha, y^{(i)} \right) K^{(i)} + \lambda \sum_{i=1}^m K^{(i)} \alpha_i
+  \end{align}
+  \]</span></p>
+<ul>
+<li>if we choose a random index <span class="math inline">\(i \in \{1, \dots, m \}\)</span>, a stochastic gradient for <span class="math inline">\(J_\lambda(\alpha)\)</span> is then:</li>
+</ul>
+<p><span class="math display">\[
+  \mathcal{L}^\prime \left(K^{(i)T}\alpha , y^{(i)}\right) K^{(i)} + m \lambda K^{(i)} \alpha_i
+  \]</span></p>
+<ul>
+<li>pseudocode for SGD for kernel supervised learning problems:
+<ul>
+<li>input:
+<ul>
+<li>loss function <span class="math inline">\(\mathcal{L}\)</span></li>
+<li>kernel matrix <span class="math inline">\(K = \left[K^{(1)} \cdots K^{(m)} \right]\)</span></li>
+<li>labels <span class="math inline">\(\left\{y^{(i)} \right\}_{i=1}^m\)</span></li>
+<li>sequence of positive stepsizes <span class="math inline">\(\eta_1, \eta_2, \eta_3, \dots\)</span></li>
+</ul></li>
+<li><strong>iterate</strong> for <span class="math inline">\(t = 1, 2, \dots\)</span>
+<ol style="list-style-type: decimal">
+<li>Choose index <span class="math inline">\(i \in \{1, \dots, m \}\)</span> uniformly at random</li>
+<li>Update</li>
+</ol>
+<span class="math display">\[
+  \alpha \gets \alpha - \eta_t \left[\mathcal{L}^\prime \left(K^{(i)T} \alpha, y^{(i)} \right) K^{(i)} + m \lambda K^{(i)} \alpha_i \right]
+  \]</span></li>
+<li>note: because the <span class="math inline">\(\lambda K^{(i)}\alpha_i\)</span> term is multiplied by <span class="math inline">\(m\)</span> to keep the gradient unbiased, it is important that <span class="math inline">\(\lambda&gt;0\)</span> not be too large, as the algorithm can be unstable otherwise</li>
+<li>note: a common stepsize is <span class="math inline">\(\eta_t = \frac{1}{\sqrt{t}}\)</span>, or a constant multiple thereof</li>
+</ul></li>
+</ul>
+</div>
+<div id="support-vector-machines" class="section level2">
+<h2><strong>support vector machines</strong></h2>
+<ul>
+<li>one approach to SVMs:
+<ul>
+<li>use the margin-based loss function</li>
+</ul>
+<p><span class="math display">\[
+  \mathcal{L}(z,y) = \left[1-yz \right]_+ = \max \{0, 1-yz \}
+  \]</span></p>
+<ul>
+<li>the empirical regularized risk is then:</li>
+</ul>
+<p><span class="math display">\[
+  J_\lambda(\alpha) = \frac{1}{m} \sum_{i=1}^m \left[1-y^{(i)} K^{(i)T} \alpha \right]_+ + \frac{\lambda}{2} \alpha^T K \alpha
+  \]</span></p></li>
+</ul>
+</div>
+<div id="gaussianrbf-kernel-example" class="section level2">
+<h2><strong>gaussian/RBF kernel example</strong></h2>
+<p><span class="math display">\[
+K (x,z) = \exp \left(- \frac{1}{2\tau^2} \lVert x-z\rVert_2^2 \right)
+\]</span></p>
+<ul>
+<li><span class="math inline">\(\tau&gt;0\)</span> controls the <strong>bandwidth</strong> of the kernel
+<ul>
+<li>for small <span class="math inline">\(\tau\)</span>, <span class="math inline">\(K(x,z) \approx 0\)</span> unless <span class="math inline">\(x \approx z\)</span></li>
+<li>for large <span class="math inline">\(\tau\)</span>, the kernel function <span class="math inline">\(K\)</span> is much smoother</li>
+</ul></li>
+<li>the feature function <span class="math inline">\(\phi\)</span> for the RBF kernel is infinite dimensional (it is the Fourier transform of the Gaussian distribution with mean zero and variance <span class="math inline">\(\tau\)</span>^2)</li>
+<li>to make a new prediction:</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  &amp; \quad \theta^Tx \\
+  &amp; = \sum_{i=1}^m \alpha_i x^T x^{(i)} &amp;&amp; \text{representer theorem} \\
+  &amp; = \sum_{i=1}^m K \left(x^{(i)}, x \right) \alpha_i &amp;&amp; \text{substitute kernel function} \\
+  &amp; = \sum_{i=1}^m \exp \left(- \frac{1}{2\tau^2} \lVert x^{(i)}-x\rVert_2^2 \right) \alpha_i
+  \end{align}
+  \]</span></p>
+<ul>
+<li>this represents something like a weighting depending on how close <span class="math inline">\(x\)</span> is to each <span class="math inline">\(x^{(i)}\)</span>
+<ul>
+<li>i.e., the contribution of weight <span class="math inline">\(\alpha_i\)</span> is scaled by the similarity of <span class="math inline">\(x\)</span> to <span class="math inline">\(x^{(i)}\)</span> as determined by the kernel function</li>
+</ul></li>
+<li>large <span class="math inline">\(\tau \rightarrow\)</span> a very simple, close to linear classifier</li>
+<li>small <span class="math inline">\(\tau \rightarrow\)</span> a variable, highly non-linear classifier</li>
 </ul>
 </div>
 
