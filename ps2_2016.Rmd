@@ -105,7 +105,7 @@ In this problem we will consider a stochastic gradient descent-like implementati
 
 $$
 \theta^{(i+1)} := \begin{cases}
-                  \theta^{(i)} + \alpha y^{(i+1)}x^{(i+1)} & \text{if } h_\theta\left(x^{(i+1)}\right) y^{(i+1)} < 0 \\
+                  \theta^{(i)} + \alpha y^{(i+1)}x^{(i+1)} & \text{if } h_{\theta^{(i)}}\left(x^{(i+1)}\right) y^{(i+1)} < 0 \\
                   \theta^{(i)} & \text{otherwise,}
                   \end{cases}
 $$
@@ -113,22 +113,51 @@ where $\theta^{(i)}$ is the value of the parameters after the algorithm has seen
 
 Let $K$ be a Mercer kernel corresponding to some very high-dimensional feature mapping $\phi$. Suppose $\phi$ is so high-dimensional (say $\infty$-dimensional) that it's infeasible to ever represent $\phi(x)$ explicitly. Describe how you would apply the "kernel trick" to the perceptron to make it work in the high-dimensional feature space $\phi$, but without ever explicitly computing $\phi(x)$. [Note: You don't have to worry about the intercept term. If you like, think of $\phi$ as having the property that $\phi_0(x)=1$ so that this is taken care of.] Your description should specify
 
-**(a)**
+**(a)** How you will (implicitly) represent the high-dimensional parameter vector $\theta^{(i)}$, including how the initial value $\theta^{(0)} = \vec{0}$ is represented (note that $\theta^{(i)}$ is now a vector whose dimension is the same as the feature vectors $\phi(x)$);
 
-How you will (implicitly) represent the high-dimensional parameter vector $\theta^{(i)}$, including how the initial value $\theta^{(0)} = \vec{0}$ is represented (note that $\theta^{(i)}$ is now a vector whose dimension is the same as the feature vectors $\phi(x)$);
+Since $\alpha$ is used to represent the learning rate, use $\beta$ to represent the coefficients in the representer theorem:
 
-**(b)**
+$$
+\begin{align}
+  \theta^{(i)}  & = \sum_{\ell=1}^i \beta_\ell \phi \left(x^{(\ell)} \right) && \text{representer theorem; substitute }\phi(x) \text{ for }x \\
+                & && \phi \left(x^{(\ell)} \right)\text{ cannot be calculated explicitly,} \\
+                & && \text{but it doesn't need to be, as seen below} \\
+  \text{initial value } \theta^{(0)} & \text{ is the empty sum above}
+\end{align}
+$$
 
-How you will efficiently make a prediction on a new input $x^{(i+1)}$. I.e., how you will computer $h_{\theta^{(i)}} \left(x^{(i+1)} \right) = g \left(\theta^{(i)T} \phi \left(x^{(i+1)} \right) \right)$, using your representation of $\theta^{(i)}$; and
+**(b)** How you will efficiently make a prediction on a new input $x^{(i+1)}$. I.e., how you will compute $h_{\theta^{(i)}} \left(x^{(i+1)} \right) = g \left(\theta^{(i)T} \phi \left(x^{(i+1)} \right) \right)$, using your representation of $\theta^{(i)}$; and
 
-**(c)**
+$$
+\begin{align}
+h_{\theta^{(i)}} \left(x^{(i+1)} \right)  & = g \left( \theta^{(i)T} \phi \left(x^{(i+1)} \right)\right) \\
+                                          & = g \left( \sum_{\ell=1}^i \beta_\ell \phi \left(x^{(\ell)} \right)^T \phi \left(x^{(i+1)} \right)\right) \\
+                                          & = g \left( \sum_{\ell=1}^i \beta_\ell K \left(x^{(\ell)}, x^{(i+1)} \right)  \right)
+\end{align}
+$$
 
-How you will modify the update rule given above to perform an update to $\theta$ on a new training example $\left(x^{(i+1)}, y^{(i+1)} \right)$; i.e., using the update rule corresponding to the feature mapping $\phi$:
+**(c)** How you will modify the update rule given above to perform an update to $\theta$ on a new training example $\left(x^{(i+1)}, y^{(i+1)} \right)$; i.e., using the update rule corresponding to the feature mapping $\phi$:
 
 $$
 \theta^{(i+1)} := \theta^{(i)} + \alpha \mathbf{1} \left\{\theta^{(i)T}\phi \left(x^{(i+1)} \right)y^{(i+1)} < 0 \right\} y^{(i+1)} \phi \left(x^{(i+1)} \right)
 $$
 [Hint: our discussion of the representer theorem may be useful.]
+
+$$
+\begin{align}
+\theta^{(i+1)}  & = \sum_{\ell=1}^{i+1} \beta_\ell \phi \left(x^{(\ell)} \right) && \text{from part a} \\
+                & = \theta^{(i)} + \beta_{i+1} \phi \left(x^{(i+1)} \right) && \text{the update is the previous } \theta \\
+                &&& \text{plus the next training example weighted by } \beta_{(i+1)} \\
+                & = \theta^{(i)} + \alpha \left(y^{(i)} - h_{\theta^{(i)}} \left(\phi \left(x^{(i+1)} \right) \right) \right) \phi \left(x^{(i)} \right) && \text{perceptron update rule? } h_{\theta^{(i)}} \text{ is calculated as in part b}
+\end{align}
+$$
+
+Update rule:
+$$
+\begin{align}
+\theta \gets \theta + \alpha \left(y^{(i)}- h_\theta \left(\phi \left(x^{(i)} \right) \right) \right) \phi\left(x^{(i)} \right)
+\end{align}
+$$
 
 ### **3. Spam classification**
 
@@ -136,7 +165,7 @@ In this problem, we will use the naive Bayes algorithm and an SVM to build a spa
 
 In recent years, spam on electronic newsgroups has been an increasing problem. Here, we'll build a classifier to distinguish between "real" newsgroup messages, and spam messages. For this experiment, we obtained a set of spam emails, and a set of genuine newsgroup messages. Using only the subject line and body of each message, we'll learn to distinguish between the spam and the non-spam.
 
-In order to get the text emails into a form usable by naive Bayes, we've already done some preprocessing on the messages. You can look at two sample spam emails in the files `spam_sample_original*`, and their preprocessed forms in the files `spam_sample_preprocessed*`. The first line in the preprocessed format is just the label and is not part of the message. The proprocessing ensures that only the message body and subject remain in teh dataset; email addresses (EMAILADDR), web addresses (HTTPADDR), currency (DOLLAR), and numbers (NUMBER) were also replaced by the special tokens to allow them to be considered properly in the classification process. (In this problem, we'll call the features "tokens" rather than "words", since some of the features will correspond to special values like EMAILADDR. You don't have to worry about the distinction.) The files `news_sample_original` and `news_sample_preprocessed` also give an example of a non-spam mail.
+In order to get the text emails into a form usable by naive Bayes, we've already done some preprocessing on the messages. You can look at two sample spam emails in the files `spam_sample_original*`, and their preprocessed forms in the files `spam_sample_preprocessed*`. The first line in the preprocessed format is just the label and is not part of the message. The preprocessing ensures that only the message body and subject remain in the dataset; email addresses (EMAILADDR), web addresses (HTTPADDR), currency (DOLLAR), and numbers (NUMBER) were also replaced by the special tokens to allow them to be considered properly in the classification process. (In this problem, we'll call the features "tokens" rather than "words", since some of the features will correspond to special values like EMAILADDR. You don't have to worry about the distinction.) The files `news_sample_original` and `news_sample_preprocessed` also give an example of a non-spam mail.
 
 The work to extract feature vectors out of the documents has also been done for you, so you can just load in the design matrices (called document-word matrices in text classification) containing all the data. In a document-word matrix, the $i$-th row represents the $i$-th document/email, and the $j$-th column represents the $j$-th distinct token. This, the $(i,j)$-entry of this matrix represents the numbers of occurrences of the $j$th token in the $i$th document.
 
@@ -144,11 +173,35 @@ For this problem, we've chosen as our set of tokens considered (i.e., as our voc
 
 Since the document-word matrix is extremely sparse (has lots of zero entries), we have stored it in our own efficient format to save space. You don't have to worry about this format. The file `readMatrix.m` provides the `readMatrix` function that reads in the document-word matrix and the correct class labels for the various docuemnts. Code in `nb_train.m` and `nb_test.m` shows how `readMatrix` should be called. The documentation at the top of these two fields will tell you all you need to know about the setup.
 
-**(a)**
+**(a)** Implement a naive Bayes classifier for spam classification, using the multinomial event model and Laplace smoothing.
 
-**(b)**
+You should use the code outline provided in `nb_train.m` to train your parameters,
+and then use these parameters to classify the test set data by filling in the code in `nb_test.m`. You may assume that any parameters computed in nb train.m are in memory when nb test.m is executed, and do not need to be recomputed (i.e., that
+`nb_test.m` is executed immediately after `nb_train.m`).
 
-**(c)**
+Train your parameters using the document-word matrix in `MATRIX.TRAIN`, and then report the test set error on `MATRIX.TEST`.
+
+**Remark.** If you implement naive Bayes the straightforward way, you’ll find that the computed $p(x \mid y) = \prod_i p(x_i \mid y)$ often equals zero. This is because $p(x_i \mid y)$, which is the product of many numbers less than one, is a very small number. The standard computer representation of real numbers cannot handle numbers that are too small, and instead rounds them off to zero. (This is called "underflow.") You’ll have to find a way to compute naive Bayes’ predicted class labels without explicitly representing very small numbers such as $p(x_i \mid y)$. [Hint: Think about using logarithms.]
+
+Test set error = 1.625%. See python notebook `ps2-3.ipynb`.
+
+**(b)** Intuitively, some tokens may be particularly indicative of an email being in a particular class. We can try to get an informal sense of how indicative token $i$ is for the SPAM class by looking at:
+
+$$
+\log \frac{p\left(x_j=i \mid y = 1 \right)}{p\left(x_j=i \mid y = 0 \right)} = \log \left(\frac{P\left(\text{token } i \mid \text{email is SPAM}\right)}{P\left(\text{token } i \mid \text{email is NOTSPAM} \right)} \right).
+$$
+Using the parameters fit in part (a), find the 5 tokens that are most indicative of the SPAM class (i.e., have the highest positive value on the measure above). The numbered list of tokens in the file `TOKENS_LIST` should be useful for identifying the words/tokens.
+
+
+Top 5 predictive tokens: 'httpaddr', 'spam', 'unsubscrib', 'ebai', 'valet'. See python notebook `ps2-3.ipynb`.
+
+
+**(c)** Repeat part (a), but with training sets of size ranging from 50, 100, 200, ... , up to 1400, by using the files `MATRIX.TRAIN.*`. Plot the test error each time (use `MATRIX.TEST` as the test data) to obtain a learning curve (test set error vs. training set size). You may need to change the call to `readMatrix` in `nb_train.m` to read the correct file each time. Which training-set size gives the best test set error?
+
+
+<center>![](figures/ps2-3c.png)</center>
+
+The lowest test set error is observed for the largest training set (1400 examples). See python notebook `ps2-3.ipynb`.
 
 **(d)** Train an SVM on this dataset using stochastic gradient descent and the radial basis function (also known as the Gaussian) kernel, which sets
 $$
@@ -168,9 +221,9 @@ $$
 $$
 In your SVM training, you should perform stochastic gradient descent, where in each iteration you choose an index $i \in \{1, \dots, m \}$ uniformly at random, for a total of $40 \cdot m$ steps, where $m$ is the training set size, and your kernel should use $\tau = 8$ and regularization multiplier $\lambda = \frac{1}{64m}$. For this part of the problem, you shoudl also replace each training or test point $x^{(i)}$ with a zero-one vector $z^{(i)}$, where $z^{(i)} = 1$ if $x_j^{(i)} > 0$ and $z^{(i)} = 0$ if $x^{(i)} = 0$. Initialize your SGD procedure at $\alpha = 0$.
 
-The output of your training code, which you should implement in `svm_test.m`, should be the $\alpha$ vector that is the *average* of all the $\alpha$ vectors that your iteration updates. At iteraction $t$ of stochastic gradient descent you should use stepsize $1/\sqrt{t}$.
+The output of your training code, which you should implement in `svm_test.m`, should be the $\alpha$ vector that is the *average* of all the $\alpha$ vectors that your iteration updates. At iteration $t$ of stochastic gradient descent you should use stepsize $1/\sqrt{t}$.
 
-**(e)**
+**(e)** How do naive Bayes and Support Vector Machines compare (in terms of generalization error) as a function of the training set size?
 
 ### **4. Properties of the VC dimension**
 

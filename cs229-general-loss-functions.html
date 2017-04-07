@@ -121,254 +121,279 @@ $(document).ready(function () {
 
 <div id="TOC">
 <ul>
-<li><a href="#intro"><strong>1. Intro</strong></a></li>
-<li><a href="#convex-sets"><strong>2. Convex Sets</strong></a></li>
-<li><a href="#convex-functions"><strong>3. Convex Functions</strong></a><ul>
-<li><a href="#first-order-condition-for-convexity"><strong>3.1 First Order Condition for Convexity</strong></a></li>
-<li><a href="#second-order-condition-for-convexity"><strong>3.2 Second Order Condition for Convexity</strong></a></li>
-<li><a href="#jensens-inequality"><strong>3.3 Jensen’s Inequality</strong></a></li>
-<li><a href="#sublevel-sets"><strong>3.4 Sublevel Sets</strong></a></li>
-<li><a href="#examples"><strong>3.5 Examples</strong></a></li>
-</ul></li>
-<li><a href="#convex-optimization-problems"><strong>4. Convex Optimization Problems</strong></a><ul>
-<li><a href="#global-optimality-in-convex-problems"><strong>4.1 Global Optimality in Convex Problems</strong></a></li>
-</ul></li>
-<li><a href="#special-cases-of-convex-problems"><strong>4.2 Special Cases of Convex Problems</strong></a></li>
+<li><a href="#binary-classification"><strong>Binary classification</strong></a></li>
+<li><a href="#logistic-regression"><strong>Logistic Regression</strong></a></li>
+<li><a href="#general-loss-functions"><strong>General loss functions</strong></a></li>
 </ul>
 </div>
 
-<p>My notes on <a href="http://cs229.stanford.edu/materials.html">CS229 Convex Optimization Overview notes</a> by Zico Kolter and Honglak Lee.</p>
-<div id="intro" class="section level2">
-<h2><strong>1. Intro</strong></h2>
+<p>My notes on John Duchi’s <a href="http://cs229.stanford.edu/materials.html">CS229 binary classification and general loss function supplemental notes</a>.</p>
+<div id="binary-classification" class="section level2">
+<h2><strong>Binary classification</strong></h2>
 <ul>
-<li>Many situations in machine learning require <strong><em>optimization</em></strong> of the value of some function</li>
-<li>I.e., given <span class="math inline">\(f: \mathbb{R}^n \rightarrow \mathbb{R}\)</span>, want to find <span class="math inline">\(x \in \mathbb{R}^n\)</span> that minimizes/maximizes <span class="math inline">\(f(x)\)</span></li>
-<li>least-squares, logistic regression, and support vector machines can all be framed as optimization problems</li>
-<li>in general, finding the global optimum of a function is very difficult
+<li><strong>binary classification</strong>
 <ul>
-<li>for a <strong><em>convex optimization problems</em></strong>, we can efficiently find the global solution in many cases</li>
+<li>target <span class="math inline">\(y\)</span> can take on only two values
+<ul>
+<li>represent by <span class="math inline">\(y \in \{-1, +1\}\)</span></li>
+<li>assume input features <span class="math inline">\(x \in \mathbb{R}^n\)</span></li>
 </ul></li>
-</ul>
-</div>
-<div id="convex-sets" class="section level2">
-<h2><strong>2. Convex Sets</strong></h2>
-<p><strong><em>Convex sets</em></strong>:</p>
+</ul></li>
+<li>use standard approach to supervised learning:
+<ol style="list-style-type: decimal">
+<li>pick a representation for the hypothesis class</li>
+<li>pick a loss function to minimize</li>
+</ol>
 <ul>
-<li>A set <span class="math inline">\(C\)</span> is convex if, for any <span class="math inline">\(x, y \in C\)</span> and <span class="math inline">\(\theta \in \mathbb{R}\)</span> with <span class="math inline">\(0 \leq \theta \leq 1\)</span>,</li>
+<li>in binary classification, often use hypothesis of the form:</li>
+</ul>
+<span class="math display">\[
+h_\theta(x) = \theta^T x
+\]</span>
+<ul>
+<li>then, classify based on the sign of <span class="math inline">\(\theta^T x\)</span>, i.e. <span class="math inline">\(\text{sign}(\theta^Tx)\)</span>
+<ul>
+<li>an example <span class="math inline">\((x,y)\)</span> is classified correctly if:</li>
+</ul>
+<span class="math display">\[
+\text{sign}(h_\theta(x)) = y
+\]</span>
+<ul>
+<li>or equivalently, if:</li>
 </ul>
 <p><span class="math display">\[
-  \theta x + (1-\theta)y \in C
-  \]</span></p>
-<ul>
-<li>This means that for any two elements in <span class="math inline">\(C\)</span>, every point on the line segment between those points also belongs to <span class="math inline">\(C\)</span>.</li>
-<li>The point <span class="math inline">\(\theta x + (1-\theta) y\)</span> is called a <strong><em>convex combination</em></strong> of the points <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>.</li>
-<li>Examples of convex sets:
-<ul>
-<li>all of <span class="math inline">\(\mathbb{R}^n\)</span></li>
-<li>the non-negative orthant, <span class="math inline">\(\mathbb{R}_+\)</span>:
-<ul>
-<li>all vectors in <span class="math inline">\(\mathbb{R}^n\)</span> whose elements are all non-negative: <span class="math inline">\(\mathbb{R}_+^n = \left\{x : x_i \geq 0 \hspace{.5em}\forall \hspace{.5em}i = 1, \dots, n \right\}\)</span></li>
-</ul></li>
-<li>norm balls</li>
-<li>affine subspaces and polyhedra</li>
-<li>intersections of convex sets</li>
-<li>positive semidefinite matrices</li>
-</ul></li>
-</ul>
-</div>
-<div id="convex-functions" class="section level2">
-<h2><strong>3. Convex Functions</strong></h2>
-<p>A function <span class="math inline">\(f: \mathbb{R}^n \rightarrow \mathbb{R}\)</span> is <strong><em>convex</em></strong> if its domain (denoted <span class="math inline">\(\mathcal{D}(f)\)</span>) is a convex set, and if, for all <span class="math inline">\(x, y \in \mathcal{D}(f)\)</span> and <span class="math inline">\(\theta \in \mathbb{R}, 0 \geq \theta \geq 1\)</span>, <span class="math display">\[
-f(\theta x + (1-\theta)y) \leq \theta f(x) + (1-\theta)f(y)
-\]</span></p>
-<p>Intuitively, the way to think about this definition is that if we pick any two points on the graph of a convex function and draw a straight line between them, then the portion of the function between these two points will lie below this straight line.</p>
-<p>We say a function is <strong><em>strictly convex</em></strong> if this definition holds with strict inequality for <span class="math inline">\(x \neq y\)</span> and <span class="math inline">\(0 &lt; \theta &lt; 1\)</span>. We say that <span class="math inline">\(f\)</span> is <strong><em>concave</em></strong> if <span class="math inline">\(-f\)</span> is convex, and likewise that <span class="math inline">\(f\)</span> is <strong><em>strictly concave</em></strong> if <span class="math inline">\(-f\)</span> is strictly convex.</p>
-<div id="first-order-condition-for-convexity" class="section level3">
-<h3><strong>3.1 First Order Condition for Convexity</strong></h3>
-<p>Suppose a function <span class="math inline">\(f : \mathbb{R}^n \rightarrow \mathbb{R}\)</span> is differentiable (i.e., the gradient <span class="math inline">\(\nabla_x f(x)\)</span> exists at all points <span class="math inline">\(x \in \mathcal{D}(f)\)</span>). Then <span class="math inline">\(f\)</span> is convex iff <span class="math inline">\(\mathbb{D}(f)\)</span> is a convex set and for all <span class="math inline">\(x,y \in \mathcal{D}(f)\)</span>,</p>
-<p><span class="math display">\[
-f(y) \geq f(x) + \nabla_x f(x)^T (y-x)
+y \theta^T x &gt; 0
 \]</span></p>
 <ul>
-<li><span class="math inline">\(f(x) + \nabla_x f(x)^T (y-x) \gets\)</span> <strong><em>first-order approximation</em></strong> of the function <span class="math inline">\(f\)</span> at the point <span class="math inline">\(x\)</span>.
+<li><span class="math inline">\(y \theta^T x\)</span> is called the <strong>margin</strong> for the example <span class="math inline">\((x,y)\)</span></li>
+<li>often (not always), <span class="math inline">\(h_\theta(x) = x^T \theta\)</span> is interepreted as a measure of the confidence with which the parameter vector <span class="math inline">\(\theta\)</span> assigns a label for the point <span class="math inline">\(x\)</span>
 <ul>
-<li>I.e., the line tangent to <span class="math inline">\(f\)</span> at <span class="math inline">\(x\)</span> is a global underestimator of the function <span class="math inline">\(f\)</span></li>
-</ul></li>
-<li>Similarly, <span class="math inline">\(f\)</span> is:
-<ul>
-<li>strictly convex if this holds w/ strict inequality</li>
-<li>concave if the inequality is reversed
-<ul>
-<li>strictly concave if this reverse inequality is strict</li>
+<li><span class="math inline">\(x^T \theta\)</span> very negative (positive), then we more strongly believe that the label <span class="math inline">\(y\)</span> is negative (positive)</li>
 </ul></li>
 </ul></li>
+<li>having chosen a hypothesis class, now choose a loss function
+<ul>
+<li>intuitively, want a loss function which:
+<ul>
+<li>given training data <span class="math inline">\(\left\{x^{(i)}, y^{(i)} \right\}_{i=1}^m\)</span>, the chosen <span class="math inline">\(\theta\)</span> makes the margin <span class="math inline">\(y^{(i)} \theta^T x^{(i)}\)</span> very large for each training example</li>
+</ul></li>
+<li>fix a hypothetical example <span class="math inline">\((x,y)\)</span>, and let:
+<ul>
+<li><span class="math inline">\(z = y x^T \theta\)</span> denote the margin</li>
+<li><span class="math inline">\(\varphi : \mathbb{R} \rightarrow \mathbb{R}\)</span> be the loss function</li>
+</ul></li>
+<li>for a particular loss function, the empirical risk to minimize is then:</li>
 </ul>
-</div>
-<div id="second-order-condition-for-convexity" class="section level3">
-<h3><strong>3.2 Second Order Condition for Convexity</strong></h3>
-<p>Suppose a function <span class="math inline">\(f: \mathbb{R}^n \to \mathbb{R}\)</span> is twice differentiable (i.e., the Hessian <span class="math inline">\(\nabla_x^2f(s)\)</span> is defined for all points <span class="math inline">\(x\)</span> in the domain of <span class="math inline">\(f\)</span>). Then <span class="math inline">\(f\)</span> is convex iff <span class="math inline">\(\mathcal{D}(f)\)</span> is a convex set and its Hessian is positive semidefinite: i.e., for any <span class="math inline">\(x \in \mathcal{D}(f)\)</span>,</p>
 <p><span class="math display">\[
-\nabla_x^2 f(x) \succeq 0.
+J(\theta) = \frac{1}{m} \sum_{i=1}^m \varphi \left(y^{(i)} \theta^T x^{(i)} \right)
 \]</span></p>
 <ul>
-<li>In one dimension, this is equivalent to the condition that the second derivative <span class="math inline">\(f^{\prime\prime}(x)\)</span> always be non-negative</li>
-<li>if Hessian is:
+<li>desired behavior:
 <ul>
-<li>positive definite, <span class="math inline">\(f\)</span> is strictly convex</li>
-<li>negative semidefinite, <span class="math inline">\(f\)</span> is concave</li>
-<li>negative definite, <span class="math inline">\(f\)</span> is negative definite</li>
+<li>want <span class="math inline">\(y^{(i)} \theta^T x^{(i)}\)</span> positive for each training example <span class="math inline">\(i = 1, \dots, m\)</span></li>
+<li>should penalize <span class="math inline">\(\theta\)</span> for which <span class="math inline">\(y^{(i)} \theta^T x^{(i)} &lt; 0\)</span> frequently in the training data</li>
 </ul></li>
+<li>an intuitive choice for loss function:
+<ul>
+<li><span class="math inline">\(\varphi(z)\)</span> small if <span class="math inline">\(z&gt; 0\)</span> (margin is positive)</li>
+<li><span class="math inline">\(\varphi(z)\)</span> large if <span class="math inline">\(z&lt; 0\)</span> (margin is negative)</li>
+</ul></li>
+<li>a natural choice is then <strong>zero-one loss</strong>:</li>
 </ul>
-</div>
-<div id="jensens-inequality" class="section level3">
-<h3><strong>3.3 Jensen’s Inequality</strong></h3>
-<p>Suppose we start with the inequality in the basic definition of a convex function</p>
 <p><span class="math display">\[
-f(\theta x + \left(1-\theta \right)y) \leq \theta f(x) + \left(1-\theta \right) f(y) \quad \text{for } 0 \leq \theta \leq 1.
-\]</span> This can be extended (by induction) to convex combinations of more than one point,</p>
-<p><span class="math display">\[
-f \left(\sum_{i=1}^k \theta_i x_i \right) \leq \sum_{i=1}^k \theta_i f(x_i) \quad \text{for } \sum_{i=1}^k \theta_i = 1, \theta_i \geq 0 \hspace{.6em}\forall i
-\]</span> This can be further extended to infinite sums or integrals:</p>
-<p><span class="math display">\[
-f \left( \int p(x)x dx \right) \leq \int p(x)f(x) dx \quad \text{for } \int p(x)dx = 1, p(x) \geq 0 \hspace{.6em} \forall x
+\varphi_{\text{zo}}(z) =  \begin{cases}
+                          1 &amp; \text{if } z \leq 0 \\
+                          0 &amp; \text{if } z &gt; 0
+                          \end{cases}
 \]</span></p>
-<p>Since <span class="math inline">\(\int p(x) dx = 1\)</span>, it can be interpreted as a probability density, in which case the above can be written as expectations:</p>
+<ul>
+<li>with zero-one loss, the risk <span class="math inline">\(J(\theta)\)</span> is the average number of misclassifications that the parameter <span class="math inline">\(\theta\)</span> makes on the training data</li>
+<li>negatives:
+<ul>
+<li>zero-one loss is discontinuous, non-convex, NP-hard to minimize
+<ul>
+<li>therefore, prefer losses which satisfy:</li>
+</ul>
+<span class="math display">\[
+\begin{cases}
+\varphi(z) \rightarrow 0 &amp; \text{as } z \rightarrow \infty \\
+\varphi(z) \rightarrow \infty &amp; \text{as } z \rightarrow - \infty
+\end{cases}
+\]</span></li>
+</ul></li>
+<li>three loss functions commonly used in ML:
+<ul>
+<li><strong>logistic loss</strong></li>
+</ul>
 <p><span class="math display">\[
-f \left(\text{E} \left[x \right] \right) \leq \text{E} [f(x)].
+\varphi_{\text{logistic}}(z) = \log \left(1+ e^{-z} \right)
 \]</span></p>
-<p>This is <strong><em>Jensen’s inequality</em></strong>.</p>
-</div>
-<div id="sublevel-sets" class="section level3">
-<h3><strong>3.4 Sublevel Sets</strong></h3>
-<p>Convex functions give rise to an important of convex set called an <strong><em><span class="math inline">\(\alpha\)</span>-sublevel set</em></strong>. Given a convex function <span class="math inline">\(f : \mathbb{R}^n \to \mathbb{R}\)</span> and a real number <span class="math inline">\(\alpha \in \mathbb{R}\)</span>, the <span class="math inline">\(\alpha\)</span>-sublevel set is defined as</p>
-<p><span class="math display">\[
-\left\{x \in \mathcal{D}(f) : f(x) \leq \alpha \right\}.
-\]</span> I.e., the <span class="math inline">\(\alpha\)</span>-sublevel set is the set of points <span class="math inline">\(x\)</span> s.t. <span class="math inline">\(f(x) \leq \alpha\)</span>.</p>
-</div>
-<div id="examples" class="section level3">
-<h3><strong>3.5 Examples</strong></h3>
-</div>
-</div>
-<div id="convex-optimization-problems" class="section level2">
-<h2><strong>4. Convex Optimization Problems</strong></h2>
-<p>A <strong><em>convex optimization problem</em></strong> is of the form</p>
+<ul>
+<li><strong>hinge (SVM) loss</strong></li>
+</ul>
 <p><span class="math display">\[
 \begin{align}
-\text{minimize} \quad &amp; f(x) \\
-\text{subject to} \quad &amp; x \in C
+\varphi_{\text{hinge}}(z) &amp; = [1-z]_+ \\
+                          &amp; = \max \left\{1-z , 0\right\}
 \end{align}
 \]</span></p>
 <ul>
-<li><span class="math inline">\(f\)</span>: a convex function</li>
-<li><span class="math inline">\(C\)</span>: a convex set</li>
-<li><span class="math inline">\(x\)</span>: the optimization variable</li>
+<li><strong>exponential loss</strong></li>
 </ul>
-<p>The same problem written more explicitly:</p>
 <p><span class="math display">\[
-\begin{align}
-\text{minimize} \quad   &amp; f(x) \\
-\text{subject to} \quad &amp; g_i(x) \leq 0, \quad i = 1, \dots, m \\
-                        &amp; h_i(x) = 0, \quad i = 1, \dots, p
-\end{align}
-\]</span></p>
+\varphi_{\text{exp}}(z) = e^{-z}
+\]</span></p></li>
+<li>minimizing different loss functions leads to different ML algorithms:
 <ul>
-<li><span class="math inline">\(f\)</span>: a convex function</li>
-<li><span class="math inline">\(g_i(x)\)</span> are convex functions</li>
-<li><span class="math inline">\(h_i(x)\)</span> are affine functions</li>
-<li><span class="math inline">\(x\)</span>: the optimization variable</li>
-</ul>
-<p>The <strong><em>optimal value</em></strong> of an optimization problem is denoted <span class="math inline">\(p^{*}\)</span> (sometimes <span class="math inline">\(f^*\)</span>) and is equal to the minimum possible value of the objective function in the feasible region</p>
-<p><span class="math display">\[
-p^* = \min \left\{f(x): \hspace{.5em} g_i(x) \leq 0, i=1, \dots, m, \hspace{.5em} h_i(x) = 0, 1, \dots, p \right\}.
-\]</span></p>
-<p><span class="math inline">\(p^*\)</span> can take on the values <span class="math inline">\(+ \infty\)</span> or <span class="math inline">\(- \infty\)</span> when the problem is <em>infeasible</em> (feasible region is empty) or <em>unbounded below</em> (feasible points exist s.t. <span class="math inline">\(f(x) \rightarrow - \infty\)</span>), respectively. We say that <span class="math inline">\(x^*\)</span> is an <strong><em>optimal point</em></strong> if <span class="math inline">\(f(x^*) = p^*\)</span>. Note that there can be more than one optimal point, even when the optimal value is finite.</p>
-<div id="global-optimality-in-convex-problems" class="section level3">
-<h3><strong>4.1 Global Optimality in Convex Problems</strong></h3>
-<p>Intiuitive definitions:</p>
-<ul>
-<li><strong><em>locally optimal</em></strong> - no “nearby” feasible points that have a lower objective value</li>
-<li><strong><em>globally optimal</em></strong> - no feasible points at all that have a lower objective value</li>
-</ul>
-<p>Formal definitions:</p>
-<ul>
-<li>a point <span class="math inline">\(x\)</span> is <strong><em>locally optimal</em></strong> if it is feasible (i.e., satisfies the constrains of the optimization problem) and if there exists some <span class="math inline">\(R &gt; 0\)</span> s.t. all feasible points <span class="math inline">\(z\)</span> with <span class="math inline">\(\lVert x-z\rVert_2 \leq R\)</span>, satisfy <span class="math inline">\(f(x) \leq f(z)\)</span>.</li>
-<li>a point <span class="math inline">\(x\)</span> is <strong><em>globally optimal</em></strong> if it is feasible and for all feasible points <span class="math inline">\(z\)</span>, <span class="math inline">\(f(x) \leq f(z)\)</span>.</li>
-</ul>
-<p>The key idea is that <strong>for a convex optimization problem, all locally optimal points are globally optimal</strong>.</p>
-<p>Proof by contradiction:</p>
-<ul>
-<li>Suppose <span class="math inline">\(x\)</span> is locally optimal but <em>not</em> globally optimal.
-<ul>
-<li>I.e., there exists a feasible point <span class="math inline">\(y\)</span> s.t. <span class="math inline">\(f(x) &gt; f(y)\)</span>.</li>
-<li>By definition of local optimality, there exist no feasible points <span class="math inline">\(z\)</span> s.t. <span class="math inline">\(\lVert x-z \rVert_2 \leq R\)</span> and <span class="math inline">\(f(z) &lt; f(x)\)</span>.</li>
+<li>logistic loss <span class="math inline">\(\rightarrow\)</span> logistic regression</li>
+<li>hinge loss <span class="math inline">\(\rightarrow\)</span> support vector machines</li>
+<li>exponential loss <span class="math inline">\(\rightarrow\)</span> boosting</li>
 </ul></li>
-<li>Then, suppose we choose the point</li>
-</ul>
-<p><span class="math display">\[
-  z = \theta y + \left(1-\theta \right)x \quad \text{with} \quad \theta = \frac{R}{2 \lVert x-y \rVert_2}.
-  \]</span></p>
-<ul>
-<li>then,</li>
-</ul>
-<p><span class="math display">\[
-  \begin{align}
-  \lVert x-z \rVert_2 &amp; = \left\lVert x - \left(\frac{R}{2 \lVert x-y \rVert_2} y+ \left(1-\frac{R}{2\lVert x-y \rVert_2} \right) x \right) \right\rVert_2 \\
-                      &amp; = \left\lVert \frac{R}{2 \lVert x-y \rVert_2} \left(x-y \right)\right\rVert_2 \\
-                      &amp; = \frac{R}{2} \leq R
-  \end{align}
-  \]</span></p>
-<ul>
-<li>By convexity of <span class="math inline">\(f\)</span>, we have:</li>
-</ul>
-<p><span class="math display">\[
-  f(z) = f(\theta y + (1-\theta)x) \leq \theta f(y) + (1-\theta)f(x) &lt; f(x)
-  \]</span></p>
-<ul>
-<li>the feasible set is a convex set
-<ul>
-<li><span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> are both feasible</li>
-<li>therefore, <span class="math inline">\(z = \theta y + (1-\theta)x\)</span> is also feasible</li>
 </ul></li>
-<li>since <span class="math inline">\(z\)</span> is feasible and:
-<ul>
-<li><span class="math inline">\(\lVert x-z \rVert_2 &lt; R\)</span> (i.e. <span class="math inline">\(z\)</span> is within the radius <span class="math inline">\(R\)</span> neighborhood of <span class="math inline">\(x\)</span>)</li>
-<li><span class="math inline">\(f(z) &lt; f(x)\)</span></li>
 </ul></li>
-<li>therefore, the point <span class="math inline">\(x\)</span> which is not globally optimal, cannot be locally optimal</li>
 </ul>
 </div>
+<div id="logistic-regression" class="section level2">
+<h2><strong>Logistic Regression</strong></h2>
+<ul>
+<li>use binary labels <span class="math inline">\(y \in \{-1, 1 \}\)</span></li>
+<li>use logistic loss:</li>
+</ul>
+<p><span class="math display">\[
+  \varphi_{\text{logistic}}(yx^T \theta) = \log \left(1 + \exp \left(-yx^T \theta \right) \right)
+  \]</span></p>
+<ul>
+<li>logistic regression corresponds to choosing <span class="math inline">\(\theta\)</span> to minimize the empirical risk:</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  J(\theta) &amp; = \frac{1}{m} \sum_{i=1}^m \varphi_{\text{logistic}} \left(y^{(i)} \theta^T x^{(i)} \right) \\
+            &amp; = \frac{1}{m} \sum_{i=1}^m \log \left(1 + \exp \left(-y^{(i)} \theta^T x^{(i)} \right) \right)
+  \end{align}
+  \]</span></p>
+<ul>
+<li><strong>probabilistic interpretation:</strong>
+<ul>
+<li>define <strong>sigmoid</strong>, aka <strong>logistic</strong> function:</li>
+</ul>
+<p><span class="math display">\[
+  g(z) = \frac{1}{1+e^{-z}}
+  \]</span></p>
+<ul>
+<li>the sigmoid function satisfies</li>
+</ul>
+<p><span class="math display">\[
+  g(z) + g(-z) = \frac{1}{1+e^{-z}} + \frac{1}{1+e^{z}} = \frac{e^z}{1+e^z} + \frac{1}{1+e^z} = 1
+  \]</span></p>
+<ul>
+<li>therefore, the sigmoid function can be used to define a probability model for binary classification</li>
+<li>for <span class="math inline">\(y \in \left\{-1, 1 \right\}\)</span>, define the <strong>logistic model</strong> for classification:</li>
+</ul>
+<p><span class="math display">\[
+  p \left(Y=y \mid x; \theta \right) = g \left(yx^T \theta \right) = \frac{1}{1 + e^{-yx^T \theta}}
+  \]</span></p>
+<ul>
+<li>interpretation:
+<ul>
+<li>margin <span class="math inline">\(yx^T \theta\)</span> is very positive <span class="math inline">\(\rightarrow p(Y=y \mid x; \theta) = g(yx^T \theta) \approx 1\)</span></li>
+<li>margin <span class="math inline">\(yx^T \theta\)</span> is very negative <span class="math inline">\(\rightarrow p(Y=y \mid x; \theta) = g(yx^T \theta) \approx 0\)</span></li>
+</ul></li>
+<li>redefine the hypothesis class as:</li>
+</ul>
+<p><span class="math display">\[
+  h_\theta(x) = g(\theta^T x) = \frac{1}{1+ e^{-\theta^Tx}}
+  \]</span></p>
+<ul>
+<li>get likelihood of the training data:</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  L(\theta) &amp; = \prod_{i=1}^m p \left(Y = y^{(i)} \mid x^{(i)}; \theta \right) \\
+            &amp; = \prod_{i=1}^m h_\theta \left(y^{(i)}x^{(i)} \right) \\
+  l(\theta) &amp; = \sum_{i=1}^m \log h_\theta \left(y^{(i)} x^{(i)} \right) &amp;&amp;\text{get log-likelihood} \\
+            &amp; = - \sum_{i=1}^m \left(1 + e^{-y^{(i)}\theta^T x^{(i)}} \right) \\
+            &amp; = -m J(\theta) &amp;&amp; J(\theta) \text{ is the logistic regression risk (see above)} \\
+  \end{align}
+  \]</span></p>
+<ul>
+<li>therefore, maximum likelihood in the logistic model is equivalent to minimizing the average logistic loss</li>
+</ul></li>
+<li><strong>gradient descent methods</strong>
+<ul>
+<li>to fit the logistic regression model, consider gradient-descent-based minimization</li>
+<li>the derivative of the logistic loss:</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  &amp; \quad \frac{d}{dz} \varphi_{\text{logistic}}(z) \\
+  &amp; = \varphi^\prime_{\text{logistic}}(z) \\
+  &amp; = \frac{1}{1+e^{-z}} \cdot \frac{d}{dz} e^{-z} \\
+  &amp; = - \frac{e^{-z}}{1+e^{-z}} \\
+  &amp; = - \frac{1}{1+e^z} \\
+  &amp; = -g(-z)
+  \end{align}
+  \]</span></p>
+<ul>
+<li>for a single training example <span class="math inline">\((x,y)\)</span> (applying chain rule), we have:</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  &amp; \quad \frac{\partial}{\partial \theta_k} \phi_{\text{logistic}}(yx^T \theta) \\
+  &amp; = -g \left(-yx^T \theta \right) \frac{\partial}{\partial \theta_k} \left(yx^T \theta \right) \\
+  &amp; = -g \left(-yx^T \theta \right) yx_k
+  \end{align}
+  \]</span></p>
+<ul>
+<li>thus, a stochastic gradient procedure for minimizing <span class="math inline">\(J(\theta)\)</span> iteratively performs the following for iterations <span class="math inline">\(t = 1, 2, \dots\)</span>, where <span class="math inline">\(\alpha_t\)</span> is a stepsize at time <span class="math inline">\(t\)</span>:
+<ol style="list-style-type: decimal">
+<li>Choose an example <span class="math inline">\(i \in \left\{1, \dots, m \right\}\)</span> uniformly at random</li>
+<li>Perform the gradient update</li>
+</ol>
+<p><span class="math display">\[
+  \begin{align}
+  \theta^{(t+1)} &amp; = \theta^{(t)} - \alpha_t \cdot \nabla_\theta \varphi_{\text{logistic}} \left(y^{(i)} x^{(i)T} \theta^{(t)} \right) \\
+  &amp; = \theta^{(t)} + \alpha_t g \left(-y^{(i)}x^{(i)T}\theta^{(t)} \right) y^{(i)} x^{(i)} \\
+  &amp; = \theta^{(t)} + \alpha_t h_{\theta^{(t)}} \left(-y^{(i)}x^{(i)} \right) y^{(i)} x^{(i)}
+  \end{align}
+  \]</span></p>
+<ul>
+<li>intuition:
+<ul>
+<li>if our current hypothesis <span class="math inline">\(h_{\theta^{(t)}}\)</span> assigns probability close to 1 for the <em>incorrect</em> label <span class="math inline">\(-y^{(i)}\)</span>:
+<ul>
+<li>try to reduce the loss by moving <span class="math inline">\(\theta\)</span> in the direction of <span class="math inline">\(y^{(i)}x^{(i)}\)</span></li>
+</ul></li>
+<li>conversely, if current hypothesis <span class="math inline">\(h_{\theta^{(t)}}\)</span> assigns probability close to 0 for the incorrect label <span class="math inline">\(-y^{(i)}\)</span>:
+<ul>
+<li>update essentially does nothing</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
 </div>
-<div id="special-cases-of-convex-problems" class="section level2">
-<h2><strong>4.2 Special Cases of Convex Problems</strong></h2>
-<p>Some special cases of the general convex optimization problem have efficient algorithms to solve very large problems</p>
+<div id="general-loss-functions" class="section level2">
+<h2><strong>General loss functions</strong></h2>
 <ul>
-<li><strong>Linear Programming</strong>. A convex optimization problem is a <strong>linear program</strong> (LP) if both the objective function <span class="math inline">\(f\)</span> and inequality constraints <span class="math inline">\(g_i\)</span> are affine functions. In other words, these problems have the form</li>
-</ul>
-<p><span class="math display">\[
-  \begin{align}
-  \text{minimize} \quad   &amp; c^Tx + d \\
-  \text{subject to} \quad &amp; Gx \preceq h \\
-                          &amp; Ax = b
-  \end{align}
-  \]</span></p>
+<li>supervised learning:
+<ol style="list-style-type: decimal">
+<li>choose a representation for the problem (i.e. a hypothesis class)</li>
+<li>choose a loss function</li>
+<li>minimize the loss</li>
+</ol></li>
+<li>consider a more general formulation for supervised learning
 <ul>
-<li><span class="math inline">\(x \in \mathbb{R}^n\)</span>: the optimization variable</li>
-<li><span class="math inline">\(c \in \mathbb{R}^n, d \in \mathbb{R}, G \in \mathbb{R}^{m \times n}, h \in \mathbb{R}^m, A \in \mathbb{R}^{p \times n}, b \in \mathbb{R}^p\)</span></li>
-<li><p>‘<span class="math inline">\(\preceq\)</span>’ denotes elementwise inequality</p></li>
-<li><p><strong>Quadratic Programming</strong>. A convex optimization problem is a <strong>quadratic program</strong> (QP) if the inequality constraints <span class="math inline">\(g_i\)</span> are still all affine, but if the objective function <span class="math inline">\(f\)</span> is a convex quadratic function. In other words, these problems ahve the form</p></li>
-</ul>
-<p><span class="math display">\[
-  \begin{align}
-  \text{minimize} \quad   &amp; \frac{1}{2}x^T P x + c^T x + d \\
-  \text{subject to} \quad &amp; G(x) \preceq h \\
-                          &amp; Ax = b
-  \end{align}
-  \]</span></p>
+<li>input data <span class="math inline">\(x \in \mathbb{R}^n\)</span></li>
+<li>targets <span class="math inline">\(y\)</span> from a space <span class="math inline">\(\mathcal{Y}\)</span>
 <ul>
-<li><span class="math inline">\(x \in \mathbb{R}^n\)</span>: the optimization variable</li>
-<li><span class="math inline">\(c \in \mathbb{R}^n, d \in \mathbb{R}, G \in \mathbb{R}^{m \times n}, h \in \mathbb{R}^m, A \in \mathbb{R}^{p \times n}, b \in \mathbb{R}^p\)</span></li>
-<li><p><span class="math inline">\(P \in \mathbb{S}_+^n\)</span>, a symmetric positive semidefinite matrix</p></li>
-<li><p><strong>Quadratically Constrained Quadratic Programming</strong>. A convex optimization problem is a <strong>quadratically constrained quadratic program</strong> (QCQP) if both the objective <span class="math inline">\(f\)</span> and the inequality constraints <span class="math inline">\(g_i\)</span> are convex quadratic functions</p></li>
+<li>e.g. in linear regression <span class="math inline">\(\mathcal{Y} = \mathbb{R}\)</span>, for binary classification <span class="math inline">\(y \in \mathcal{Y} = \{ -1, 1\}\)</span></li>
+<li>for each of these problems:
+<ul>
+<li>make predictions based on <span class="math inline">\(\theta^Tx\)</span> for some vector <span class="math inline">\(\theta\)</span></li>
+<li>construct a loss function <span class="math inline">\(\mathcal{L}: \mathbb{R} \times \mathcal{Y} \rightarrow \mathbb{R}\)</span></li>
+</ul></li>
+</ul></li>
+</ul></li>
 </ul>
 </div>
 

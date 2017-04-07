@@ -1,0 +1,240 @@
+---
+output:
+  html_document:
+    toc: TRUE
+    fig_width: 4.5
+    css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
+---
+
+My notes on John Duchi's [CS229 binary classification and general loss function supplemental notes](http://cs229.stanford.edu/materials.html).
+
+## **Binary classification**
+
+  - **binary classification**
+    - target $y$ can take on only two values
+        - represent by $y \in \{-1, +1\}$
+        - assume input features $x \in \mathbb{R}^n$
+  - use standard approach to supervised learning:
+    1. pick a representation for the hypothesis class
+    2. pick a loss function to minimize
+    - in binary classification, often use hypothesis of the form:
+    
+    $$
+    h_\theta(x) = \theta^T x
+    $$
+    - then, classify based on the sign of $\theta^T x$, i.e. $\text{sign}(\theta^Tx)$
+        - an example $(x,y)$ is classified correctly if:
+        
+        $$
+        \text{sign}(h_\theta(x)) = y
+        $$
+        - or equivalently, if:
+        
+        $$
+        y \theta^T x > 0
+        $$
+        
+        - $y \theta^T x$ is called the **margin** for the example $(x,y)$
+        - often (not always), $h_\theta(x) = x^T \theta$ is interepreted as a measure of the confidence with which the parameter vector $\theta$ assigns a label for the point $x$
+            - $x^T \theta$ very negative (positive), then we more strongly believe that the label $y$ is negative (positive)
+    - having chosen a hypothesis class, now choose a loss function
+        - intuitively, want a loss function which:
+            - given training data $\left\{x^{(i)}, y^{(i)} \right\}_{i=1}^m$, the chosen $\theta$ makes the margin $y^{(i)} \theta^T x^{(i)}$ very large for each training example
+        - fix a hypothetical example $(x,y)$, and let:
+            - $z = y x^T \theta$ denote the margin
+            - $\varphi : \mathbb{R} \rightarrow \mathbb{R}$ be the loss function
+        - for a particular loss function, the empirical risk to minimize is then:
+        
+        $$
+        J(\theta) = \frac{1}{m} \sum_{i=1}^m \varphi \left(y^{(i)} \theta^T x^{(i)} \right)
+        $$
+        
+        - desired behavior:
+            - want $y^{(i)} \theta^T x^{(i)}$ positive for each training example $i = 1, \dots, m$
+            - should penalize $\theta$ for which $y^{(i)} \theta^T x^{(i)} < 0$ frequently in the training data
+        - an intuitive choice for loss function:
+            - $\varphi(z)$ small if $z> 0$ (margin is positive)
+            - $\varphi(z)$ large if $z< 0$ (margin is negative)
+        - a natural choice is then **zero-one loss**:
+        
+        $$
+        \varphi_{\text{zo}}(z) =  \begin{cases}
+                                  1 & \text{if } z \leq 0 \\
+                                  0 & \text{if } z > 0
+                                  \end{cases}
+        $$
+        
+        - with zero-one loss, the risk $J(\theta)$ is the average number of misclassifications that the parameter $\theta$ makes on the training data
+        - negatives:
+            - zero-one loss is discontinuous, non-convex, NP-hard to minimize
+                - therefore, prefer losses which satisfy:
+                
+                $$
+                \begin{cases}
+                \varphi(z) \rightarrow 0 & \text{as } z \rightarrow \infty \\
+                \varphi(z) \rightarrow \infty & \text{as } z \rightarrow - \infty
+                \end{cases}
+                $$
+        - three loss functions commonly used in ML:
+            - **logistic loss**
+            
+            $$
+            \varphi_{\text{logistic}}(z) = \log \left(1+ e^{-z} \right)
+            $$
+            
+            - **hinge (SVM) loss**
+            
+            $$
+            \begin{align}
+            \varphi_{\text{hinge}}(z) & = [1-z]_+ \\
+                                      & = \max \left\{1-z , 0\right\}
+            \end{align}
+            $$
+            
+            - **exponential loss**
+            
+            $$
+            \varphi_{\text{exp}}(z) = e^{-z}
+            $$
+            
+        - minimizing different loss functions leads to different ML algorithms:
+            - logistic loss $\rightarrow$ logistic regression
+            - hinge loss $\rightarrow$ support vector machines
+            - exponential loss $\rightarrow$ boosting
+            
+## **Logistic Regression**
+
+  - use binary labels $y \in \{-1, 1 \}$
+  - use logistic loss:
+  
+  $$
+  \varphi_{\text{logistic}}(yx^T \theta) = \log \left(1 + \exp \left(-yx^T \theta \right) \right)
+  $$
+  
+  - logistic regression corresponds to choosing $\theta$ to minimize the empirical risk:
+  
+  $$
+  \begin{align}
+  J(\theta) & = \frac{1}{m} \sum_{i=1}^m \varphi_{\text{logistic}} \left(y^{(i)} \theta^T x^{(i)} \right) \\
+            & = \frac{1}{m} \sum_{i=1}^m \log \left(1 + \exp \left(-y^{(i)} \theta^T x^{(i)} \right) \right)
+  \end{align}
+  $$
+  
+  - **probabilistic interpretation:**
+      - define **sigmoid**, aka **logistic** function:
+      
+      $$
+      g(z) = \frac{1}{1+e^{-z}}
+      $$
+      
+      - the sigmoid function satisfies
+      
+      $$
+      g(z) + g(-z) = \frac{1}{1+e^{-z}} + \frac{1}{1+e^{z}} = \frac{e^z}{1+e^z} + \frac{1}{1+e^z} = 1
+      $$
+      
+      - therefore, the sigmoid function can be used to define a probability model for binary classification
+      - for $y \in \left\{-1, 1 \right\}$, define the **logistic model** for classification:
+      
+      $$
+      p \left(Y=y \mid x; \theta \right) = g \left(yx^T \theta \right) = \frac{1}{1 + e^{-yx^T \theta}}
+      $$
+      
+      - interpretation:
+          - margin $yx^T \theta$ is very positive $\rightarrow p(Y=y \mid x; \theta) = g(yx^T \theta) \approx 1$
+          - margin $yx^T \theta$ is very negative $\rightarrow p(Y=y \mid x; \theta) = g(yx^T \theta) \approx 0$
+      - redefine the hypothesis class as:
+      
+      $$
+      h_\theta(x) = g(\theta^T x) = \frac{1}{1+ e^{-\theta^Tx}}
+      $$
+      
+      - get likelihood of the training data:
+      
+      $$
+      \begin{align}
+      L(\theta) & = \prod_{i=1}^m p \left(Y = y^{(i)} \mid x^{(i)}; \theta \right) \\
+                & = \prod_{i=1}^m h_\theta \left(y^{(i)}x^{(i)} \right) \\
+      l(\theta) & = \sum_{i=1}^m \log h_\theta \left(y^{(i)} x^{(i)} \right) &&\text{get log-likelihood} \\
+                & = - \sum_{i=1}^m \left(1 + e^{-y^{(i)}\theta^T x^{(i)}} \right) \\
+                & = -m J(\theta) && J(\theta) \text{ is the logistic regression risk (see above)} \\
+      \end{align}
+      $$
+      
+      - therefore, maximum likelihood in the logistic model is equivalent to minimizing the average logistic loss
+  - **gradient descent methods**
+      - to fit the logistic regression model, consider gradient-descent-based minimization
+      - the derivative of the logistic loss:
+      
+      $$
+      \begin{align}
+      & \quad \frac{d}{dz} \varphi_{\text{logistic}}(z) \\
+      & = \varphi^\prime_{\text{logistic}}(z) \\
+      & = \frac{1}{1+e^{-z}} \cdot \frac{d}{dz} e^{-z} \\
+      & = - \frac{e^{-z}}{1+e^{-z}} \\
+      & = - \frac{1}{1+e^z} \\
+      & = -g(-z)
+      \end{align}
+      $$
+      
+      - for a single training example $(x,y)$ (applying chain rule), we have:
+      
+      $$
+      \begin{align}
+      & \quad \frac{\partial}{\partial \theta_k} \phi_{\text{logistic}}(yx^T \theta) \\
+      & = -g \left(-yx^T \theta \right) \frac{\partial}{\partial \theta_k} \left(yx^T \theta \right) \\
+      & = -g \left(-yx^T \theta \right) yx_k
+      \end{align}
+      $$
+      
+      - thus, a stochastic gradient procedure for minimizing $J(\theta)$ iteratively performs the following for iterations $t = 1, 2, \dots$, where $\alpha_t$ is a stepsize at time $t$:
+          1. Choose an example $i \in \left\{1, \dots, m \right\}$ uniformly at random
+          2. Perform the gradient update
+          
+          $$
+          \begin{align}
+          \theta^{(t+1)} & = \theta^{(t)} - \alpha_t \cdot \nabla_\theta \varphi_{\text{logistic}} \left(y^{(i)} x^{(i)T} \theta^{(t)} \right) \\
+          & = \theta^{(t)} + \alpha_t g \left(-y^{(i)}x^{(i)T}\theta^{(t)} \right) y^{(i)} x^{(i)} \\
+          & = \theta^{(t)} + \alpha_t h_{\theta^{(t)}} \left(-y^{(i)}x^{(i)} \right) y^{(i)} x^{(i)}
+          \end{align}
+          $$
+          
+          - intuition:
+              - if our current hypothesis $h_{\theta^{(t)}}$ assigns probability close to 1 for the *incorrect* label $-y^{(i)}$:
+                  - try to reduce the loss by moving $\theta$ in the direction of $y^{(i)}x^{(i)}$
+              - conversely, if current hypothesis $h_{\theta^{(t)}}$ assigns probability close to 0 for the incorrect label $-y^{(i)}$:
+                  - update essentially does nothing
+                  
+## **General loss functions**
+
+  - supervised learning:
+      1. choose a representation for the problem (i.e. a hypothesis class)
+      2. choose a loss function
+      3. minimize the loss
+  - consider a more general formulation for supervised learning
+      - input data $x \in \mathbb{R}^n$
+      - targets $y$ from a space $\mathcal{Y}$
+          - e.g. in linear regression $\mathcal{Y} = \mathbb{R}$, for binary classification $y \in \mathcal{Y} = \{ -1, 1\}$
+          - for each of these problems:
+              - make predictions based on $\theta^Tx$ for some vector $\theta$
+              - construct a loss function $\mathcal{L}: \mathbb{R} \times \mathcal{Y} \rightarrow \mathbb{R}$
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
