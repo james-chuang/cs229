@@ -231,6 +231,8 @@ In this problem, we investigate a few properties of the Vapnik-Chervonenkis dime
 
 **(a)** Let two hypothesis classes $H_1$ and $H_2$ satisfy $H_1 \subseteq H_2$. Prove or disprove: $\text{VC}\left(H_1 \right) \leq \text{VC}\left(H_2 \right)$.
 
+True. Let $\text{VC} \left(H_1 \right) = d$. I.e., $H_1$ can shatter a set of $d$ points. Since $H_1$ is contained within $H_2$, $H_2$ also shatters $d$. Therefore, $\text{VC}\left(H_1 \right) \leq \text{VC}\left(H_2 \right)$.
+
 **(b)** Let $H_1 = H_2 \cup \left\{h_1, \dots, h_k \right\}$. (I.e., $H_1$ is the union of $H_2$ and some set of $k$ additional hypotheses.) Prove or disprove: $\text{VC}\left(H_1\right) \leq \text{VC} \left(H_2 \right) + k$. [Hint: You might want to start by considering the case of $k=1$.]
 
 **(c)** Let $H_1 = H_2 \cup H_3$. Prove or disprove: $\text{VC} \left(H_1 \right) \leq \text{VC} \left(H_2 \right) + \text{VC} \left(H_3 \right)$.
@@ -239,13 +241,35 @@ In this problem, we investigate a few properties of the Vapnik-Chervonenkis dime
 
 In the discussion in class about learning theory, a key assumption was that we trained and tested our learning algorithms on the same distribution $\mathcal{D}$. In this problem, we'll investigate one special case of training and testing on different distributions. Specifically, we will consider what happens when the training examples are *noisy*, but the test labels are not.
 
-Consider a binary classification problem with labels $y \in \left\{0,1 \right\}$, and let $\mathcal{D}$ be a distribution over $(x,y)$, that we'll think of as the original, "clean" or "uncorrupted" distribution. Define $\mathcal{D}_{\mathcal{T}}$ to be a "corrupted" distribution over $(x,y)$ which is the same as $\mathcal{D}$, except that the labels $y$ have some probability $0 \leq \mathcal{T} < 0.5$ of being flipped. Thus, to sample from $\mathcal{D}_{\mathcal{T}}$, we would first sample $(x,y)$ from $\mathcal{D}$
+Consider a binary classification problem with labels $y \in \left\{0,1 \right\}$, and let $\mathcal{D}$ be a distribution over $(x,y)$, that we'll think of as the original, "clean" or "uncorrupted" distribution. Define $\mathcal{D}_\tau$ to be a "corrupted" distribution over $(x,y)$ which is the same as $\mathcal{D}$, except that the labels $y$ have some probability $0 \leq \tau < 0.5$ of being flipped. Thus, to sample from $\mathcal{D}_\tau$, we would first sample $(x,y)$ from $\mathcal{D}$, and then with probability $\mathcal{T}$ (independently of the observed $x$ and $y$) replace $y$ with $1-y$. Note that $\mathcal{D}_0 = \mathcal{D}$.
 
-**(a)**
+We define the generalization error *with respect to* $\mathcal{D}_{\mathcal{T}}$ to be
 
-**(b)**
+$$
+\varepsilon_{\tau}(h) = P_{(x,y) \sim \mathcal{D}_\tau} \left[h(x) \neq y \right].
+$$
 
-**(c)**
+Note that $\varepsilon_0(h)$ is the generalization error with respect to the "clean" distribution; it is with respect to $\varepsilon_0$ that we wish to evaluate our hypotheses.
+
+**(a)** For any hypothesis $h$, the quantity $\varepsilon_0(h)$ can be calculated as a function of $\varepsilon_\tau(h)$ and $\tau$. Write down a formula for $\varepsilon_0(h)$ in terms of $\varepsilon_\tau(h)$ and $\tau$, and justify your answer.
+
+**(b)** Let $\lvert H \rvert$ be finite, and suppose our training set $S = \left\{\left(x^{(i)}, y^{(i)} \right); 1, \dots, m \right\}$ is obtained by drawing $m$ examples IID from the corrupted distribution $\mathcal{D}_\tau$. Suppose we pick $h \in H$ using empirical risk minimization: $\hat{h} = \arg \min_{h \in H} \hat{\varepsilon}_S(h)$. Also, let $h^* = \arg \min_{h \in H} \varepsilon_0(h)$.
+
+Let any $\delta, \gamma > 0$ be given. Prove that for
+
+$$
+\epsilon_0 \left(\hat{h} \right) \leq \varepsilon_0(h^*) + 2 \gamma
+$$
+
+to hold with probability $1-\delta$, it suffices that
+
+$$
+m \geq \frac{1}{2(1-2\tau)^2 \gamma^2} \log \frac{2 \lvert H \rvert}{ \delta}.
+$$
+
+**Remark.** This result suggests that, roughly, $m$ examples that have been corrupted at noise level $\tau$ are worth about as much as $(1-2\tau)^2m$ uncorrupted training examples. This is a useful rule-of-thumb to know if you ever need to decide whether/how much to pay for a more reliable source of training data. (If you've taken a class in information theory, you may also have heard that $\left(1-\mathcal{H}(\tau) \right)m $ is a good estimate of the information in the $m$ corrupted examples, where $\mathcal{H}(\tau) = -\left( \tau \log_2 \tau + \left(1-\tau \right) \log_2 \left(1-\tau \right) \right)$ is the "binary entropy" function. And indeed, the functions $(1-2\tau)^2$ and $1-\mathcal{H}(\tau)$ are quite close to each other.) 
+
+**(c)** Comment **briefly** on what happens as $\tau$ approaches $0.5$.
 
 ### **6. Boosting and high energy physics**
 

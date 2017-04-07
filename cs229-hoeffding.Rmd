@@ -1,0 +1,102 @@
+---
+output:
+  html_document:
+    toc: TRUE
+    fig_width: 4.5
+    css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
+---
+
+My notes on John Duchi's [CS229 supplemental notes on Hoeffding's inequality](http://cs229.stanford.edu/materials.html).
+
+## **basic probability bounds**
+
+  - a basic question in probability, statistics, and machine learning:
+      - given a random variable $Z$ with expectation $\mathbb{E}[Z]$, how likely is $Z$ to be close to its expectation?
+      - more precisely, how close is it likely to be?
+      - therefore, we would like to compute bounds of the following form for $t \geq 0$
+      
+      $$
+      P(Z \geq \mathbb{E}[Z] + t) \text{  and  } P(Z \leq \mathbb{E}[Z]-t)
+      $$
+      
+  - **Markov's inequality**
+      - Let $Z \geq 0$ be a non-negative random variable. Then for all $t \geq 0$,
+      
+      $$
+      P(Z \geq t) \leq \frac{\mathbb{E}[Z]}{t}
+      $$
+      
+      - Proof:
+          - note: $P(Z \geq t) = \mathbb{E} \left[\mathbf{1} \left\{Z \geq t \right\} \right]$
+              - consider the two possible cases for $Z$:
+                  - if $Z \geq t$, then $\mathbf{1}\{Z \geq t \} = 1$:
+                  
+                  $$
+                  \begin{align}
+                  Z & \geq t \\
+                  \frac{Z}{t} & \geq 1 \\
+                  \frac{Z}{t} & \geq \mathbf{1}\{Z \geq t \}
+                  \end{align}
+                  $$
+                  
+                  - if $Z < t$, then $\mathbf{1}\{Z \geq t \} = 0$:
+                  
+                  $$
+                  \begin{align}
+                  \frac{Z}{t} & \geq 0 && \text{Z and t both } > 0 \\
+                  \frac{Z}{t} & \geq \mathbf{1}\{Z \geq t\}
+                  \end{align}
+                  $$
+                  
+                  - so in general, $\frac{Z}{t} \geq \mathbf{1}\{Z \geq t\}$
+          - thus:
+          
+          $$
+          \begin{align}
+          P(Z \geq t) & = \mathbb{E}\left[\mathbf{1} \left\{Z \geq t \right\} \right] \\
+          P(Z \geq t) & \leq \mathbb{E} \left[\frac{Z}{t} \right] \\
+          P(Z \geq t) & \leq \frac{\mathbb{E}[Z]}{t} 
+          \end{align}
+          $$
+          
+  - essentially all other bounds on probabilities are variations on Markov's inequality
+      - the first variation uses second moments -- the variance -- of a random variable rather than simply its mean, and is known as Chebyshev's inequality
+  - **Chebyshev's inequality**
+      - Let $Z$ be any random variable with $\text{Var}(Z) < \infty$. Then, for $t \geq 0$,
+      
+      $$
+      P \left(Z \geq \mathbb{E}[Z] + t \text{  or  } Z \leq \mathbb{E}[Z] -t \right) \leq \frac{\text{Var}(Z)}{t^2}
+      $$
+      
+      - Proof:
+          - note:
+              - if $Z \geq \mathbb{E}[Z] + t$:
+          
+              $$
+              \begin{align}
+              Z & \geq \mathbb{E}[Z] + t \\
+              Z - \mathbb{E}[Z] & \geq t \\
+              \left(Z - \mathbb{E}[Z] \right)^2 & \geq t^2
+              \end{align}
+              $$
+              
+              - if $Z \leq \mathbb{E}[Z] - t$:
+              
+              $$
+              \begin{align}
+              Z & \leq \mathbb{E}[Z] - t \\
+              Z - \mathbb{E}[Z] & \leq - t \\
+              \left(Z - \mathbb{E}[Z] \right)^2 & \geq t^2
+              \end{align}
+              $$
+              
+          - thus:
+          
+          $$
+          \begin{align}
+          & \quad P \left(Z \geq \mathbb{E}[Z] + t \text{  or  } Z \leq \mathbb{E}[Z] -t \right) \\
+          & = P \left( \left(Z - \mathbb{E}[Z] \right)^2 \geq t^2 \right) \\
+          & \leq \frac{\mathbb{E}[\left(Z - \mathbb{E}[Z]\right)^2]}{t^2} && \text{by Markov's inequality} \\
+          & \leq \frac{\text{Var}(Z)}{t^2}
+          \end{align}
+          $$
