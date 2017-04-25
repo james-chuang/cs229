@@ -26,6 +26,7 @@ My notes on John Duchi's [CS229 supplemental notes on Hoeffding's inequality](ht
       P(Z \geq t) \leq \frac{\mathbb{E}[Z]}{t}
       $$
       
+      - i.e., Markov's inequality puts a bound on the probability that a random variable is greater than a non-negative value $t$
       - Proof:
           - note: $P(Z \geq t) = \mathbb{E} \left[\mathbf{1} \left\{Z \geq t \right\} \right]$
               - consider the two possible cases for $Z$:
@@ -59,44 +60,91 @@ My notes on John Duchi's [CS229 supplemental notes on Hoeffding's inequality](ht
           \end{align}
           $$
           
+      - **note:** this is the proof given in the notes, but [this proof](http://mathworld.wolfram.com/MarkovsInequality.html) from Wolfram Alpha makes more sense to me
   - essentially all other bounds on probabilities are variations on Markov's inequality
       - the first variation uses second moments -- the variance -- of a random variable rather than simply its mean, and is known as Chebyshev's inequality
   - **Chebyshev's inequality**
       - Let $Z$ be any random variable with $\text{Var}(Z) < \infty$. Then, for $t \geq 0$,
       
       $$
-      P \left(Z \geq \mathbb{E}[Z] + t \text{  or  } Z \leq \mathbb{E}[Z] -t \right) \leq \frac{\text{Var}(Z)}{t^2}
+      P \left(\left( Z - \mathbb{E}[Z]\right)^2 \geq t^2 \right) \leq \frac{\text{Var}(Z)}{t^2}
       $$
       
+      - i.e., Chebyshev's inequality puts a bound on the probability that a random variable is greater than $t$ away from its expected value $\mathbb{E}[Z]$
       - Proof:
-          - note:
-              - if $Z \geq \mathbb{E}[Z] + t$:
-          
-              $$
-              \begin{align}
-              Z & \geq \mathbb{E}[Z] + t \\
-              Z - \mathbb{E}[Z] & \geq t \\
-              \left(Z - \mathbb{E}[Z] \right)^2 & \geq t^2
-              \end{align}
-              $$
-              
-              - if $Z \leq \mathbb{E}[Z] - t$:
-              
-              $$
-              \begin{align}
-              Z & \leq \mathbb{E}[Z] - t \\
-              Z - \mathbb{E}[Z] & \leq - t \\
-              \left(Z - \mathbb{E}[Z] \right)^2 & \geq t^2
-              \end{align}
-              $$
-              
-          - thus:
           
           $$
           \begin{align}
-          & \quad P \left(Z \geq \mathbb{E}[Z] + t \text{  or  } Z \leq \mathbb{E}[Z] -t \right) \\
-          & = P \left( \left(Z - \mathbb{E}[Z] \right)^2 \geq t^2 \right) \\
+          & \quad  P \left( \left(Z - \mathbb{E}[Z] \right)^2 \geq t^2 \right) \\
           & \leq \frac{\mathbb{E}[\left(Z - \mathbb{E}[Z]\right)^2]}{t^2} && \text{by Markov's inequality} \\
           & \leq \frac{\text{Var}(Z)}{t^2}
           \end{align}
           $$
+          
+      - a nice consequence of Chebyshev's inequality:
+          - averages of random variables with finite variance converge to their mean
+          - an example:
+              - suppose $Z_i$ are i.i.d. and satisfy $\mathbb{E} \left[Z_i \right]=0$
+              - define $\bar{Z} = \frac{1}{n} \sum_{i=1}^n Z_i$
+              - then:
+              
+              $$
+              \begin{align}
+              & \quad \text{Var}(\bar{Z}) \\
+              & = \mathbb{E} \left[\bar{Z}^2 \right] - \mathbb{E}^2 \left[\bar{Z} \right] && \text{def. variance}\\
+              & = \mathbb{E} \left[\left(\frac{1}{n}  \sum_{i=1}^n Z_i \right)^2 \right]  && \mathbb{E}\left[\bar{Z} \right] = 0, \text{ since } \mathbb{E}\left[Z_i \right] = 0 \text{ and expectations are linear}\\
+              & = \frac{1}{n^2} \sum_{i,j \leq n} \mathbb{E} \left[Z_i Z_j \right] \\
+              & = \frac{1}{n^2} \sum_{i=1}^n \mathbb{E} \left[Z_i^2 \right] \\
+              & = \frac{\text{Var} \left(Z_1 \right)}{n}
+              \end{align}
+              $$
+              
+              - in particular, for any $t \geq 0$:
+              
+              $$
+              P \left(\left\lvert \frac{1}{n} \sum_{i=1}^n Z_i \right\rvert \geq t \right) \leq \frac{\text{Var}\left(Z_1 \right)}{nt^2}
+              $$
+              
+              - so, $P \left(\left\lvert \bar{Z} \right\rvert \geq t \right) \rightarrow 0$ for any $t>0$
+              
+## **moment generating functions**
+
+  - often, we want sharper -- even exponential -- bounds on the probability that a random variable exceeds its expectation by much
+      - to accomplish this, we need a stronger condition than finite variance
+      - **moment generating functions** are natural candidates for this condition:
+          - for a random variable $Z$, the moment generating function of $Z$ is the function:
+          
+          $$
+          M_Z (\lambda) := \mathbb{E} \left[\exp (\lambda Z) \right]
+          $$
+          
+          - the moment generating function may be infinite for some $\lambda$
+          
+### **Chernoff bounds**
+
+  - **Chernoff bounds** use moment generating functions to give exponential deviation bounds
+      - Let $Z$ be any random variable
+      - then, for any $t \geq 0$
+      
+      $$
+      \begin{align}
+      P \left(Z \geq \mathbb{E}[Z] + t \right) & \leq \min_{\lambda \geq 0} \mathbb{E} \left[e^{\lambda \left(Z - \mathbb{E}[Z] \right)} \right] e^{-\lambda t} \\
+       & \leq \min_{\lambda \geq 0} M_{Z - \mathbb{E}[Z]} \left(\lambda \right) e^{-\lambda t} \\
+       \\
+       \text{and} \\
+       P \left(Z \leq \mathbb{E}[Z] - t \right) & \leq \min_{\lambda \geq 0} \mathbb{E} \left[e^{\lambda \left(\mathbb{E}[Z]-Z \right)} \right] e^{-\lambda t} \\
+       & \leq \min_{\lambda \geq 0} M_{\mathbb{E}[Z]-Z} \left(\lambda \right) e^{-\lambda t}
+      \end{align}
+      $$
+      
+      - proof of the first inequality (the second inequality is identical):
+          - for any $\lambda > 0$:
+              - $Z \geq \mathbb{E}[Z]+t$ iff $e^{\lambda Z} \geq e^{\lambda \mathbb{E}[Z]+ \lambda t}$, i.e. $e^{lambda \left(Z- \mathbb{E}[Z] \right)}$
+              - thus,
+              
+              $$
+              \begin{align}
+              P\left(Z - \mathbb{E}[Z] \geq t \right) & = P\left(e^{\lambda \left(Z - \mathbb{E}[Z] \right)} \geq e^{\lambda t}\right) \\
+              & \leq \mathbb{E} \left[e^{\lambda \left(Z - \mathbb{E}[Z] \right)} \right] e^{- \lambda t} && \text{by Markov's inequality}
+              \end{align}
+              $$

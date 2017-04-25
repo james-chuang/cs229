@@ -122,6 +122,9 @@ $(document).ready(function () {
 <div id="TOC">
 <ul>
 <li><a href="#basic-probability-bounds"><strong>basic probability bounds</strong></a></li>
+<li><a href="#moment-generating-functions"><strong>moment generating functions</strong></a><ul>
+<li><a href="#chernoff-bounds"><strong>Chernoff bounds</strong></a></li>
+</ul></li>
 </ul>
 </div>
 
@@ -146,6 +149,7 @@ $(document).ready(function () {
   P(Z \geq t) \leq \frac{\mathbb{E}[Z]}{t}
   \]</span></p>
 <ul>
+<li>i.e., Markov’s inequality puts a bound on the probability that a random variable is greater than a non-negative value <span class="math inline">\(t\)</span></li>
 <li>Proof:
 <ul>
 <li>note: <span class="math inline">\(P(Z \geq t) = \mathbb{E} \left[\mathbf{1} \left\{Z \geq t \right\} \right]\)</span>
@@ -176,13 +180,14 @@ $(document).ready(function () {
 </ul></li>
 <li>thus:</li>
 </ul>
-<span class="math display">\[
+<p><span class="math display">\[
   \begin{align}
   P(Z \geq t) &amp; = \mathbb{E}\left[\mathbf{1} \left\{Z \geq t \right\} \right] \\
   P(Z \geq t) &amp; \leq \mathbb{E} \left[\frac{Z}{t} \right] \\
   P(Z \geq t) &amp; \leq \frac{\mathbb{E}[Z]}{t} 
   \end{align}
-  \]</span></li>
+  \]</span></p></li>
+<li><strong>note:</strong> this is the proof given in the notes, but <a href="http://mathworld.wolfram.com/MarkovsInequality.html">this proof</a> from Wolfram Alpha makes more sense to me</li>
 </ul></li>
 <li>essentially all other bounds on probabilities are variations on Markov’s inequality
 <ul>
@@ -193,44 +198,104 @@ $(document).ready(function () {
 <li>Let <span class="math inline">\(Z\)</span> be any random variable with <span class="math inline">\(\text{Var}(Z) &lt; \infty\)</span>. Then, for <span class="math inline">\(t \geq 0\)</span>,</li>
 </ul>
 <p><span class="math display">\[
-  P \left(Z \geq \mathbb{E}[Z] + t \text{  or  } Z \leq \mathbb{E}[Z] -t \right) \leq \frac{\text{Var}(Z)}{t^2}
+  P \left(\left( Z - \mathbb{E}[Z]\right)^2 \geq t^2 \right) \leq \frac{\text{Var}(Z)}{t^2}
   \]</span></p>
 <ul>
-<li>Proof:
-<ul>
-<li>note:
-<ul>
-<li>if <span class="math inline">\(Z \geq \mathbb{E}[Z] + t\)</span>:</li>
-</ul>
+<li>i.e., Chebyshev’s inequality puts a bound on the probability that a random variable is greater than <span class="math inline">\(t\)</span> away from its expected value <span class="math inline">\(\mathbb{E}[Z]\)</span></li>
+<li><p>Proof:</p>
 <p><span class="math display">\[
   \begin{align}
-  Z &amp; \geq \mathbb{E}[Z] + t \\
-  Z - \mathbb{E}[Z] &amp; \geq t \\
-  \left(Z - \mathbb{E}[Z] \right)^2 &amp; \geq t^2
-  \end{align}
-  \]</span></p>
-<ul>
-<li>if <span class="math inline">\(Z \leq \mathbb{E}[Z] - t\)</span>:</li>
-</ul>
-<p><span class="math display">\[
-  \begin{align}
-  Z &amp; \leq \mathbb{E}[Z] - t \\
-  Z - \mathbb{E}[Z] &amp; \leq - t \\
-  \left(Z - \mathbb{E}[Z] \right)^2 &amp; \geq t^2
-  \end{align}
-  \]</span></p></li>
-<li><p>thus:</p></li>
-</ul>
-<span class="math display">\[
-  \begin{align}
-  &amp; \quad P \left(Z \geq \mathbb{E}[Z] + t \text{  or  } Z \leq \mathbb{E}[Z] -t \right) \\
-  &amp; = P \left( \left(Z - \mathbb{E}[Z] \right)^2 \geq t^2 \right) \\
+  &amp; \quad  P \left( \left(Z - \mathbb{E}[Z] \right)^2 \geq t^2 \right) \\
   &amp; \leq \frac{\mathbb{E}[\left(Z - \mathbb{E}[Z]\right)^2]}{t^2} &amp;&amp; \text{by Markov's inequality} \\
   &amp; \leq \frac{\text{Var}(Z)}{t^2}
   \end{align}
-  \]</span></li>
+  \]</span></p></li>
+<li>a nice consequence of Chebyshev’s inequality:
+<ul>
+<li>averages of random variables with finite variance converge to their mean</li>
+<li>an example:
+<ul>
+<li>suppose <span class="math inline">\(Z_i\)</span> are i.i.d. and satisfy <span class="math inline">\(\mathbb{E} \left[Z_i \right]=0\)</span></li>
+<li>define <span class="math inline">\(\bar{Z} = \frac{1}{n} \sum_{i=1}^n Z_i\)</span></li>
+<li>then:</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  &amp; \quad \text{Var}(\bar{Z}) \\
+  &amp; = \mathbb{E} \left[\bar{Z}^2 \right] - \mathbb{E}^2 \left[\bar{Z} \right] &amp;&amp; \text{def. variance}\\
+  &amp; = \mathbb{E} \left[\left(\frac{1}{n}  \sum_{i=1}^n Z_i \right)^2 \right]  &amp;&amp; \mathbb{E}\left[\bar{Z} \right] = 0, \text{ since } \mathbb{E}\left[Z_i \right] = 0 \text{ and expectations are linear}\\
+  &amp; = \frac{1}{n^2} \sum_{i,j \leq n} \mathbb{E} \left[Z_i Z_j \right] \\
+  &amp; = \frac{1}{n^2} \sum_{i=1}^n \mathbb{E} \left[Z_i^2 \right] \\
+  &amp; = \frac{\text{Var} \left(Z_1 \right)}{n}
+  \end{align}
+  \]</span></p>
+<ul>
+<li>in particular, for any <span class="math inline">\(t \geq 0\)</span>:</li>
+</ul>
+<p><span class="math display">\[
+  P \left(\left\lvert \frac{1}{n} \sum_{i=1}^n Z_i \right\rvert \geq t \right) \leq \frac{\text{Var}\left(Z_1 \right)}{nt^2}
+  \]</span></p>
+<ul>
+<li>so, <span class="math inline">\(P \left(\left\lvert \bar{Z} \right\rvert \geq t \right) \rightarrow 0\)</span> for any <span class="math inline">\(t&gt;0\)</span></li>
+</ul></li>
+</ul></li>
 </ul></li>
 </ul>
+</div>
+<div id="moment-generating-functions" class="section level2">
+<h2><strong>moment generating functions</strong></h2>
+<ul>
+<li>often, we want sharper – even exponential – bounds on the probability that a random variable exceeds its expectation by much
+<ul>
+<li>to accomplish this, we need a stronger condition than finite variance</li>
+<li><strong>moment generating functions</strong> are natural candidates for this condition:
+<ul>
+<li>for a random variable <span class="math inline">\(Z\)</span>, the moment generating function of <span class="math inline">\(Z\)</span> is the function:</li>
+</ul>
+<p><span class="math display">\[
+  M_Z (\lambda) := \mathbb{E} \left[\exp (\lambda Z) \right]
+  \]</span></p>
+<ul>
+<li>the moment generating function may be infinite for some <span class="math inline">\(\lambda\)</span></li>
+</ul></li>
+</ul></li>
+</ul>
+<div id="chernoff-bounds" class="section level3">
+<h3><strong>Chernoff bounds</strong></h3>
+<ul>
+<li><strong>Chernoff bounds</strong> use moment generating functions to give exponential deviation bounds
+<ul>
+<li>Let <span class="math inline">\(Z\)</span> be any random variable</li>
+<li>then, for any <span class="math inline">\(t \geq 0\)</span></li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  P \left(Z \geq \mathbb{E}[Z] + t \right) &amp; \leq \min_{\lambda \geq 0} \mathbb{E} \left[e^{\lambda \left(Z - \mathbb{E}[Z] \right)} \right] e^{-\lambda t} \\
+   &amp; \leq \min_{\lambda \geq 0} M_{Z - \mathbb{E}[Z]} \left(\lambda \right) e^{-\lambda t} \\
+   \\
+   \text{and} \\
+   P \left(Z \leq \mathbb{E}[Z] - t \right) &amp; \leq \min_{\lambda \geq 0} \mathbb{E} \left[e^{\lambda \left(\mathbb{E}[Z]-Z \right)} \right] e^{-\lambda t} \\
+   &amp; \leq \min_{\lambda \geq 0} M_{\mathbb{E}[Z]-Z} \left(\lambda \right) e^{-\lambda t}
+  \end{align}
+  \]</span></p>
+<ul>
+<li>proof of the first inequality (the second inequality is identical):
+<ul>
+<li>for any <span class="math inline">\(\lambda &gt; 0\)</span>:
+<ul>
+<li><span class="math inline">\(Z \geq \mathbb{E}[Z]+t\)</span> iff <span class="math inline">\(e^{\lambda Z} \geq e^{\lambda \mathbb{E}[Z]+ \lambda t}\)</span>, i.e. <span class="math inline">\(e^{lambda \left(Z- \mathbb{E}[Z] \right)}\)</span></li>
+<li>thus,</li>
+</ul>
+<span class="math display">\[
+  \begin{align}
+  P\left(Z - \mathbb{E}[Z] \geq t \right) &amp; = P\left(e^{\lambda \left(Z - \mathbb{E}[Z] \right)} \geq e^{\lambda t}\right) \\
+  &amp; \leq \mathbb{E} \left[e^{\lambda \left(Z - \mathbb{E}[Z] \right)} \right] e^{- \lambda t} &amp;&amp; \text{by Markov's inequality}
+  \end{align}
+  \]</span></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
 </div>
 
 
