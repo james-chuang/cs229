@@ -124,7 +124,9 @@ $(document).ready(function () {
 <li><a href="#basic-probability-bounds"><strong>basic probability bounds</strong></a></li>
 <li><a href="#moment-generating-functions"><strong>moment generating functions</strong></a><ul>
 <li><a href="#chernoff-bounds"><strong>Chernoff bounds</strong></a></li>
+<li><a href="#moment-generating-function-examples"><strong>moment generating function examples</strong></a></li>
 </ul></li>
+<li><a href="#hoeffdings-lemma-and-hoeffdings-inequality"><strong>Hoeffding’s lemma and Hoeffding’s inequality</strong></a></li>
 </ul>
 </div>
 
@@ -283,19 +285,231 @@ $(document).ready(function () {
 <ul>
 <li>for any <span class="math inline">\(\lambda &gt; 0\)</span>:
 <ul>
-<li><span class="math inline">\(Z \geq \mathbb{E}[Z]+t\)</span> iff <span class="math inline">\(e^{\lambda Z} \geq e^{\lambda \mathbb{E}[Z]+ \lambda t}\)</span>, i.e. <span class="math inline">\(e^{lambda \left(Z- \mathbb{E}[Z] \right)}\)</span></li>
+<li><span class="math inline">\(Z \geq \mathbb{E}[Z]+t\)</span> iff <span class="math inline">\(e^{\lambda Z} \geq e^{\lambda \mathbb{E}[Z]+ \lambda t}\)</span>, i.e. <span class="math inline">\(e^{\lambda \left(Z- \mathbb{E}[Z] \right)} \geq e^{\lambda t}\)</span></li>
 <li>thus,</li>
 </ul>
-<span class="math display">\[
+<p><span class="math display">\[
   \begin{align}
   P\left(Z - \mathbb{E}[Z] \geq t \right) &amp; = P\left(e^{\lambda \left(Z - \mathbb{E}[Z] \right)} \geq e^{\lambda t}\right) \\
   &amp; \leq \mathbb{E} \left[e^{\lambda \left(Z - \mathbb{E}[Z] \right)} \right] e^{- \lambda t} &amp;&amp; \text{by Markov's inequality}
+  \end{align}
+  \]</span></p>
+<ul>
+<li>since the choice of <span class="math inline">\(\lambda &gt; 0\)</span> did not matter, we can take the best one by minimizing the right side of the bound
+<ul>
+<li>note that the bound still holds at <span class="math inline">\(\lambda = 0\)</span></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li>the important result: <strong>Chernoff bounds “play nicely” with summations</strong>
+<ul>
+<li>this is a consequence of the moment generating function</li>
+<li>assume that <span class="math inline">\(Z_i\)</span> are independent, then:</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  &amp; \quad M_{Z_1 + \dots + Z_n} (\lambda) \\
+  &amp; = \mathbb{E} \left[\exp \left( \lambda \sum_{i=1}^n Z_i\right) \right] &amp;&amp; \text{def. MGF} \\
+  &amp; = \mathbb{E} \left[\prod_{i=1}^n  \exp \left(\lambda Z_i \right)\right] &amp;&amp; \text{just exponent properties} \\
+  &amp; = \prod_{i=1}^n \mathbb{E} \left[\exp\left(\lambda Z_i\right) \right] &amp;&amp; Z_i \text{ are independent} \\
+  &amp; = \prod_{i=1}^n M_{Z_i} (\lambda)
+  \end{align}
+  \]</span></p>
+<ul>
+<li>this means that <strong>when we calculate a Chernoff bound of a sum of i.i.d. variables, we only need to calculate the moment generating function for one of them</strong>:
+<ul>
+<li>suppose <span class="math inline">\(Z_i\)</span> are i.i.d. and (for simplicity) mean zero. Then:</li>
+</ul>
+<span class="math display">\[
+  \begin{align}
+  P \left( \sum_{i=1}^n Z_i \geq t \right) &amp; \leq \mathbb{E} \left[e^{\lambda \left(\sum_{i=1}^n Z_i \right)} \right]e^{-\lambda t} &amp;&amp; \text{Chernoff bound with } \mathbb{E}\left[Z_i \right] = 0\\
+  &amp; \leq M_{\sum_{i=1}^n Z_i} (\lambda) e^{-\lambda t} &amp;&amp; \text{rewrite in terms of MGF} \\
+  &amp; \leq \prod_{i=1}^n M_{Z_i} (\lambda) e^{-\lambda t} &amp;&amp; \text{the rule derived above}\\
+  &amp; \leq \prod_{i=1}^n \mathbb{E} \left[ \exp \left(\lambda Z_i \right)\right] e^{- \lambda t} &amp;&amp; \text{def. MGF}\\
+  &amp; \leq \left(\mathbb{E} \left[e^{\lambda Z_1} \right] \right)^n e^{-\lambda t} &amp;&amp; Z_i \text{ are i.i.d.} 
   \end{align}
   \]</span></li>
 </ul></li>
 </ul></li>
 </ul>
 </div>
+<div id="moment-generating-function-examples" class="section level3">
+<h3><strong>moment generating function examples</strong></h3>
+<ul>
+<li>now we give several examples of moment generating functions, which enable us to give a few nice deviation inequalities as a result</li>
+<li>for all of our examples, we will have very convenient bounds of the form</li>
+</ul>
+<p><span class="math display">\[
+  M_Z(\lambda) = \mathbb{E} \left[e^{\lambda Z}\right] \leq \left(\frac{C^2 \lambda^2}{2} \right) \quad \text{for all } \lambda \in \mathbb{R}
+  \]</span></p>
+<ul>
+<li>,for some <span class="math inline">\(C \in \mathbb{R}\)</span> (which depends on the distribution of <span class="math inline">\(Z\)</span>)
+<ul>
+<li>this form is ‘nice’ for applying Chernoff bounds</li>
+</ul></li>
+<li>begin with the classical normal distribution, <span class="math inline">\(Z \sim \mathcal{N}\left(0, \sigma^2 \right)\)</span>. Then,</li>
+</ul>
+<p><span class="math display">\[
+  \mathbb{E} \left[ \exp \left(\lambda Z \right)\right] = \exp \left(\frac{\lambda^2 \sigma^2}{2} \right)
+  \]</span></p>
+<ul>
+<li><p><strong>DERIVATION GOES HERE</strong></p></li>
+<li>a second example is the <strong>Rademacher random variable</strong>, aka the random sign variable:
+<ul>
+<li>let <span class="math inline">\(S = 1\)</span> with probability <span class="math inline">\(\frac{1}{2}\)</span> and <span class="math inline">\(S = -1\)</span> with probability <span class="math inline">\(\frac{1}{2}\)</span>:</li>
+</ul>
+<p><span class="math display">\[
+  \mathbb{E} \left[e^{\lambda S} \right] \leq \left(\frac{\lambda^2}{2} \right)
+  \]</span></p>
+<ul>
+<li>derivation:</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  \mathbb{E} \left[e^{\lambda S} \right]
+  &amp; = \mathbb{E} \left[\sum_{k=0}^\infty \frac{\left(\lambda S \right)^k}{k !} \right] &amp;&amp; \text{Taylor expansion: } e^x = \sum_{k=0}^\infty \frac{x^k}{k!} \\
+  &amp; = \sum_{k=0}^\infty \frac{\lambda^k \mathbb{E} \left[S^k \right]}{k!} \\
+  &amp; = \sum_{k=0,2,4,...} \frac{\lambda^k}{k!} &amp;&amp; \text{for } k \text{ odd, } \mathbb{E}\left[S^k \right] = 0; \text{ for }k \text{ even, } \mathbb{E} \left[S^k \right] = 1 \\
+  &amp; = \sum_{k=0}^\infty \frac{\lambda^{2k}}{\left(2k \right)!} \\
+  &amp; \leq \sum_{k=0}^\infty \frac{\left(\lambda^2 \right)^k}{2^k \cdot k!} &amp;&amp; (2k)! \geq 2k \cdot k! \text{ for all } k = 0, 1, 2, \dots \\
+  &amp; \leq \sum_{k=0}^\infty \left(\frac{\lambda^2}{2} \right)^k \frac{1}{k!} \\
+  &amp; \leq \exp \left(\frac{\lambda^2}{2} \right) &amp;&amp; \text{Taylor expansion}
+  \end{align}
+  \]</span></p>
+<ul>
+<li>we can apply this inequality in a Chernoff bound to see how large a sum of i.i.d. random signs is likely to be:</li>
+<li><span class="math inline">\(Z = \sum_{i=1}^n S_i\)</span>, where <span class="math inline">\(S_i \in \left\{\pm 1 \right\}\)</span>, so <span class="math inline">\(\mathbb{E}[Z] = 0\)</span></li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  P \left(Z &gt; t \right) &amp; \leq \mathbb{E} \left[e^{\lambda Z} \right]e^{\lambda t} \\
+  &amp; \leq \mathbb{E} \left[e^{\lambda S_1} \right]^n e^{-\lambda t} \\
+  &amp; \leq \exp \left(\frac{n \lambda^2}{2} \right) e^{-\lambda t} \\
+  \\
+  \text{minimize w.r.t. } \lambda: \\
+  &amp; \quad \frac{\partial}{\partial \lambda} \left(\frac{n \lambda^2}{2} - \lambda t \right) \\
+  &amp; = n \lambda -t = 0 \\
+  &amp; \lambda = \frac{t}{n} \\
+  \\
+  P(Z \geq t) &amp; \leq \exp \left(- \frac{t^2}{2n} \right) \\
+  P\left(\sum_{i=1}^n  S_i \geq \sqrt{2n \log \frac{1}{\delta}} \right) &amp; \leq \delta &amp;&amp; \text{let } t = \sqrt{2n \log \frac{1}{\delta}}
+  \end{align}
+  \]</span></p>
+<ul>
+<li>so, <span class="math inline">\(Z = \sum_{i=1}^n S_i = O\left(\sqrt{n} \right)\)</span> with extremely high probability- the sum of <span class="math inline">\(n\)</span> independent random signs is essentially never larger than <span class="math inline">\(O(\sqrt{n})\)</span></li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="hoeffdings-lemma-and-hoeffdings-inequality" class="section level2">
+<h2><strong>Hoeffding’s lemma and Hoeffding’s inequality</strong></h2>
+<ul>
+<li><strong>Hoeffding’s inequality</strong>: a powerful technique for bounding the probability that sums of bounded random variables are too large or too small
+<ul>
+<li>perhaps the most important inequality in learning theory</li>
+<li>Let <span class="math inline">\(Z_1, \dots, Z_n\)</span> be independent bounded random variables with <span class="math inline">\(Z_i \in \left[a, b \right]\)</span> for all <span class="math inline">\(i\)</span>, where <span class="math inline">\(-\infty &lt; a &lt; b &lt; \infty\)</span>. Then:</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  P \left(\frac{1}{n} \sum_{i=1}^n \left(Z_i - \mathbb{E}\left[Z_i \right] \right) \geq t \right) &amp; \leq \exp \left(- \frac{2nt^2}{\left(b-a \right)^2} \right) \\
+  \\
+  \text{and}\\
+  \\
+  P \left(\frac{1}{n} \sum_{i=1}^n \left(Z_i - \mathbb{E}\left[Z_i \right] \right) \leq -t \right) &amp; \leq \exp \left(- \frac{2nt^2}{\left(b-a \right)^2} \right) \\
+  \\
+  \text{for all } t \geq 0
+  \end{align}
+  \]</span></p>
+<ul>
+<li>proof of Hoeffding’s inequality using Chernoff bounds and Hoeffding’s lemma:
+<ul>
+<li><strong>Hoeffding’s lemma</strong>:
+<ul>
+<li>Let <span class="math inline">\(Z\)</span> be a bounded random variable with <span class="math inline">\(Z \in [a,b]\)</span>. Then,</li>
+</ul>
+<p><span class="math display">\[
+  \mathbb{E} \left[\exp \left(\lambda \left(Z - \mathbb{E}[Z] \right) \right) \right] \leq \left(\frac{\lambda^2 \left(b-a \right)^2}{8} \right) \quad \text{for all } \lambda \in \mathbb{R}
+  \]</span></p>
+<ul>
+<li>A proof of a slightly weaker version of this lemma with a factor of <span class="math inline">\(2\)</span> instead of <span class="math inline">\(8\)</span> using the random sign moment generating bound and <strong>Jensen’s inequality</strong>
+<ul>
+<li>Jensen’s inequality states: if <span class="math inline">\(f: \mathbb{R} \rightarrow \mathbb{R}\)</span> is a <em>convex</em> function, then:</li>
+</ul>
+<p><span class="math display">\[
+  f \left(\mathbb{E} [Z] \right) \leq \mathbb{E} \left[f(Z) \right]
+  \]</span></p>
+<ul>
+<li>to remember this inequality:
+<ul>
+<li>think of <span class="math inline">\(f(t) = t^2\)</span></li>
+<li>note that if <span class="math inline">\(\mathbb{E}[Z] = 0\)</span>, then <span class="math inline">\(f \left(\mathbb{E} [Z]\right) = 0\)</span>, while we generally have <span class="math inline">\(\mathbb{E}[Z^2] &gt; 0\)</span></li>
+</ul></li>
+<li>we will use a technique in probability theory known as <strong>symmetrization</strong> (this is a common technique in probability theory, machine learning, and statistics):
+<ul>
+<li>Let <span class="math inline">\(Z^\prime\)</span> be an independent copy of <span class="math inline">\(Z\)</span> with the same distribution, so that <span class="math inline">\(Z^\prime \in [a,b]\)</span> and <span class="math inline">\(\mathbb{E}[Z^\prime] = \mathbb{E}[Z]\)</span>, but <span class="math inline">\(Z\)</span> and <span class="math inline">\(Z^\prime\)</span> are independent. Then:</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  &amp; \quad \mathbb{E}_Z \left[\exp \left(\lambda \left(Z - \mathbb{E}_Z [Z] \right) \right) \right] \\
+  &amp; = \mathbb{E}_Z \left[\exp \left(\lambda \left(Z - \mathbb{E}_{Z^\prime}[Z^\prime] \right) \right) \right] &amp;&amp; \mathbb{E}_Z \text{ and } \mathbb{E}_{Z^\prime} \text{ indicate expectations w.r.t. } Z \text{ and } Z^{\prime} \\
+  &amp; \leq \mathbb{E}_Z \left[\mathbb{E}_{Z^\prime} \exp \left(\lambda \left(Z - Z^\prime \right) \right)\right] &amp;&amp; \text{Jensen's inequality applied to } f(x) = e^{-x}
+  \end{align}
+  \]</span></p>
+<ul>
+<li>so, we have:</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  \mathbb{E}[\exp \left(\lambda \left(Z - \mathbb{E}[Z] \right) \right)] \leq \mathbb{E} \left[\exp \left(\lambda \left(Z - Z^\prime \right) \right) \right]
+  \end{align}
+  \]</span></p>
+<ul>
+<li>now, we note the following: the difference <span class="math inline">\(Z - Z^\prime\)</span> is symmetric about zero, so that if <span class="math inline">\(S \in \left\{-1,1 \right\}\)</span> is a random sign variable, then <span class="math inline">\(S (Z - Z^\prime)\)</span> has exactly the same distribution as <span class="math inline">\(Z - Z^\prime\)</span></li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  \mathbb{E}_{Z, Z^\prime} \left[\exp \left(\lambda \left(Z - Z^\prime \right) \right) \right] &amp; = \mathbb{E}_{Z, Z^\prime, S} \left[\exp \left(\lambda S \left(Z - Z^\prime \right) \right) \right] \\
+  &amp; = \mathbb{E}_{Z, Z^\prime} \left[\mathbb{E}_S \left[\exp \left(\lambda S \left(Z - Z^\prime \right) \right) \right] \mid Z, Z^\prime \right] \\
+  \end{align}
+  \]</span></p>
+<ul>
+<li>now, use inequality (3) from the notes (i.e., <span class="math inline">\(\mathbb{E} \left[e^{\lambda S} \right] \leq \exp \left(\frac{\lambda^2}{2} \right) \hspace{.4em} \forall \hspace{.4em} \in \mathbb{R}\)</span>):</li>
+</ul>
+<p><span class="math display">\[
+  \mathbb{E}_S \left[\exp \left(\lambda S \left(Z - Z^\prime \right) \right) \mid Z, Z^\prime \right] \leq \exp \left(\frac{\lambda^2 \left(Z - Z^\prime \right)^2}{2} \right)
+  \]</span></p>
+<ul>
+<li>by assumption, we have <span class="math inline">\(\left\lvert Z - Z^\prime \right\rvert \leq (b-a)\)</span>, so <span class="math inline">\((Z - Z^\prime) \leq (b-a)^2\)</span>, giving:</li>
+</ul>
+<p><span class="math display">\[
+  \mathbb{E}_{Z, Z^\prime} \left[\exp \left(\lambda \left(Z - Z^\prime \right) \right) \right] \leq \exp \left(\frac{\lambda^2 \left(b-a \right)^2}{2} \right)
+  \]</span></p>
+<ul>
+<li>this is the result, with a factor of 2 instead of 8</li>
+</ul></li>
+<li><p>now, use Hoeffding’s lemma with the Chernoff bound to prove Hoeffding’s inequality:</p></li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  P \left(\frac{1}{n} \sum_{i=1}^n \left(Z_i - \mathbb{E}\left[Z_i \right] \right) \geq t \right) &amp; = P \left(\sum_{i=1}^n \left(Z_i - \mathbb{E}\left[Z_i \right] \right) \geq nt \right) \\
+  &amp; \leq \mathbb{E} \left[\exp \left(\lambda \sum_{i=1}^n \left(Z_i - \mathbb{E}\left[Z_i \right] \right) \right) \right] e^{-\lambda nt} &amp;&amp; \text{Chernoff bound}\\
+  &amp; \leq \left(\prod_{i=1}^n \mathbb{E} \left[e^{\lambda \left(Z_i - \mathbb{E}[Z_i] \right)} \right] \right) e^{- \lambda nt} \\
+  &amp; \leq \left(\prod_{i=1}^n e^{\frac{\lambda^2 \left(b-a \right)^2}{8}} \right) e^{-\lambda nt} &amp;&amp; \text{Hoeffding's lemma}
+  \end{align}
+  \]</span></p>
+<ul>
+<li>rewriting and minimizing over <span class="math inline">\(\lambda \geq 0\)</span>:</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  P \left(\frac{1}{n} \sum_{i=1}^n \left(Z_i - \mathbb{E} \left[Z_i \right] \right) \geq t \right) &amp; \leq \min_{\lambda \geq 0} \exp \left(\frac{n \lambda^2 \left(b-a \right)^2}{8} - \lambda nt \right) \\
+  &amp; \leq \exp \left(- \frac{2nt^2}{\left(b-a \right)^2} \right)
+  \end{align}
+  \]</span></p></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
 </div>
 
 

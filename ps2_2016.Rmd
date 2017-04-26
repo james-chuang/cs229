@@ -22,6 +22,7 @@ For each of the functions $K$ below, state whether it is necessarily a kernel. I
 
 **(a)** $K(x,z) = K_1(x,z) + K_2(x,z)$
 
+___
 The kernel matrix corresponding to $K(x,z)$ is symmetric since it is the sum of the two valid kernel matrices (i.e. symmetric matrices) $K_1$ and $K_2$. Therefore, $K(x,z)$ is PSD and therefore a valid kernel if $\forall \hspace{.2em}z, z^TKz \geq 0$:
 $$
 \begin{align}
@@ -33,9 +34,11 @@ $$
 \end{align}
 $$
 
+___
 
 **(b)** $K(x,z) = K_1(x,z) - K_2(x,z)$:
 
+___
 Similar to 1a, $K(x,z)$ is symmetric since it is the difference of two symmetric matrices.
 $$
 \begin{align}
@@ -47,7 +50,11 @@ $$
 \end{align}
 $$
 
+___
+
 **(c)** $K(x,z) = aK_1(x,z)$
+
+___
 
 $K(x,z)$ is symmetric because it is a symmetric matrix $K_1$ scaled by a scalar $a$.
 
@@ -61,12 +68,18 @@ $$
 \end{align}
 $$
 
+___
+
 **(d)** $K(x,z) = -aK_1(x,z)$
 
+___
 By the same logic as 1c, $K$ is not a valid kernel.
+
+___
 
 **(e)** $K(x,z) = K_1(x,z)K_2(x,z)$
 
+___
 $K(x,z)$ is symmetric since scalar multiplication is commutative.
 
 $$
@@ -81,21 +94,31 @@ K(x,z)  & = \psi(x)^T \psi(z), \quad \therefore K \text{ is a valid kernel}.
 \end{align}
 $$
 
-
+___
 
 **(f)** $K(x,z) = f(x)f(z)$
 
+___
 $K(x,z)$ is symmetric since scalar multiplication is commutative.
 
 Let $f(x) = \psi(x)$ as in 1e., then $K$ is a valid kernel.
 
+___
+
 **(g)** $K(x,z) = K_3(\phi(x), \phi(z))$
 
+___
 $K_3$ is a valid kernel for any finite set $\left\{x^{(1)}, \dots, x^{(m)} \right\}$. This includes the set $\left\{\phi\left(x^{(1)} \right), \dots, \phi \left(x^{(m)} \right) \right\}$, so K is also a valid kernel.
+
+___
 
 **(h)** $K(x,z) = p(K_1(x,z))$
 
+
+___
 Combining the results from 1a (sum), 1c (scalar product), 1e (powers), and 1f (constant term), any polynomial of a kernel $K_1$ will also be a kernel.
+
+___
 
 ### **2. Kernelizing the Perceptron**
 
@@ -115,6 +138,7 @@ Let $K$ be a Mercer kernel corresponding to some very high-dimensional feature m
 
 **(a)** How you will (implicitly) represent the high-dimensional parameter vector $\theta^{(i)}$, including how the initial value $\theta^{(0)} = \vec{0}$ is represented (note that $\theta^{(i)}$ is now a vector whose dimension is the same as the feature vectors $\phi(x)$);
 
+___
 Since $\alpha$ is used to represent the learning rate, use $\beta$ to represent the coefficients in the representer theorem:
 
 $$
@@ -126,7 +150,11 @@ $$
 \end{align}
 $$
 
+___
+
 **(b)** How you will efficiently make a prediction on a new input $x^{(i+1)}$. I.e., how you will compute $h_{\theta^{(i)}} \left(x^{(i+1)} \right) = g \left(\theta^{(i)T} \phi \left(x^{(i+1)} \right) \right)$, using your representation of $\theta^{(i)}$; and
+
+___
 
 $$
 \begin{align}
@@ -136,12 +164,16 @@ h_{\theta^{(i)}} \left(x^{(i+1)} \right)  & = g \left( \theta^{(i)T} \phi \left(
 \end{align}
 $$
 
+___
+
 **(c)** How you will modify the update rule given above to perform an update to $\theta$ on a new training example $\left(x^{(i+1)}, y^{(i+1)} \right)$; i.e., using the update rule corresponding to the feature mapping $\phi$:
 
 $$
 \theta^{(i+1)} := \theta^{(i)} + \alpha \mathbf{1} \left\{\theta^{(i)T}\phi \left(x^{(i+1)} \right)y^{(i+1)} < 0 \right\} y^{(i+1)} \phi \left(x^{(i+1)} \right)
 $$
 [Hint: our discussion of the representer theorem may be useful.]
+
+___
 
 $$
 \begin{align}
@@ -158,6 +190,8 @@ $$
 \theta \gets \theta + \alpha \left(y^{(i)}- h_\theta \left(\phi \left(x^{(i)} \right) \right) \right) \phi\left(x^{(i)} \right)
 \end{align}
 $$
+
+___
 
 ### **3. Spam classification**
 
@@ -183,7 +217,11 @@ Train your parameters using the document-word matrix in `MATRIX.TRAIN`, and then
 
 **Remark.** If you implement naive Bayes the straightforward way, you’ll find that the computed $p(x \mid y) = \prod_i p(x_i \mid y)$ often equals zero. This is because $p(x_i \mid y)$, which is the product of many numbers less than one, is a very small number. The standard computer representation of real numbers cannot handle numbers that are too small, and instead rounds them off to zero. (This is called "underflow.") You’ll have to find a way to compute naive Bayes’ predicted class labels without explicitly representing very small numbers such as $p(x_i \mid y)$. [Hint: Think about using logarithms.]
 
+___
+
 Test set error = 1.625%. See python notebook `ps2-3.ipynb`.
+
+___
 
 **(b)** Intuitively, some tokens may be particularly indicative of an email being in a particular class. We can try to get an informal sense of how indicative token $i$ is for the SPAM class by looking at:
 
@@ -192,16 +230,21 @@ $$
 $$
 Using the parameters fit in part (a), find the 5 tokens that are most indicative of the SPAM class (i.e., have the highest positive value on the measure above). The numbered list of tokens in the file `TOKENS_LIST` should be useful for identifying the words/tokens.
 
+___
 
 Top 5 predictive tokens: 'httpaddr', 'spam', 'unsubscrib', 'ebai', 'valet'. See python notebook `ps2-3.ipynb`.
 
+___
 
 **(c)** Repeat part (a), but with training sets of size ranging from 50, 100, 200, ... , up to 1400, by using the files `MATRIX.TRAIN.*`. Plot the test error each time (use `MATRIX.TEST` as the test data) to obtain a learning curve (test set error vs. training set size). You may need to change the call to `readMatrix` in `nb_train.m` to read the correct file each time. Which training-set size gives the best test set error?
 
+___
 
 <center>![](figures/ps2-3c.png)</center>
 
 The lowest test set error is observed for the largest training set (1400 examples). See python notebook `ps2-3.ipynb`.
+
+___
 
 **(d)** Train an SVM on this dataset using stochastic gradient descent and the radial basis function (also known as the Gaussian) kernel, which sets
 $$
@@ -225,17 +268,39 @@ The output of your training code, which you should implement in `svm_test.m`, sh
 
 **(e)** How do naive Bayes and Support Vector Machines compare (in terms of generalization error) as a function of the training set size?
 
+___
+
+
+
+
+
+___
+
 ### **4. Properties of the VC dimension**
 
 In this problem, we investigate a few properties of the Vapnik-Chervonenkis dimension, mostly relating to how $\text{VC}(H)$ increases as the set $H$ increases. For each part of this problem, you should state whether the given statement is true, and justify your answer with either a formal proof or a counter-example.
 
 **(a)** Let two hypothesis classes $H_1$ and $H_2$ satisfy $H_1 \subseteq H_2$. Prove or disprove: $\text{VC}\left(H_1 \right) \leq \text{VC}\left(H_2 \right)$.
 
+___
+
 True. Let $\text{VC} \left(H_1 \right) = d$. I.e., $H_1$ can shatter a set of $d$ points. Since $H_1$ is contained within $H_2$, $H_2$ also shatters $d$. Therefore, $\text{VC}\left(H_1 \right) \leq \text{VC}\left(H_2 \right)$.
+
+___
 
 **(b)** Let $H_1 = H_2 \cup \left\{h_1, \dots, h_k \right\}$. (I.e., $H_1$ is the union of $H_2$ and some set of $k$ additional hypotheses.) Prove or disprove: $\text{VC}\left(H_1\right) \leq \text{VC} \left(H_2 \right) + k$. [Hint: You might want to start by considering the case of $k=1$.]
 
+___
+
+
+___
+
+
 **(c)** Let $H_1 = H_2 \cup H_3$. Prove or disprove: $\text{VC} \left(H_1 \right) \leq \text{VC} \left(H_2 \right) + \text{VC} \left(H_3 \right)$.
+
+___
+
+___
 
 ### **5. Training and testing on different distributions**
 
@@ -273,10 +338,85 @@ $$
 
 ### **6. Boosting and high energy physics**
 
-**(a)**
+In class, we discussed boosting algorithms and decision stumps. In this problem, we explore applications of these ideas to detect particle emissions in a high-energy particle accelerator. In high energy physics, such as at the Large Hadron Collider (LHC), one accelerates small particles to relativistic speeds and smashes them into one another, tracking the emitted particles. The goal in these problems is to detect the emission of certain interesting paticles based on other observed particles and energies. In this problem, we explore the application of boosting to a higher energy physics problem, where we use decision stumps applied to 18 low- and high-level physics-based features. All data for the problem is available at [http://cs229.stanford.edu/materials/boost_data.tgz](http://cs229.stanford.edu/materials/boost_data.tgz).
 
-**(b)**
+For the first part of the problem, we explore how decision stumps based on thresholding can provide a weak-learning guarantee. In particular, we show that for real-valued attributes $x$, thre is an edge $\gamma > 0$ that decision stumps guarantee. Recall that thresholding-based decision stumps are functions indexed by a threshold $s$ and sign $+/-$, such that
 
-**(c)**
+$$
+\phi_{s,+}(x) = \begin{cases}
+                1 & \text{if }x \geq s \\
+                -1 & \text{if } x < s
+                \end{cases}
+                \hspace{1em}
+                \text{and}
+                \hspace{1em}
+\phi_{s, -}(x) = \begin{cases}
+                -1 & \text{if }x \geq s \\
+                1 & \text{if } x < s
+                \end{cases}
+$$
+
+That is, $\phi_{s, +}(x) = -\phi_{s, -}(x)$. We assume for simplicity in the theoretical parts of this exercise that our input attribute vectors $x \in \mathbb{R}$, that is, they are one-dimensional. Now, we would like to guarantee that there is some $\gamma > 0$ and a threshold $s$ such that, for *any* distribution $p$ on the training set $\left\{x^{(i)}, y^{(i)} \right\}_{i=1}^m$ (where $y^{(i)} \in \left\{-1, +1\right\}$ and $x^{(i)} \in \mathbb{R}$, and we recall that $p$ is a distribution on the training set if $\sum_{i=1}^m p_i = 1$ and $p_i \geq 0$ for each $i$) we have
+
+$$
+\sum_{i=1}^m p_i \mathbf{1} \left\{y^{(i)} \neq \phi_{s, +} \left(x^{(i)} \right) \right\} \leq \frac{1}{2} - \gamma \hspace{1em} \text{or} \hspace{1em} \sum_{i=1}^m p_i \mathbf{1} \left\{y^{(i)} \neq \phi_{s, -}\left(x^{(i)} \right) \right\} \leq \frac{1}{2} - \gamma
+$$
+
+For simplicity, we assume that all of the $x^{(i)}$ are *distinct*, so that none of them are equal. We also assume (without loss of generality, but this makes the problem notationally simpler) that 
+
+$$
+x^{(1)} > x^{(2)} > \cdots > x^{(m)}.
+$$
+
+**(a)** Show that for each threshold $s$, there is some $m_0(s) \in \left\{0, 1, \dots, m \right\}$ such that
+
+$$
+\sum_{i=1}^m p_i \mathbf{1} \left\{\phi_{s, +} \left(x^{(i)} \right) \right\} = \frac{1}{2} - \frac{1}{2} \left(\sum_{i=1}^{m_0(s)} y^{(i)} p_i - \sum_{i=m_0(s)+1}^m y^{(i)}p_i \right)
+$$
+and
+
+$$
+\sum_{i=1}^m p_i \mathbf{1} \left\{\phi_{s, -} \left(x^{(i)} \right) \right\} = \frac{1}{2} - \frac{1}{2} \left(\sum_{i=m_0(s)+1}^m y^{(i)}p_i - \sum_{i=1}^{m_0(s)} y^{(i)} p_i  \right)
+$$
+
+Treat sums over empty sets of indices as zero, so that $\sum_{i=1}^0 a_i = 0$ for any $a_i$, and similarly $\sum_{i = m+1}^m a_i = 0$.
+
+___
+
+
+
+___
+
+**(b)** Define, for each $m_0 \in \left\{ 0, 1, \dots, m \right\}$,
+
+$$
+f\left(m_0\right) = \sum_{i=1}^{m_0} y^{(i)}p_i - \sum_{i=m_0+1}^m y^{(i)}p_i.
+$$
+Show that there exists *some* $\gamma > 0$, which may depend on the training set size $m$ (but should not depend on $p$), such that for any set of probabilities $p$ on the training set, where $p_i \geq 0$ and $\sum_{i=1}^m p_i = 1$, we can find $m_0$ with 
+
+$$
+\left\lvert f\left(m_0\right) \right\rvert \geq 2 \gamma.
+$$
+What is your $\gamma$?
+
+(*Hint:* Consider the difference $f(m_0) - f(m_0 + 1)$.)
+
+___
+
+
+___
+
+**(c)** Based on your answer to part (6b), what edge can thresholded decision stumps guarantee on any training set $\left\{x^{(i)}, y^{(i)} \right\}_{i=1}^m$, where the raw attributes $x^{(i)} \in \mathbb{R}$ are all distinct? Recall that the edge of a weak classifier $\phi: \mathbb{R} \rightarrow \left\{-1, 1 \right\}$ is the constant $\gamma \in \left[0, \frac{1}{2} \right]$ such that
+
+$$
+\sum_{i=1}^m p_i \mathbf{1} \left\{\phi \left(x^{(i)} \right) \neq y^{(i)} \right\} \leq \frac{1}{2} - \gamma.
+$$
+
+Can you give an upper bound on the number of thresholded deicision stumps required to achieve zero error on a given training set?
+
+___
+
+
+___
 
 **(d)**
