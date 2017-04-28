@@ -318,10 +318,11 @@ J(\alpha) = \frac{1}{m} \sum_{i=1}^m \left[1-y^{(i)} K^{(i)T} \alpha \right]_{+}
 <hr />
 <p><strong>(b)</strong> Let <span class="math inline">\(H_1 = H_2 \cup \left\{h_1, \dots, h_k \right\}\)</span>. (I.e., <span class="math inline">\(H_1\)</span> is the union of <span class="math inline">\(H_2\)</span> and some set of <span class="math inline">\(k\)</span> additional hypotheses.) Prove or disprove: <span class="math inline">\(\text{VC}\left(H_1\right) \leq \text{VC} \left(H_2 \right) + k\)</span>. [Hint: You might want to start by considering the case of <span class="math inline">\(k=1\)</span>.]</p>
 <hr />
+<p>False. Consider the case where <span class="math inline">\(k=1\)</span>, i.e. <span class="math inline">\(H_1 = H_2 \cup h_1\)</span>. Let <span class="math inline">\(\text{VC} \left(H_2 \right) = d\)</span>. I.e., <span class="math inline">\(H_2\)</span> can shatter a set of <span class="math inline">\(d\)</span> points. If the additional hypothesis <span class="math inline">\(h_1\)</span> can shatter more than <span class="math inline">\(d+1\)</span> points, then <span class="math inline">\(H_1\)</span> can shatter more than <span class="math inline">\(d+1\)</span> points, and <span class="math inline">\(\text{VC}\left(H_1 \right) \nleq \text{VC} \left(H_2 \right) + k\)</span>.</p>
 <hr />
 <p><strong>(c)</strong> Let <span class="math inline">\(H_1 = H_2 \cup H_3\)</span>. Prove or disprove: <span class="math inline">\(\text{VC} \left(H_1 \right) \leq \text{VC} \left(H_2 \right) + \text{VC} \left(H_3 \right)\)</span>.</p>
 <hr />
-<hr />
+<p>False. Consider the case where <span class="math inline">\(\text{VC} \left(H_2 \right) = \text{VC} \left(H_3 \right) = d\)</span>. I.e., <span class="math inline">\(H_2\)</span> and <span class="math inline">\(H_3\)</span> are hypothesis classes which can shatter <span class="math inline">\(d\)</span> points. ___</p>
 </div>
 <div id="training-and-testing-on-different-distributions" class="section level3">
 <h3><strong>5. Training and testing on different distributions</strong></h3>

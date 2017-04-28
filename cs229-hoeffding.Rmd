@@ -67,7 +67,11 @@ My notes on John Duchi's [CS229 supplemental notes on Hoeffding's inequality](ht
       - Let $Z$ be any random variable with $\text{Var}(Z) < \infty$. Then, for $t \geq 0$,
       
       $$
-      P \left(\left( Z - \mathbb{E}[Z]\right)^2 \geq t^2 \right) \leq \frac{\text{Var}(Z)}{t^2}
+      \begin{align}
+      P \left(\left( Z - \mathbb{E}[Z]\right)^2 \geq t^2 \right) & \leq \frac{\text{Var}(Z)}{t^2} \\
+      \text{or equivalently,} \\
+      P \left(\left\lvert Z - \mathbb{E}[Z]\right\rvert \geq t \right) &\leq \frac{\text{Var} (Z)}{t^2}\\
+      \end{align}
       $$
       
       - i.e., Chebyshev's inequality puts a bound on the probability that a random variable is greater than $t$ away from its expected value $\mathbb{E}[Z]$
@@ -82,27 +86,26 @@ My notes on John Duchi's [CS229 supplemental notes on Hoeffding's inequality](ht
           $$
           
       - a nice consequence of Chebyshev's inequality:
-          - averages of random variables with finite variance converge to their mean
+          - averages of random variables with finite variance converge to their mean (this is the [**weak law of large numbers**](https://en.wikipedia.org/wiki/Law_of_large_numbers#Proof_using_Chebyshev.27s_inequality))
           - an example:
-              - suppose $Z_i$ are i.i.d. and satisfy $\mathbb{E} \left[Z_i \right]=0$
+              - suppose $Z_i$ are i.i.d. with finite variance and $\mathbb{E}[Z_i] = 0$
               - define $\bar{Z} = \frac{1}{n} \sum_{i=1}^n Z_i$
               - then:
               
               $$
               \begin{align}
-              & \quad \text{Var}(\bar{Z}) \\
-              & = \mathbb{E} \left[\bar{Z}^2 \right] - \mathbb{E}^2 \left[\bar{Z} \right] && \text{def. variance}\\
-              & = \mathbb{E} \left[\left(\frac{1}{n}  \sum_{i=1}^n Z_i \right)^2 \right]  && \mathbb{E}\left[\bar{Z} \right] = 0, \text{ since } \mathbb{E}\left[Z_i \right] = 0 \text{ and expectations are linear}\\
-              & = \frac{1}{n^2} \sum_{i,j \leq n} \mathbb{E} \left[Z_i Z_j \right] \\
-              & = \frac{1}{n^2} \sum_{i=1}^n \mathbb{E} \left[Z_i^2 \right] \\
+              & \quad \text{Var}\left(\bar{Z} \right) \\
+              & = \text{Var} \left(\frac{1}{n} \sum_{i=1}^n Z_i \right) && \text{def. } \bar{Z} \\
+              & = \frac{1}{n^2} \text{Var} \left(\sum_{i=1}^n Z_i \right) && \text{property of variance} \\
+              & = \frac{n \text{Var}\left(Z_1 \right)}{n^2} && \text{Var}\left(Z_i \right) \text{ are all equal, since } Z_i \text{ are i.i.d.} \\
               & = \frac{\text{Var} \left(Z_1 \right)}{n}
               \end{align}
               $$
-              
-              - in particular, for any $t \geq 0$:
+          
+              - in particular, for any $t \geq 0$ (remember $\mathbb{E}[Z_i] = 0$):
               
               $$
-              P \left(\left\lvert \frac{1}{n} \sum_{i=1}^n Z_i \right\rvert \geq t \right) \leq \frac{\text{Var}\left(Z_1 \right)}{nt^2}
+              P \left(\left\lvert \frac{1}{n} \sum_{i=1}^n Z_i \right\rvert \geq t \right) \leq \frac{\text{Var}\left(Z_1 \right)}{nt^2} \qquad \text{Chebyshev's inequality}
               $$
               
               - so, $P \left(\left\lvert \bar{Z} \right\rvert \geq t \right) \rightarrow 0$ for any $t>0$
@@ -149,7 +152,7 @@ My notes on John Duchi's [CS229 supplemental notes on Hoeffding's inequality](ht
               \end{align}
               $$
               
-              - since the choice of $\lambda > 0$ did not matter, we can take the best one by minimizing the right side of the bound
+              - since the choice of $\lambda > 0$ did not matter, we can take the best one by minimizing the right side of the bound w.r.t. $\lambda$
                   - note that the bound still holds at $\lambda = 0$
       - the important result: **Chernoff bounds "play nicely" with summations**
           - this is a consequence of the moment generating function

@@ -292,6 +292,7 @@ ___
 
 ___
 
+False. Consider the case where $k=1$, i.e. $H_1 = H_2 \cup h_1$. Let $\text{VC} \left(H_2 \right) = d$. I.e., $H_2$ can shatter a set of $d$ points. If the additional hypothesis $h_1$ can shatter more than $d+1$ points, then $H_1$ can shatter more than $d+1$ points, and $\text{VC}\left(H_1 \right) \nleq \text{VC} \left(H_2 \right) + k$.
 
 ___
 
@@ -300,6 +301,7 @@ ___
 
 ___
 
+False. Consider the case where $\text{VC} \left(H_2 \right) = \text{VC} \left(H_3 \right) = d$. I.e., $H_2$ and $H_3$ are hypothesis classes which can shatter $d$ points. 
 ___
 
 ### **5. Training and testing on different distributions**

@@ -200,7 +200,11 @@ $(document).ready(function () {
 <li>Let <span class="math inline">\(Z\)</span> be any random variable with <span class="math inline">\(\text{Var}(Z) &lt; \infty\)</span>. Then, for <span class="math inline">\(t \geq 0\)</span>,</li>
 </ul>
 <p><span class="math display">\[
-  P \left(\left( Z - \mathbb{E}[Z]\right)^2 \geq t^2 \right) \leq \frac{\text{Var}(Z)}{t^2}
+  \begin{align}
+  P \left(\left( Z - \mathbb{E}[Z]\right)^2 \geq t^2 \right) &amp; \leq \frac{\text{Var}(Z)}{t^2} \\
+  \text{or equivalently,} \\
+  P \left(\left\lvert Z - \mathbb{E}[Z]\right\rvert \geq t \right) &amp;\leq \frac{\text{Var} (Z)}{t^2}\\
+  \end{align}
   \]</span></p>
 <ul>
 <li>i.e., Chebyshev’s inequality puts a bound on the probability that a random variable is greater than <span class="math inline">\(t\)</span> away from its expected value <span class="math inline">\(\mathbb{E}[Z]\)</span></li>
@@ -214,28 +218,27 @@ $(document).ready(function () {
   \]</span></p></li>
 <li>a nice consequence of Chebyshev’s inequality:
 <ul>
-<li>averages of random variables with finite variance converge to their mean</li>
+<li>averages of random variables with finite variance converge to their mean (this is the <a href="https://en.wikipedia.org/wiki/Law_of_large_numbers#Proof_using_Chebyshev.27s_inequality"><strong>weak law of large numbers</strong></a>)</li>
 <li>an example:
 <ul>
-<li>suppose <span class="math inline">\(Z_i\)</span> are i.i.d. and satisfy <span class="math inline">\(\mathbb{E} \left[Z_i \right]=0\)</span></li>
+<li>suppose <span class="math inline">\(Z_i\)</span> are i.i.d. with finite variance and <span class="math inline">\(\mathbb{E}[Z_i] = 0\)</span></li>
 <li>define <span class="math inline">\(\bar{Z} = \frac{1}{n} \sum_{i=1}^n Z_i\)</span></li>
 <li>then:</li>
 </ul>
 <p><span class="math display">\[
   \begin{align}
-  &amp; \quad \text{Var}(\bar{Z}) \\
-  &amp; = \mathbb{E} \left[\bar{Z}^2 \right] - \mathbb{E}^2 \left[\bar{Z} \right] &amp;&amp; \text{def. variance}\\
-  &amp; = \mathbb{E} \left[\left(\frac{1}{n}  \sum_{i=1}^n Z_i \right)^2 \right]  &amp;&amp; \mathbb{E}\left[\bar{Z} \right] = 0, \text{ since } \mathbb{E}\left[Z_i \right] = 0 \text{ and expectations are linear}\\
-  &amp; = \frac{1}{n^2} \sum_{i,j \leq n} \mathbb{E} \left[Z_i Z_j \right] \\
-  &amp; = \frac{1}{n^2} \sum_{i=1}^n \mathbb{E} \left[Z_i^2 \right] \\
+  &amp; \quad \text{Var}\left(\bar{Z} \right) \\
+  &amp; = \text{Var} \left(\frac{1}{n} \sum_{i=1}^n Z_i \right) &amp;&amp; \text{def. } \bar{Z} \\
+  &amp; = \frac{1}{n^2} \text{Var} \left(\sum_{i=1}^n Z_i \right) &amp;&amp; \text{property of variance} \\
+  &amp; = \frac{n \text{Var}\left(Z_1 \right)}{n^2} &amp;&amp; \text{Var}\left(Z_i \right) \text{ are all equal, since } Z_i \text{ are i.i.d.} \\
   &amp; = \frac{\text{Var} \left(Z_1 \right)}{n}
   \end{align}
   \]</span></p>
 <ul>
-<li>in particular, for any <span class="math inline">\(t \geq 0\)</span>:</li>
+<li>in particular, for any <span class="math inline">\(t \geq 0\)</span> (remember <span class="math inline">\(\mathbb{E}[Z_i] = 0\)</span>):</li>
 </ul>
 <p><span class="math display">\[
-  P \left(\left\lvert \frac{1}{n} \sum_{i=1}^n Z_i \right\rvert \geq t \right) \leq \frac{\text{Var}\left(Z_1 \right)}{nt^2}
+  P \left(\left\lvert \frac{1}{n} \sum_{i=1}^n Z_i \right\rvert \geq t \right) \leq \frac{\text{Var}\left(Z_1 \right)}{nt^2} \qquad \text{Chebyshev's inequality}
   \]</span></p>
 <ul>
 <li>so, <span class="math inline">\(P \left(\left\lvert \bar{Z} \right\rvert \geq t \right) \rightarrow 0\)</span> for any <span class="math inline">\(t&gt;0\)</span></li>
