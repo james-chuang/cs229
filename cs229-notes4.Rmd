@@ -55,6 +55,7 @@ My notes on Andrew Ng's [CS229 lecture 4 notes](http://cs229.stanford.edu/materi
           $$
           
           - in words, if we take $\hat{\phi}$ -- the average of $m \text{ Bernoulli}(\phi)$ random variables -- to be our estimate of $\phi$, then the probability of our being far from the true value is small, so long as $m$ is large
+              - note that this only applies to the case of $m \text{Bernoulli}$ random variables described here: the more general Hoeffding inequality is described in the supplemental notes
           - in other words, if you have a biased coin whose chance of landing on heads is $\phi$, then if you toss it $m$ times and calculate the fraction of time that it came up heads, that will be a good estimate of $\phi$ with high probability (if $m$ is large)
     - first, restrict attention to binary classification with labels $y \in \left\{ 0,1 \right\}$
         - note that everything here generalizes to other problems, including regression and multi-class classification

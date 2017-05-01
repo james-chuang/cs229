@@ -314,15 +314,66 @@ J(\alpha) = \frac{1}{m} \sum_{i=1}^m \left[1-y^{(i)} K^{(i)T} \alpha \right]_{+}
 <p>In this problem, we investigate a few properties of the Vapnik-Chervonenkis dimension, mostly relating to how <span class="math inline">\(\text{VC}(H)\)</span> increases as the set <span class="math inline">\(H\)</span> increases. For each part of this problem, you should state whether the given statement is true, and justify your answer with either a formal proof or a counter-example.</p>
 <p><strong>(a)</strong> Let two hypothesis classes <span class="math inline">\(H_1\)</span> and <span class="math inline">\(H_2\)</span> satisfy <span class="math inline">\(H_1 \subseteq H_2\)</span>. Prove or disprove: <span class="math inline">\(\text{VC}\left(H_1 \right) \leq \text{VC}\left(H_2 \right)\)</span>.</p>
 <hr />
-<p>True. Let <span class="math inline">\(\text{VC} \left(H_1 \right) = d\)</span>. I.e., <span class="math inline">\(H_1\)</span> can shatter a set of <span class="math inline">\(d\)</span> points. Since <span class="math inline">\(H_1\)</span> is contained within <span class="math inline">\(H_2\)</span>, <span class="math inline">\(H_2\)</span> also shatters <span class="math inline">\(d\)</span>. Therefore, <span class="math inline">\(\text{VC}\left(H_1 \right) \leq \text{VC}\left(H_2 \right)\)</span>.</p>
+<p>True.</p>
+<ul>
+<li>Let <span class="math inline">\(\text{VC} \left(H_1 \right) = d\)</span>.
+<ul>
+<li>I.e., <span class="math inline">\(H_1\)</span> can shatter a set of <span class="math inline">\(d\)</span> points.</li>
+</ul></li>
+<li>Since <span class="math inline">\(H_1\)</span> is contained within <span class="math inline">\(H_2\)</span>, <span class="math inline">\(H_2\)</span> also shatters <span class="math inline">\(d\)</span>.</li>
+<li>Therefore, <span class="math inline">\(\text{VC}\left(H_1 \right) \leq \text{VC}\left(H_2 \right)\)</span>.</li>
+</ul>
 <hr />
 <p><strong>(b)</strong> Let <span class="math inline">\(H_1 = H_2 \cup \left\{h_1, \dots, h_k \right\}\)</span>. (I.e., <span class="math inline">\(H_1\)</span> is the union of <span class="math inline">\(H_2\)</span> and some set of <span class="math inline">\(k\)</span> additional hypotheses.) Prove or disprove: <span class="math inline">\(\text{VC}\left(H_1\right) \leq \text{VC} \left(H_2 \right) + k\)</span>. [Hint: You might want to start by considering the case of <span class="math inline">\(k=1\)</span>.]</p>
 <hr />
-<p>False. Consider the case where <span class="math inline">\(k=1\)</span>, i.e. <span class="math inline">\(H_1 = H_2 \cup h_1\)</span>. Let <span class="math inline">\(\text{VC} \left(H_2 \right) = d\)</span>. I.e., <span class="math inline">\(H_2\)</span> can shatter a set of <span class="math inline">\(d\)</span> points. If the additional hypothesis <span class="math inline">\(h_1\)</span> can shatter more than <span class="math inline">\(d+1\)</span> points, then <span class="math inline">\(H_1\)</span> can shatter more than <span class="math inline">\(d+1\)</span> points, and <span class="math inline">\(\text{VC}\left(H_1 \right) \nleq \text{VC} \left(H_2 \right) + k\)</span>.</p>
+<p>True.</p>
+<ul>
+<li>Consider the case of <span class="math inline">\(k=1\)</span>, i.e. <span class="math inline">\(H_1 = H_2 \cup \left\{h_1 \right\}\)</span>.
+<ul>
+<li>Let <span class="math inline">\(\text{VC}\left(H_1 \right) = d\)</span>
+<ul>
+<li>then, there exists a set <span class="math inline">\(S_1\)</span> such that <span class="math inline">\(H_1\)</span> realizes the correct labeling of every point in <span class="math inline">\(S_1\)</span></li>
+</ul></li>
+<li>Pick an arbitrary (<span class="math inline">\(x \in S_1\)</span>).
+<ul>
+<li><span class="math inline">\(H_1\)</span> shatters <span class="math inline">\(S_1\)</span>, so there must be a hypothesis <span class="math inline">\(h^\prime\)</span> which agrees with <span class="math inline">\(h_1\)</span> on labelings for all points in <span class="math inline">\(S_1\)</span> <em>except</em> <span class="math inline">\(x\)</span>.</li>
+</ul></li>
+<li>Define <span class="math inline">\(H^\prime: H_1 \backslash \{h_1\}\)</span>.
+<ul>
+<li><span class="math inline">\(H^\prime\)</span> achieves all possible labelings on <span class="math inline">\(S^\prime \equiv S_1 \backslash \{x\}\)</span>, i.e. <span class="math inline">\(H^\prime\)</span> shatters <span class="math inline">\(S^\prime\)</span></li>
+</ul></li>
+<li>then,</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  \text{VC}\left(H^\prime \right) &amp; \geq \left\lvert S^\prime \right\rvert &amp;&amp; \text{since } H^\prime \text{ shatters the set } S^\prime, \text{VC}(H^\prime) \text{ is at least the size of } S^\prime  \\
+  \text{VC}\left(H^\prime \right) &amp; \geq d-1
+  \end{align}
+  \]</span></p>
+<p><span class="math display">\[
+  \begin{align}
+  H^\prime &amp; \subseteq H_2 \\
+  \text{VC}\left(H^\prime \right) &amp; \leq \text{VC} \left(H_2 \right) &amp;&amp; \text{from part a} \\
+  d-1 &amp; \leq \text{VC} \left(H_2 \right) &amp;&amp;\text{VC}\left(H^\prime \right) \geq d-1\\
+  \text{VC}\left(H_1 \right) - 1 &amp; \leq \text{VC} \left(H_2 \right) &amp;&amp; \text{VC}\left(H_1 \right) \equiv d \\
+  \text{VC}\left(H_1 \right) &amp; \leq \text{VC}\left(H_2 \right) + 1
+  \end{align}
+  \]</span></p></li>
+</ul>
+<p>(At first I thought the answer was obviously false, until I understood the difference between a hypothesis and a hypothesis class. A single hypothesis can’t shatter a set, since it only realizes one set of labels on the set. I didn’t get this until after I looked at the solutions, so this answer is pretty much from the solutions.)</p>
 <hr />
 <p><strong>(c)</strong> Let <span class="math inline">\(H_1 = H_2 \cup H_3\)</span>. Prove or disprove: <span class="math inline">\(\text{VC} \left(H_1 \right) \leq \text{VC} \left(H_2 \right) + \text{VC} \left(H_3 \right)\)</span>.</p>
 <hr />
-<p>False. Consider the case where <span class="math inline">\(\text{VC} \left(H_2 \right) = \text{VC} \left(H_3 \right) = d\)</span>. I.e., <span class="math inline">\(H_2\)</span> and <span class="math inline">\(H_3\)</span> are hypothesis classes which can shatter <span class="math inline">\(d\)</span> points. ___</p>
+<p>False.</p>
+<ul>
+<li>from part b, we have <span class="math inline">\(\text{VC}\left(H_1 \right) \leq \text{VC} \left(H_2 \right) + \left\lvert H_3 \right\rvert\)</span>, where <span class="math inline">\(\left\lvert H_3 \right\rvert\)</span> is the number of hypotheses in <span class="math inline">\(H_3\)</span>.
+<ul>
+<li><span class="math inline">\(\text{VC}\left(H_3 \right) \leq \left\lvert H_3 \right\rvert\)</span>, since a hypothesis class cannot shatter a set larger than the number of hypotheses in the hypothesis class</li>
+<li>if <span class="math inline">\(\text{VC}\left(H_3 \right) = k\)</span>, then the statement is true</li>
+<li>however, if <span class="math inline">\(\text{VC}\left(H_3 \right) &lt; k\)</span>, then the statement is not necessarily true</li>
+</ul></li>
+</ul>
+<hr />
 </div>
 <div id="training-and-testing-on-different-distributions" class="section level3">
 <h3><strong>5. Training and testing on different distributions</strong></h3>
@@ -334,16 +385,28 @@ J(\alpha) = \frac{1}{m} \sum_{i=1}^m \left[1-y^{(i)} K^{(i)T} \alpha \right]_{+}
 \]</span></p>
 <p>Note that <span class="math inline">\(\varepsilon_0(h)\)</span> is the generalization error with respect to the “clean” distribution; it is with respect to <span class="math inline">\(\varepsilon_0\)</span> that we wish to evaluate our hypotheses.</p>
 <p><strong>(a)</strong> For any hypothesis <span class="math inline">\(h\)</span>, the quantity <span class="math inline">\(\varepsilon_0(h)\)</span> can be calculated as a function of <span class="math inline">\(\varepsilon_\tau(h)\)</span> and <span class="math inline">\(\tau\)</span>. Write down a formula for <span class="math inline">\(\varepsilon_0(h)\)</span> in terms of <span class="math inline">\(\varepsilon_\tau(h)\)</span> and <span class="math inline">\(\tau\)</span>, and justify your answer.</p>
+<hr />
+<p>An error in the ‘corrupted’ distribution occurs if a classification error was made on the original distribution and the label was not inverted, or if classification was correct on the original distribution but the label was inverted. Therefore,</p>
+<p><span class="math display">\[
+\begin{align}
+\varepsilon_\tau &amp; = \left(\text{error on } \mathcal{D} \right) \left(\text{label not inverted} \right) + \left(  \text{no error on } \mathcal{D}\right) \left(\text{label inverted} \right) \\
+\varepsilon_\tau &amp; = \varepsilon_0 \left(1-\tau \right) + \left(1-\varepsilon_0 \right) \tau \\
+\varepsilon_\tau &amp; = \varepsilon_0 - \tau \varepsilon_0 + \tau - \tau \varepsilon_0 \\
+\varepsilon_\tau &amp; = \varepsilon_0 \left(1-2 \tau \right)  + \tau \\
+\varepsilon_0 &amp; = \frac{\varepsilon_\tau - \tau}{1 - 2\tau}
+\end{align}
+\]</span></p>
+<hr />
 <p><strong>(b)</strong> Let <span class="math inline">\(\lvert H \rvert\)</span> be finite, and suppose our training set <span class="math inline">\(S = \left\{\left(x^{(i)}, y^{(i)} \right); 1, \dots, m \right\}\)</span> is obtained by drawing <span class="math inline">\(m\)</span> examples IID from the corrupted distribution <span class="math inline">\(\mathcal{D}_\tau\)</span>. Suppose we pick <span class="math inline">\(h \in H\)</span> using empirical risk minimization: <span class="math inline">\(\hat{h} = \arg \min_{h \in H} \hat{\varepsilon}_S(h)\)</span>. Also, let <span class="math inline">\(h^* = \arg \min_{h \in H} \varepsilon_0(h)\)</span>.</p>
 <p>Let any <span class="math inline">\(\delta, \gamma &gt; 0\)</span> be given. Prove that for</p>
 <p><span class="math display">\[
-\epsilon_0 \left(\hat{h} \right) \leq \varepsilon_0(h^*) + 2 \gamma
+\varepsilon_0 \left(\hat{h} \right) \leq \varepsilon_0(h^*) + 2 \gamma
 \]</span></p>
 <p>to hold with probability <span class="math inline">\(1-\delta\)</span>, it suffices that</p>
 <p><span class="math display">\[
 m \geq \frac{1}{2(1-2\tau)^2 \gamma^2} \log \frac{2 \lvert H \rvert}{ \delta}.
 \]</span></p>
-<p><strong>Remark.</strong> This result suggests that, roughly, <span class="math inline">\(m\)</span> examples that have been corrupted at noise level <span class="math inline">\(\tau\)</span> are worth about as much as <span class="math inline">\((1-2\tau)^2m\)</span> uncorrupted training examples. This is a useful rule-of-thumb to know if you ever need to decide whether/how much to pay for a more reliable source of training data. (If you’ve taken a class in information theory, you may also have heard that $(1-() )m $ is a good estimate of the information in the <span class="math inline">\(m\)</span> corrupted examples, where <span class="math inline">\(\mathcal{H}(\tau) = -\left( \tau \log_2 \tau + \left(1-\tau \right) \log_2 \left(1-\tau \right) \right)\)</span> is the “binary entropy” function. And indeed, the functions <span class="math inline">\((1-2\tau)^2\)</span> and <span class="math inline">\(1-\mathcal{H}(\tau)\)</span> are quite close to each other.)</p>
+<p><strong>Remark.</strong> This result suggests that, roughly, <span class="math inline">\(m\)</span> examples that have been corrupted at noise level <span class="math inline">\(\tau\)</span> are worth about as much as <span class="math inline">\((1-2\tau)^2m\)</span> uncorrupted training examples. This is a useful rule-of-thumb to know if you ever need to decide whether/how much to pay for a more reliable source of training data. (If you’ve taken a class in information theory, you may also have heard that <span class="math inline">\(\left(1-\mathcal{H}(\tau) \right) m\)</span> is a good estimate of the information in the <span class="math inline">\(m\)</span> corrupted examples, where <span class="math inline">\(\mathcal{H}(\tau) = -\left( \tau \log_2 \tau + \left(1-\tau \right) \log_2 \left(1-\tau \right) \right)\)</span> is the “binary entropy” function. And indeed, the functions <span class="math inline">\((1-2\tau)^2\)</span> and <span class="math inline">\(1-\mathcal{H}(\tau)\)</span> are quite close to each other.)</p>
 <p><strong>(c)</strong> Comment <strong>briefly</strong> on what happens as <span class="math inline">\(\tau\)</span> approaches <span class="math inline">\(0.5\)</span>.</p>
 </div>
 <div id="boosting-and-high-energy-physics" class="section level3">

@@ -284,7 +284,12 @@ In this problem, we investigate a few properties of the Vapnik-Chervonenkis dime
 
 ___
 
-True. Let $\text{VC} \left(H_1 \right) = d$. I.e., $H_1$ can shatter a set of $d$ points. Since $H_1$ is contained within $H_2$, $H_2$ also shatters $d$. Therefore, $\text{VC}\left(H_1 \right) \leq \text{VC}\left(H_2 \right)$.
+True.
+
+  - Let $\text{VC} \left(H_1 \right) = d$.
+      - I.e., $H_1$ can shatter a set of $d$ points.
+  - Since $H_1$ is contained within $H_2$, $H_2$ also shatters $d$.
+  - Therefore, $\text{VC}\left(H_1 \right) \leq \text{VC}\left(H_2 \right)$.
 
 ___
 
@@ -292,7 +297,35 @@ ___
 
 ___
 
-False. Consider the case where $k=1$, i.e. $H_1 = H_2 \cup h_1$. Let $\text{VC} \left(H_2 \right) = d$. I.e., $H_2$ can shatter a set of $d$ points. If the additional hypothesis $h_1$ can shatter more than $d+1$ points, then $H_1$ can shatter more than $d+1$ points, and $\text{VC}\left(H_1 \right) \nleq \text{VC} \left(H_2 \right) + k$.
+True.
+
+  - Consider the case of $k=1$, i.e. $H_1 = H_2 \cup \left\{h_1 \right\}$.
+      - Let $\text{VC}\left(H_1 \right) = d$
+          - then, there exists a set $S_1$ such that $H_1$ realizes the correct labeling of every point in $S_1$
+      - Pick an arbitrary ($x \in S_1$).
+          - $H_1$ shatters $S_1$, so there must be a hypothesis $h^\prime$ which agrees with $h_1$ on labelings for all points in $S_1$ *except* $x$.
+      - Define $H^\prime: H_1 \backslash \{h_1\}$.
+          - $H^\prime$ achieves all possible labelings on $S^\prime \equiv S_1 \backslash \{x\}$, i.e. $H^\prime$ shatters $S^\prime$
+      - then,
+      
+      $$
+      \begin{align}
+      \text{VC}\left(H^\prime \right) & \geq \left\lvert S^\prime \right\rvert && \text{since } H^\prime \text{ shatters the set } S^\prime, \text{VC}(H^\prime) \text{ is at least the size of } S^\prime  \\
+      \text{VC}\left(H^\prime \right) & \geq d-1
+      \end{align}
+      $$
+      
+      $$
+      \begin{align}
+      H^\prime & \subseteq H_2 \\
+      \text{VC}\left(H^\prime \right) & \leq \text{VC} \left(H_2 \right) && \text{from part a} \\
+      d-1 & \leq \text{VC} \left(H_2 \right) &&\text{VC}\left(H^\prime \right) \geq d-1\\
+      \text{VC}\left(H_1 \right) - 1 & \leq \text{VC} \left(H_2 \right) && \text{VC}\left(H_1 \right) \equiv d \\
+      \text{VC}\left(H_1 \right) & \leq \text{VC}\left(H_2 \right) + 1
+      \end{align}
+      $$
+
+(At first I thought the answer was obviously false, until I understood the difference between a hypothesis and a hypothesis class. A single hypothesis can't shatter a set, since it only realizes one set of labels on the set. I didn't get this until after I looked at the solutions, so this answer is pretty much from the solutions.)
 
 ___
 
@@ -301,7 +334,13 @@ ___
 
 ___
 
-False. Consider the case where $\text{VC} \left(H_2 \right) = \text{VC} \left(H_3 \right) = d$. I.e., $H_2$ and $H_3$ are hypothesis classes which can shatter $d$ points. 
+False.
+
+  - from part b, we have $\text{VC}\left(H_1 \right) \leq \text{VC} \left(H_2 \right) + \left\lvert H_3 \right\rvert$, where $\left\lvert H_3 \right\rvert$ is the number of hypotheses in $H_3$.
+      - $\text{VC}\left(H_3 \right) \leq \left\lvert H_3 \right\rvert$, since a hypothesis class cannot shatter a set larger than the number of hypotheses in the hypothesis class
+      - if $\text{VC}\left(H_3 \right) = k$, then the statement is true
+      - however, if $\text{VC}\left(H_3 \right) < k$, then the statement is not necessarily true
+
 ___
 
 ### **5. Training and testing on different distributions**
@@ -320,12 +359,29 @@ Note that $\varepsilon_0(h)$ is the generalization error with respect to the "cl
 
 **(a)** For any hypothesis $h$, the quantity $\varepsilon_0(h)$ can be calculated as a function of $\varepsilon_\tau(h)$ and $\tau$. Write down a formula for $\varepsilon_0(h)$ in terms of $\varepsilon_\tau(h)$ and $\tau$, and justify your answer.
 
-**(b)** Let $\lvert H \rvert$ be finite, and suppose our training set $S = \left\{\left(x^{(i)}, y^{(i)} \right); 1, \dots, m \right\}$ is obtained by drawing $m$ examples IID from the corrupted distribution $\mathcal{D}_\tau$. Suppose we pick $h \in H$ using empirical risk minimization: $\hat{h} = \arg \min_{h \in H} \hat{\varepsilon}_S(h)$. Also, let $h^* = \arg \min_{h \in H} \varepsilon_0(h)$.
+___
+
+An error in the 'corrupted' distribution occurs if a classification error was made on the original distribution and the label was not inverted, or if classification was correct on the original distribution but the label was inverted. Therefore,
+
+$$
+\begin{align}
+\varepsilon_\tau & = \left(\text{error on } \mathcal{D} \right) \left(\text{label not inverted} \right) + \left(  \text{no error on } \mathcal{D}\right) \left(\text{label inverted} \right) \\
+\varepsilon_\tau & = \varepsilon_0 \left(1-\tau \right) + \left(1-\varepsilon_0 \right) \tau \\
+\varepsilon_\tau & = \varepsilon_0 - \tau \varepsilon_0 + \tau - \tau \varepsilon_0 \\
+\varepsilon_\tau & = \varepsilon_0 \left(1-2 \tau \right)  + \tau \\
+\varepsilon_0 & = \frac{\varepsilon_\tau - \tau}{1 - 2\tau}
+\end{align}
+$$
+
+
+___
+
+**(b)** Let $\lvert H \rvert$ be finite, and suppose our training set $S = \left\{\left(x^{(i)}, y^{(i)} \right); i= 1, \dots, m \right\}$ is obtained by drawing $m$ examples IID from the corrupted distribution $\mathcal{D}_\tau$. Suppose we pick $h \in H$ using empirical risk minimization: $\hat{h} = \arg \min_{h \in H} \hat{\varepsilon}_S(h)$. Also, let $h^* = \arg \min_{h \in H} \varepsilon_0(h)$.
 
 Let any $\delta, \gamma > 0$ be given. Prove that for
 
 $$
-\epsilon_0 \left(\hat{h} \right) \leq \varepsilon_0(h^*) + 2 \gamma
+\varepsilon_0 \left(\hat{h} \right) \leq \varepsilon_0(h^*) + 2 \gamma
 $$
 
 to hold with probability $1-\delta$, it suffices that
@@ -334,7 +390,7 @@ $$
 m \geq \frac{1}{2(1-2\tau)^2 \gamma^2} \log \frac{2 \lvert H \rvert}{ \delta}.
 $$
 
-**Remark.** This result suggests that, roughly, $m$ examples that have been corrupted at noise level $\tau$ are worth about as much as $(1-2\tau)^2m$ uncorrupted training examples. This is a useful rule-of-thumb to know if you ever need to decide whether/how much to pay for a more reliable source of training data. (If you've taken a class in information theory, you may also have heard that $\left(1-\mathcal{H}(\tau) \right)m $ is a good estimate of the information in the $m$ corrupted examples, where $\mathcal{H}(\tau) = -\left( \tau \log_2 \tau + \left(1-\tau \right) \log_2 \left(1-\tau \right) \right)$ is the "binary entropy" function. And indeed, the functions $(1-2\tau)^2$ and $1-\mathcal{H}(\tau)$ are quite close to each other.) 
+**Remark.** This result suggests that, roughly, $m$ examples that have been corrupted at noise level $\tau$ are worth about as much as $(1-2\tau)^2m$ uncorrupted training examples. This is a useful rule-of-thumb to know if you ever need to decide whether/how much to pay for a more reliable source of training data. (If you've taken a class in information theory, you may also have heard that $\left(1-\mathcal{H}(\tau) \right) m$ is a good estimate of the information in the $m$ corrupted examples, where $\mathcal{H}(\tau) = -\left( \tau \log_2 \tau + \left(1-\tau \right) \log_2 \left(1-\tau \right) \right)$ is the "binary entropy" function. And indeed, the functions $(1-2\tau)^2$ and $1-\mathcal{H}(\tau)$ are quite close to each other.) 
 
 **(c)** Comment **briefly** on what happens as $\tau$ approaches $0.5$.
 
