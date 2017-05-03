@@ -22,7 +22,7 @@ My notes on John Duchi's [CS229 supplemental notes on boosting](http://cs229.sta
                   - if it is blank, call the image a 0
               - boosting procedures take a collection of weak classifiers, and reweight their contributions to form a classifier with much better accuracy than any individual classifier
       - problem formulation:
-          - one interpretation of boosting is as a coordinate descent method in an infinite dimensional space
+          - one interpretation of boosting is as **a coordinate descent method in an infinite dimensional space**
           - assume:
               - raw input samples $x \in \mathbb{R}^n$ with labels $y \in \{-1, 1\}$
               - an infinite collection of *feature* functions $\phi_j : \mathbb{R}^n \rightarrow \{-1,1 \}$
@@ -39,9 +39,9 @@ My notes on John Duchi's [CS229 supplemental notes on boosting](http://cs229.sta
           \theta^T \phi(x) = \sum_{i=1}^\infty \theta_j \phi_j(x)
           $$
           
-          - in boosting, the features $\phi_j$ are called **weak hypotheses*
+          - in boosting, the features $\phi_j$ are called **weak hypotheses**
           - given a training set $\left(x^{(1)}, y^{(1)} \right), \dots, \left(x^{(m)}, y^{(m)} \right)$:
-              - we call a vector $p = \left(p^{(1)}, \dots, p^{(m)} \right)$ a distribution on the examples if $p^{(i)} \geq 0 \forall i$ and
+              - we call a vector $p = \left(p^{(1)}, \dots, p^{(m)} \right)$ a distribution on the examples if $p^{(i)} \geq 0 \hspace{.3em} \forall \hspace{.3em} i$ and
               
               $$
               \sum_{i=1}^m p^{(i)} = 1
@@ -50,14 +50,14 @@ My notes on John Duchi's [CS229 supplemental notes on boosting](http://cs229.sta
               - we say that there is a *weak learner with margin* $\gamma > 0$ if for any distribution $p$ on the $m$ training examples there exists one weak hypothesis $\phi_j$ such that
               
               $$
-              \sum_{i=1}^m p^{(i)} \mathbb{1} \left\{y^{(i)} \neq \phi_j \left(x^{(i)} \right) \right\} \leq \frac{1}{2} - \gamma
+              \sum_{i=1}^m p^{(i)} \mathbf{1} \left\{y^{(i)} \neq \phi_j \left(x^{(i)} \right) \right\} \leq \frac{1}{2} - \gamma
               $$
               
               - i.e., we assume that there is *some* classifier that does slightly better than random guessing on the dataset
                   - the existence of a weak learning algorithm is an assumption
                       - however, we can transform any weak learning algorithm into one with perfect accuracy
-              - in more generality, we assume we have access to a *weak learner*- an algorithm that takes as input a distribution (weights) $p$ on the training examples and returns a classifier doing slightly better than random
-                  - given access to a weak learning algorithm, boosting can return a classifier wtih perfect accuracy on the training data (we ignore generalization for now)
+              - in more generality, we assume we have access to a **weak learner**- an algorithm that takes as input a distribution (weights) $p$ on the training examples and returns a classifier doing slightly better than random
+                  - given access to a weak learning algorithm, boosting can return a classifier with perfect accuracy on the training data (we ignore generalization for now)
                   
 ### **1.1 the boosting algorithm**
 
@@ -77,7 +77,56 @@ My notes on John Duchi's [CS229 supplemental notes on boosting](http://cs229.sta
           1. choose a coordinate $j \in \mathbb{N}$
           2. update $\theta_j$: $\theta_j \gets \arg \min_{\theta_j} J(\theta)$
               - leave $\theta_k$ unchanged for all $k \neq j$
+          - iterate until convergence
+      - derivation of the coordinate update for coordinate $k$:
+          
+          $$
+          \begin{align}
+          J(\theta) & = \frac{1}{m} \sum_{i=1}^m \exp \left(-y^{(i)} \theta^T \phi \left(x^{(i)} \right) \right) && \text{the objective function} \\
+          J(\theta) & = \frac{1}{m} \sum_{i=1}^m \exp \left(-y^{(i)} \sum_{j \neq k} \theta_j \phi \left( x^{(i)} \right)\right) \exp \left(-y^{(i)} \theta_k \phi \left(x^{(i)} \right)\right) && \text{property of exp} \\
+          J(\theta) & = \frac{1}{m} \sum_{i=1}^m w^{(i)} \exp \left(-y^{(i)} \theta_k \phi \left(x^{(i)} \right)\right) && \text{define } w^{(i)} = \exp \left(-y^{(i)} \sum_{j \neq k} \theta_j \phi \left( x^{(i)} \right)\right) \\
+          & \text{to optimize coordinate }k:
+          \end{align}
+          $$
+          
+          $$
+          \begin{align}
+          \alpha^* & = \arg \min_\alpha \sum_{i=1}^m w^{(i)} \exp \left(-y^{(i)} \phi_k \left(x^{(i)}\right) \alpha \right) && \text{,where } \alpha = \theta^k \\
+          \alpha^* & = \arg \min_\alpha \sum
+          \end{align}
+          $$
       
+      
+      
+      
+          - define the **weights**:
+          
+          $$
+          w^{(i)} = \exp \left(-y^{(i)} \sum_{j \neq k} \theta_j \phi_j \left(x^{(i)} \right)\right)
+          $$
+          
+          - optimizing coordinate $k$ corresponds to minimizing
+          
+          $$
+          \sum_{i=1}^m w^{(i)} \exp \left(-y^{(i)} \phi_k \left(x^{(i)} \right) \alpha \right)
+          $$
+          
+          - w.r.t. $\alpha = \theta_k$
+          - define:
+          
+          $$
+          W^+ := \sum_{i: y^{(i)}\phi_k \left(x^{(i)} \right)=1} w^{(i)} \hspace{3em} W^- := \sum_{i: y^{(i)}\phi_k \left(x^{(i)} \right)=-1} w^{(i)}
+          $$
+          
+          - these are the sums of the weights of examples that $\phi_k$ classifies correctly and incorrectly, respectively
+          - finding $\theta_k$ is the same as choosing
+          
+          $$
+          \begin{align}
+          \alpha & = \arg \min_\alpha \left\{W^+ e^{-\alpha} + W^- e^\alpha \right\} \\
+          \alpha & = \frac{1}{2} \log \frac{W^+}{W^-}
+          \end{align}
+          $$
       
       
       

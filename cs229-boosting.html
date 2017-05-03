@@ -153,7 +153,7 @@ $(document).ready(function () {
 </ul></li>
 <li>problem formulation:
 <ul>
-<li>one interpretation of boosting is as a coordinate descent method in an infinite dimensional space</li>
+<li>one interpretation of boosting is as <strong>a coordinate descent method in an infinite dimensional space</strong></li>
 <li>assume:
 <ul>
 <li>raw input samples <span class="math inline">\(x \in \mathbb{R}^n\)</span> with labels <span class="math inline">\(y \in \{-1, 1\}\)</span></li>
@@ -172,10 +172,10 @@ $(document).ready(function () {
   \theta^T \phi(x) = \sum_{i=1}^\infty \theta_j \phi_j(x)
   \]</span></p>
 <ul>
-<li>in boosting, the features <span class="math inline">\(\phi_j\)</span> are called **weak hypotheses*</li>
+<li>in boosting, the features <span class="math inline">\(\phi_j\)</span> are called <strong>weak hypotheses</strong></li>
 <li>given a training set <span class="math inline">\(\left(x^{(1)}, y^{(1)} \right), \dots, \left(x^{(m)}, y^{(m)} \right)\)</span>:
 <ul>
-<li>we call a vector <span class="math inline">\(p = \left(p^{(1)}, \dots, p^{(m)} \right)\)</span> a distribution on the examples if <span class="math inline">\(p^{(i)} \geq 0 \forall i\)</span> and</li>
+<li>we call a vector <span class="math inline">\(p = \left(p^{(1)}, \dots, p^{(m)} \right)\)</span> a distribution on the examples if <span class="math inline">\(p^{(i)} \geq 0 \hspace{.3em} \forall \hspace{.3em} i\)</span> and</li>
 </ul>
 <p><span class="math display">\[
   \sum_{i=1}^m p^{(i)} = 1
@@ -184,7 +184,7 @@ $(document).ready(function () {
 <li>we say that there is a <em>weak learner with margin</em> <span class="math inline">\(\gamma &gt; 0\)</span> if for any distribution <span class="math inline">\(p\)</span> on the <span class="math inline">\(m\)</span> training examples there exists one weak hypothesis <span class="math inline">\(\phi_j\)</span> such that</li>
 </ul>
 <p><span class="math display">\[
-  \sum_{i=1}^m p^{(i)} \mathbb{1} \left\{y^{(i)} \neq \phi_j \left(x^{(i)} \right) \right\} \leq \frac{1}{2} - \gamma
+  \sum_{i=1}^m p^{(i)} \mathbf{1} \left\{y^{(i)} \neq \phi_j \left(x^{(i)} \right) \right\} \leq \frac{1}{2} - \gamma
   \]</span></p>
 <ul>
 <li>i.e., we assume that there is <em>some</em> classifier that does slightly better than random guessing on the dataset
@@ -194,9 +194,9 @@ $(document).ready(function () {
 <li>however, we can transform any weak learning algorithm into one with perfect accuracy</li>
 </ul></li>
 </ul></li>
-<li>in more generality, we assume we have access to a <em>weak learner</em>- an algorithm that takes as input a distribution (weights) <span class="math inline">\(p\)</span> on the training examples and returns a classifier doing slightly better than random
+<li>in more generality, we assume we have access to a <strong>weak learner</strong>- an algorithm that takes as input a distribution (weights) <span class="math inline">\(p\)</span> on the training examples and returns a classifier doing slightly better than random
 <ul>
-<li>given access to a weak learning algorithm, boosting can return a classifier wtih perfect accuracy on the training data (we ignore generalization for now)</li>
+<li>given access to a weak learning algorithm, boosting can return a classifier with perfect accuracy on the training data (we ignore generalization for now)</li>
 </ul></li>
 </ul></li>
 </ul></li>
@@ -227,7 +227,46 @@ $(document).ready(function () {
 <ul>
 <li>leave <span class="math inline">\(\theta_k\)</span> unchanged for all <span class="math inline">\(k \neq j\)</span></li>
 </ul></li>
-</ol></li>
+</ol>
+<ul>
+<li>iterate until convergence</li>
+</ul></li>
+<li><p>derivation of the coordinate update for coordinate <span class="math inline">\(k\)</span>:</p>
+$$
+<span class="math display">\[\begin{align}
+  J(\theta) &amp; = \frac{1}{m} \sum_{i=1}^m \exp \left(-y^{(i)} \theta^T \phi \left(x^{(i)} \right) \right) &amp;&amp; \text{the objective function} \\
+
+  \end{align}\]</span>
+<p>$$</p>
+<ul>
+<li>define the <strong>weights</strong>:</li>
+</ul>
+<p><span class="math display">\[
+  w^{(i)} = \exp \left(-y^{(i)} \sum_{j \neq k} \theta_j \phi_j \left(x^{(i)} \right)\right)
+  \]</span></p>
+<ul>
+<li>optimizing coordinate <span class="math inline">\(k\)</span> corresponds to minimizing</li>
+</ul>
+<p><span class="math display">\[
+  \sum_{i=1}^m w^{(i)} \exp \left(-y^{(i)} \phi_k \left(x^{(i)} \right) \alpha \right)
+  \]</span></p>
+<ul>
+<li>w.r.t. <span class="math inline">\(\alpha = \theta_k\)</span></li>
+<li>define:</li>
+</ul>
+<p><span class="math display">\[
+  W^+ := \sum_{i: y^{(i)}\phi_k \left(x^{(i)} \right)=1} w^{(i)} \hspace{3em} W^- := \sum_{i: y^{(i)}\phi_k \left(x^{(i)} \right)=-1} w^{(i)}
+  \]</span></p>
+<ul>
+<li>these are the sums of the weights of examples that <span class="math inline">\(\phi_k\)</span> classifies correctly and incorrectly, respectively</li>
+<li>finding <span class="math inline">\(\theta_k\)</span> is the same as choosing</li>
+</ul>
+<p><span class="math display">\[
+  \begin{align}
+  \alpha &amp; = \arg \min_\alpha \left\{W^+ e^{-\alpha} + W^- e^\alpha \right\} \\
+  \alpha &amp; = \frac{1}{2} \log \frac{W^+}{W^-}
+  \end{align}
+  \]</span></p></li>
 </ul></li>
 </ul>
 </div>

@@ -390,9 +390,42 @@ $$
 m \geq \frac{1}{2(1-2\tau)^2 \gamma^2} \log \frac{2 \lvert H \rvert}{ \delta}.
 $$
 
+___
+
+$$
+\begin{align}
+\varepsilon_0 \left(\hat{h} \right) & = \frac{\varepsilon_\tau \left(\hat{h} \right) - \tau}{1-2\tau} \\
+                                    & \leq \frac{\hat{\varepsilon}_\tau \left(\hat{h} \right) + \bar{\gamma}- \tau}{1-2\tau} \hspace{1em}\text{ w.p. } \left(1-\delta \right) && \left\lvert \varepsilon_\tau \left(\hat{h} \right) - \hat{\varepsilon}_\tau\left(\hat{h} \right)\right\rvert \leq \bar{\gamma}   \text{ by Hoeffding ineq.}\\
+                                    & \leq \frac{\hat{\varepsilon}_\tau \left(h^* \right) + \bar{\gamma}- \tau}{1-2\tau} \hspace{1em} \text{ w.p. } \left(1-\delta \right) && \hat{\varepsilon}_\tau \left(\hat{h} \right) \leq \hat{\varepsilon}_\tau \left(h^* \right), \text{ i.e. train err. } < \text{ generalization err.} \\
+                                    & \leq \frac{\varepsilon_\tau \left(h^* \right) + 2 \bar{\gamma}- \tau}{1-2\tau} \hspace{1em} \text{ w.p. } \left(1-\delta \right) && \left\lvert \varepsilon_\tau \left(h^* \right) - \hat{\varepsilon}_\tau \left(h^* \right)\right\rvert \leq \bar{\gamma} \text{ by Hoeffding ineq.} \\
+                                    & \leq \frac{\left(1-2\tau \right)\varepsilon_0 \left(h^* \right) + \tau + 2 \bar{\gamma}-\tau}{1-2\tau} \hspace{1em} \text{w.p. } \left(1-\delta \right) && \varepsilon_\tau\left(h^* \right) = \left(1-2\tau \right) \varepsilon_0 \left(h^* \right) + \tau \text{ (from part a)} \\
+                                    & \leq \varepsilon_0 \left(h^* \right) + \frac{2 \bar{\gamma}}{1-2\tau} \hspace{1em} \text{w.p. } \left(1-\delta \right) \\
+\varepsilon_0 \left(\hat{h} \right) & \leq \varepsilon_0 \left(h^* \right) + 2 \gamma \hspace{1em} \text{w.p. }\left(1-\delta \right) && \text{letting } \bar{\gamma} = \gamma\left(1-2\tau \right), \text{ where } \delta = 2\lvert H\rvert \exp \left(-2 \bar{\gamma}^2 m \right)
+\end{align}
+$$
+
+$$
+\begin{align}
+\delta & = 2\lvert H\rvert \exp \left(-2 \bar{\gamma}^2 m \right) \\
+\delta & = 2\lvert H\rvert \exp \left(-2 \left(\gamma \left(1-2\tau \right) \right)^2 m \right) && \bar{\gamma} = \gamma\left(1-2\tau \right) \\
+\frac{\delta}{2\lvert H\rvert} & = \exp \left(-2 \left(\gamma \left(1-2\tau \right) \right)^2 m \right) \\
+\log\frac{\delta}{2\lvert H\rvert} & = -2 \left(\gamma \left(1-2\tau \right) \right)^2 m \\
+m & \geq \frac{1}{2  \left(1-2\tau \right)^2\gamma^2} \log \frac{2\lvert H\rvert}{\delta}
+\end{align}
+$$
+
+___
+
+
 **Remark.** This result suggests that, roughly, $m$ examples that have been corrupted at noise level $\tau$ are worth about as much as $(1-2\tau)^2m$ uncorrupted training examples. This is a useful rule-of-thumb to know if you ever need to decide whether/how much to pay for a more reliable source of training data. (If you've taken a class in information theory, you may also have heard that $\left(1-\mathcal{H}(\tau) \right) m$ is a good estimate of the information in the $m$ corrupted examples, where $\mathcal{H}(\tau) = -\left( \tau \log_2 \tau + \left(1-\tau \right) \log_2 \left(1-\tau \right) \right)$ is the "binary entropy" function. And indeed, the functions $(1-2\tau)^2$ and $1-\mathcal{H}(\tau)$ are quite close to each other.) 
 
 **(c)** Comment **briefly** on what happens as $\tau$ approaches $0.5$.
+
+___
+
+As $\tau \rightarrow 0.5$, the number of samples $m$ needed for the guarantee in part b goes to infinity. This makes sense since at $\tau=0.5$, the labels of the training data are assigned randomly.
+
+___
 
 ### **6. Boosting and high energy physics**
 

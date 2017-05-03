@@ -397,7 +397,7 @@ J(\alpha) = \frac{1}{m} \sum_{i=1}^m \left[1-y^{(i)} K^{(i)T} \alpha \right]_{+}
 \end{align}
 \]</span></p>
 <hr />
-<p><strong>(b)</strong> Let <span class="math inline">\(\lvert H \rvert\)</span> be finite, and suppose our training set <span class="math inline">\(S = \left\{\left(x^{(i)}, y^{(i)} \right); 1, \dots, m \right\}\)</span> is obtained by drawing <span class="math inline">\(m\)</span> examples IID from the corrupted distribution <span class="math inline">\(\mathcal{D}_\tau\)</span>. Suppose we pick <span class="math inline">\(h \in H\)</span> using empirical risk minimization: <span class="math inline">\(\hat{h} = \arg \min_{h \in H} \hat{\varepsilon}_S(h)\)</span>. Also, let <span class="math inline">\(h^* = \arg \min_{h \in H} \varepsilon_0(h)\)</span>.</p>
+<p><strong>(b)</strong> Let <span class="math inline">\(\lvert H \rvert\)</span> be finite, and suppose our training set <span class="math inline">\(S = \left\{\left(x^{(i)}, y^{(i)} \right); i= 1, \dots, m \right\}\)</span> is obtained by drawing <span class="math inline">\(m\)</span> examples IID from the corrupted distribution <span class="math inline">\(\mathcal{D}_\tau\)</span>. Suppose we pick <span class="math inline">\(h \in H\)</span> using empirical risk minimization: <span class="math inline">\(\hat{h} = \arg \min_{h \in H} \hat{\varepsilon}_S(h)\)</span>. Also, let <span class="math inline">\(h^* = \arg \min_{h \in H} \varepsilon_0(h)\)</span>.</p>
 <p>Let any <span class="math inline">\(\delta, \gamma &gt; 0\)</span> be given. Prove that for</p>
 <p><span class="math display">\[
 \varepsilon_0 \left(\hat{h} \right) \leq \varepsilon_0(h^*) + 2 \gamma
@@ -406,8 +406,33 @@ J(\alpha) = \frac{1}{m} \sum_{i=1}^m \left[1-y^{(i)} K^{(i)T} \alpha \right]_{+}
 <p><span class="math display">\[
 m \geq \frac{1}{2(1-2\tau)^2 \gamma^2} \log \frac{2 \lvert H \rvert}{ \delta}.
 \]</span></p>
+<hr />
+<p><span class="math display">\[
+\begin{align}
+\varepsilon_0 \left(\hat{h} \right) &amp; = \frac{\varepsilon_\tau \left(\hat{h} \right) - \tau}{1-2\tau} \\
+                                    &amp; \leq \frac{\hat{\varepsilon}_\tau \left(\hat{h} \right) + \bar{\gamma}- \tau}{1-2\tau} \hspace{1em}\text{ w.p. } \left(1-\delta \right) &amp;&amp; \left\lvert \varepsilon_\tau \left(\hat{h} \right) - \hat{\varepsilon}_\tau\left(\hat{h} \right)\right\rvert \leq \bar{\gamma}   \text{ by Hoeffding ineq.}\\
+                                    &amp; \leq \frac{\hat{\varepsilon}_\tau \left(h^* \right) + \bar{\gamma}- \tau}{1-2\tau} \hspace{1em} \text{ w.p. } \left(1-\delta \right) &amp;&amp; \hat{\varepsilon}_\tau \left(\hat{h} \right) \leq \hat{\varepsilon}_\tau \left(h^* \right), \text{ i.e. train err. } &lt; \text{ generalization err.} \\
+                                    &amp; \leq \frac{\varepsilon_\tau \left(h^* \right) + 2 \bar{\gamma}- \tau}{1-2\tau} \hspace{1em} \text{ w.p. } \left(1-\delta \right) &amp;&amp; \left\lvert \varepsilon_\tau \left(h^* \right) - \hat{\varepsilon}_\tau \left(h^* \right)\right\rvert \leq \bar{\gamma} \text{ by Hoeffding ineq.} \\
+                                    &amp; \leq \frac{\left(1-2\tau \right)\varepsilon_0 \left(h^* \right) + \tau + 2 \bar{\gamma}-\tau}{1-2\tau} \hspace{1em} \text{w.p. } \left(1-\delta \right) &amp;&amp; \varepsilon_\tau\left(h^* \right) = \left(1-2\tau \right) \varepsilon_0 \left(h^* \right) + \tau \text{ (from part a)} \\
+                                    &amp; \leq \varepsilon_0 \left(h^* \right) + \frac{2 \bar{\gamma}}{1-2\tau} \hspace{1em} \text{w.p. } \left(1-\delta \right) \\
+\varepsilon_0 \left(\hat{h} \right) &amp; \leq \varepsilon_0 \left(h^* \right) + 2 \gamma \hspace{1em} \text{w.p. }\left(1-\delta \right) &amp;&amp; \text{letting } \bar{\gamma} = \gamma\left(1-2\tau \right), \text{ where } \delta = 2\lvert H\rvert \exp \left(-2 \bar{\gamma}^2 m \right)
+\end{align}
+\]</span></p>
+<p><span class="math display">\[
+\begin{align}
+\delta &amp; = 2\lvert H\rvert \exp \left(-2 \bar{\gamma}^2 m \right) \\
+\delta &amp; = 2\lvert H\rvert \exp \left(-2 \left(\gamma \left(1-2\tau \right) \right)^2 m \right) &amp;&amp; \bar{\gamma} = \gamma\left(1-2\tau \right) \\
+\frac{\delta}{2\lvert H\rvert} &amp; = \exp \left(-2 \left(\gamma \left(1-2\tau \right) \right)^2 m \right) \\
+\log\frac{\delta}{2\lvert H\rvert} &amp; = -2 \left(\gamma \left(1-2\tau \right) \right)^2 m \\
+m &amp; \geq \frac{1}{2  \left(1-2\tau \right)^2\gamma^2} \log \frac{2\lvert H\rvert}{\delta}
+\end{align}
+\]</span></p>
+<hr />
 <p><strong>Remark.</strong> This result suggests that, roughly, <span class="math inline">\(m\)</span> examples that have been corrupted at noise level <span class="math inline">\(\tau\)</span> are worth about as much as <span class="math inline">\((1-2\tau)^2m\)</span> uncorrupted training examples. This is a useful rule-of-thumb to know if you ever need to decide whether/how much to pay for a more reliable source of training data. (If you’ve taken a class in information theory, you may also have heard that <span class="math inline">\(\left(1-\mathcal{H}(\tau) \right) m\)</span> is a good estimate of the information in the <span class="math inline">\(m\)</span> corrupted examples, where <span class="math inline">\(\mathcal{H}(\tau) = -\left( \tau \log_2 \tau + \left(1-\tau \right) \log_2 \left(1-\tau \right) \right)\)</span> is the “binary entropy” function. And indeed, the functions <span class="math inline">\((1-2\tau)^2\)</span> and <span class="math inline">\(1-\mathcal{H}(\tau)\)</span> are quite close to each other.)</p>
 <p><strong>(c)</strong> Comment <strong>briefly</strong> on what happens as <span class="math inline">\(\tau\)</span> approaches <span class="math inline">\(0.5\)</span>.</p>
+<hr />
+<p>As <span class="math inline">\(\tau \rightarrow 0.5\)</span>, the number of samples <span class="math inline">\(m\)</span> needed for the guarantee in part b goes to infinity. This makes sense since at <span class="math inline">\(tau=0.5\)</span>, the labels of the training data are essentially assigned randomly.</p>
+<hr />
 </div>
 <div id="boosting-and-high-energy-physics" class="section level3">
 <h3><strong>6. Boosting and high energy physics</strong></h3>
