@@ -1,9 +1,21 @@
 ---
+title: "CS229 convex optimization notes"
+author: James Chuang
+date: January 30, 2017
+mainfont: FreeSans
+linkcolor: "purple"
 output:
-  html_document:
-    toc: TRUE
-    fig_width: 4.5
-    css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
+    pdf_document:
+        latex_engine: xelatex
+        toc: true
+        toc_depth: 4
+        number_sections: false
+        fig_width: 4.5
+        df_print: tibble
+  # html_document:
+  #   toc: TRUE
+  #   fig_width: 4.5
+  #   css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
 ---
 
 My notes on [CS229 Convex Optimization Overview notes](http://cs229.stanford.edu/materials.html) by Zico Kolter and Honglak Lee.
@@ -14,17 +26,17 @@ My notes on [CS229 Convex Optimization Overview notes](http://cs229.stanford.edu
   - least-squares, logistic regression, and support vector machines can all be framed as optimization problems
   - in general, finding the global optimum of a function is very difficult
       - for a ***convex optimization problems***, we can efficiently find the global solution in many cases
-      
+
 ## **2. Convex Sets**
 
 ***Convex sets***:
 
   - A set $C$ is convex if, for any $x, y \in C$ and $\theta \in \mathbb{R}$ with $0 \leq \theta \leq 1$,
-  
+
   $$
   \theta x + (1-\theta)y \in C
   $$
-  
+
   - This means that for any two elements in $C$, every point on the line segment between those points also belongs to $C$.
   - The point $\theta x + (1-\theta) y$ is called a ***convex combination*** of the points $x$ and $y$.
   - Examples of convex sets:
@@ -35,7 +47,7 @@ My notes on [CS229 Convex Optimization Overview notes](http://cs229.stanford.edu
       - affine subspaces and polyhedra
       - intersections of convex sets
       - positive semidefinite matrices
-      
+
 ## **3. Convex Functions**
 
 A function $f: \mathbb{R}^n \rightarrow \mathbb{R}$ is ***convex*** if its domain (denoted $\mathcal{D}(f)$) is a convex set, and if, for all $x, y \in \mathcal{D}(f)$ and $\theta \in \mathbb{R}, 0 \geq \theta \geq 1$,
@@ -61,7 +73,7 @@ $$
       - strictly convex if this holds w/ strict inequality
       - concave if the inequality is reversed
           - strictly concave if this reverse inequality is strict
-          
+
 ### **3.2 Second Order Condition for Convexity**
 
 Suppose a function $f: \mathbb{R}^n \to \mathbb{R}$ is twice differentiable (i.e., the Hessian $\nabla_x^2f(s)$ is defined for all points $x$ in the domain of $f$). Then $f$ is convex iff $\mathcal{D}(f)$ is a convex set and its Hessian is positive semidefinite: i.e., for any $x \in \mathcal{D}(f)$,
@@ -75,7 +87,7 @@ $$
       - positive definite, $f$ is strictly convex
       - negative semidefinite, $f$ is concave
       - negative definite, $f$ is negative definite
-      
+
 ### **3.3 Jensen's Inequality**
 
 Suppose we start with the inequality in the basic definition of a convex function
@@ -118,31 +130,31 @@ I.e., the $\alpha$-sublevel set is the set of points $x$ s.t. $f(x) \leq \alpha$
 A ***convex optimization problem*** is of the form
 
 $$
-\begin{align}
+\begin{aligned}
 \text{minimize} \quad & f(x) \\
 \text{subject to} \quad & x \in C
-\end{align}
+\end{aligned}
 $$
 
   - $f$: a convex function
   - $C$: a convex set
   - $x$: the optimization variable
-  
+
 The same problem written more explicitly:
 
 $$
-\begin{align}
+\begin{aligned}
 \text{minimize} \quad   & f(x) \\
 \text{subject to} \quad & g_i(x) \leq 0, \quad i = 1, \dots, m \\
                         & h_i(x) = 0, \quad i = 1, \dots, p
-\end{align}
+\end{aligned}
 $$
 
   - $f$: a convex function
   - $g_i(x)$ are convex functions
   - $h_i(x)$ are affine functions
   - $x$: the optimization variable
-  
+
 The ***optimal value*** of an optimization problem is denoted $p^{*}$ (sometimes $f^*$) and is equal to the minimum possible value of the objective function in the feasible region
 
 $$
@@ -157,12 +169,12 @@ Intiuitive definitions:
 
   - ***locally optimal*** - no "nearby" feasible points that have a lower objective value
   - ***globally optimal*** - no feasible points at all that have a lower objective value
-  
+
 Formal definitions:
 
   - a point $x$ is ***locally optimal*** if it is feasible (i.e., satisfies the constrains of the optimization problem) and if there exists some $R > 0$ s.t. all feasible points $z$ with $\lVert x-z\rVert_2 \leq R$, satisfy $f(x) \leq f(z)$.
   - a point $x$ is ***globally optimal*** if it is feasible and for all feasible points $z$, $f(x) \leq f(z)$.
-  
+
 The key idea is that **for a convex optimization problem, all locally optimal points are globally optimal**.
 
 Proof by contradiction:
@@ -171,27 +183,27 @@ Proof by contradiction:
       - I.e., there exists a feasible point $y$ s.t. $f(x) > f(y)$.
       - By definition of local optimality, there exist no feasible points $z$ s.t. $\lVert x-z \rVert_2 \leq R$ and $f(z) < f(x)$.
   - Then, suppose we choose the point
-  
+
   $$
   z = \theta y + \left(1-\theta \right)x \quad \text{with} \quad \theta = \frac{R}{2 \lVert x-y \rVert_2}.
   $$
-  
+
   - then,
-      
+
   $$
-  \begin{align}
+  \begin{aligned}
   \lVert x-z \rVert_2 & = \left\lVert x - \left(\frac{R}{2 \lVert x-y \rVert_2} y+ \left(1-\frac{R}{2\lVert x-y \rVert_2} \right) x \right) \right\rVert_2 \\
                       & = \left\lVert \frac{R}{2 \lVert x-y \rVert_2} \left(x-y \right)\right\rVert_2 \\
                       & = \frac{R}{2} \leq R
-  \end{align}
+  \end{aligned}
   $$
-  
+
   - By convexity of $f$, we have:
-  
+
   $$
   f(z) = f(\theta y + (1-\theta)x) \leq \theta f(y) + (1-\theta)f(x) < f(x)
   $$
-  
+
   - the feasible set is a convex set
       - $x$ and $y$ are both feasible
       - therefore, $z = \theta y + (1-\theta)x$ is also feasible
@@ -199,37 +211,37 @@ Proof by contradiction:
       - $\lVert x-z \rVert_2 < R$ (i.e. $z$ is within the radius $R$ neighborhood of $x$)
       - $f(z) < f(x)$
   - therefore, the point $x$ which is not globally optimal, cannot be locally optimal
-  
+
 ## **4.2 Special Cases of Convex Problems**
 
 Some special cases of the general convex optimization problem have efficient algorithms to solve very large problems
 
   - **Linear Programming**. A convex optimization problem is a **linear program** (LP) if both the objective function $f$ and inequality constraints $g_i$ are affine functions. In other words, these problems have the form
-  
+
   $$
-  \begin{align}
+  \begin{aligned}
   \text{minimize} \quad   & c^Tx + d \\
   \text{subject to} \quad & Gx \preceq h \\
                           & Ax = b
-  \end{align}
+  \end{aligned}
   $$
 
   - $x \in \mathbb{R}^n$: the optimization variable
   - $c \in \mathbb{R}^n, d \in \mathbb{R}, G \in \mathbb{R}^{m \times n}, h \in \mathbb{R}^m, A \in \mathbb{R}^{p \times n}, b \in \mathbb{R}^p$
   - '$\preceq$' denotes elementwise inequality
-  
+
   - **Quadratic Programming**. A convex optimization problem is a **quadratic program** (QP) if the inequality constraints $g_i$ are still all affine, but if the objective function $f$ is a convex quadratic function. In other words, these problems ahve the form
-  
+
   $$
-  \begin{align}
+  \begin{aligned}
   \text{minimize} \quad   & \frac{1}{2}x^T P x + c^T x + d \\
   \text{subject to} \quad & G(x) \preceq h \\
                           & Ax = b
-  \end{align}
+  \end{aligned}
   $$
-  
+
   - $x \in \mathbb{R}^n$: the optimization variable
   - $c \in \mathbb{R}^n, d \in \mathbb{R}, G \in \mathbb{R}^{m \times n}, h \in \mathbb{R}^m, A \in \mathbb{R}^{p \times n}, b \in \mathbb{R}^p$
   - $P \in \mathbb{S}_+^n$, a symmetric positive semidefinite matrix
-  
+
   - **Quadratically Constrained Quadratic Programming**. A convex optimization problem is a **quadratically constrained quadratic program** (QCQP) if both the objective $f$ and the inequality constraints $g_i$ are convex quadratic functions

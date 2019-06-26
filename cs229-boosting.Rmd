@@ -1,64 +1,88 @@
 ---
+title: "CS229 boosting notes"
+author: James Chuang
+date: May 2, 2017
+mainfont: FreeSans
+linkcolor: "purple"
+header-includes:
+    \usepackage{enumitem}
+    \setlistdepth{9}
+    \setlist[itemize,1]{label=$\bullet$}
+    \setlist[itemize,2]{label=$\bullet$}
+    \setlist[itemize,3]{label=$\bullet$}
+    \setlist[itemize,4]{label=$\bullet$}
+    \setlist[itemize,5]{label=$\bullet$}
+    \setlist[itemize,6]{label=$\bullet$}
+    \setlist[itemize,7]{label=$\bullet$}
+    \setlist[itemize,8]{label=$\bullet$}
+    \setlist[itemize,9]{label=$\bullet$}
+    \renewlist{itemize}{itemize}{9}
 output:
-  html_document:
-    toc: TRUE
-    fig_width: 4.5
-    css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
+    pdf_document:
+        latex_engine: xelatex
+        toc: true
+        number_sections: false
+        fig_width: 4.5
+        df_print: tibble
+  # html_document:
+  #   toc: TRUE
+  #   fig_width: 4.5
+  #   css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
 ---
 
 My notes on John Duchi's [CS229 supplemental notes on boosting](http://cs229.stanford.edu/materials.html).
 
 ## **1. Boosting**
 
-  - so far, have seen how to solve classification (and other) problems when we have a data representation already chosen
-  - in **boosting**, feature representations are automatically chosen
-      - the rough idea:
-          - take a *weak learning* algorithm (a classifier that is slightly better than random)
-          - transform it into a *strong* classifier, which does much better than random
-      - intuition:
-          - consider a digit recognition problem distinguishing 0 from 1 from images
-              - a weak learner might take the middle pixel of the image:
-                  - if it is colored, call the image a 1
-                  - if it is blank, call the image a 0
-              - boosting procedures take a collection of weak classifiers, and reweight their contributions to form a classifier with much better accuracy than any individual classifier
-      - problem formulation:
-          - one interpretation of boosting is as **a coordinate descent method in an infinite dimensional space**
-          - assume:
-              - raw input samples $x \in \mathbb{R}^n$ with labels $y \in \{-1, 1\}$
-              - an infinite collection of *feature* functions $\phi_j : \mathbb{R}^n \rightarrow \{-1,1 \}$
-              - an infinite vector $\theta = \begin{bmatrix}\theta_1 & \theta_2 & \cdots \end{bmatrix}^T$ with a finite number of non-zero entries
-          - hypothesis:
-          
-          $$
-          h_\theta(x) = \text{sign} \left(\sum_{j=1}^\infty \theta_j \phi_j(x) \right)
-          $$
-          
-          - define:
-          
-          $$
-          \theta^T \phi(x) = \sum_{i=1}^\infty \theta_j \phi_j(x)
-          $$
-          
-          - in boosting, the features $\phi_j$ are called **weak hypotheses**
-          - given a training set $\left(x^{(1)}, y^{(1)} \right), \dots, \left(x^{(m)}, y^{(m)} \right)$:
-              - we call a vector $p = \left(p^{(1)}, \dots, p^{(m)} \right)$ a distribution on the examples if $p^{(i)} \geq 0 \hspace{.3em} \forall \hspace{.3em} i$ and
-              
-              $$
-              \sum_{i=1}^m p^{(i)} = 1
-              $$
-              
-              - we say that there is a *weak learner with margin* $\gamma > 0$ if for any distribution $p$ on the $m$ training examples there exists one weak hypothesis $\phi_j$ such that
-              
-              $$
-              \sum_{i=1}^m p^{(i)} \mathbf{1} \left\{y^{(i)} \neq \phi_j \left(x^{(i)} \right) \right\} \leq \frac{1}{2} - \gamma
-              $$
-              
-              - i.e., we assume that there is *some* classifier that does slightly better than random guessing on the dataset
-                  - the existence of a weak learning algorithm is an assumption
-                      - however, we can transform any weak learning algorithm into one with perfect accuracy
-              - in more generality, we assume we have access to a **weak learner**- an algorithm that takes as input a distribution (weights) $p$ on the training examples and returns a classifier doing slightly better than random
-                  - given access to a weak learning algorithm, boosting can return a classifier with perfect accuracy on the training data (we ignore generalization for now)
-                  
+- so far, have seen how to solve classification (and other) problems when we have a data representation already chosen
+- in **boosting**, feature representations are automatically chosen
+    - the rough idea:
+        - take a *weak learning* algorithm (a classifier that is slightly better than random)
+        - transform it into a *strong* classifier, which does much better than random
+    - intuition:
+        - consider a digit recognition problem distinguishing 0 from 1 from images
+            - a weak learner might take the middle pixel of the image:
+                - if it is colored, call the image a 1
+            - if it is blank, call the image a 0
+        - boosting procedures take a collection of weak classifiers, and reweight their contributions to form a classifier with much better accuracy than any individual classifier
+- problem formulation:
+    - one interpretation of boosting is as **a coordinate descent method in an infinite dimensional space**
+    - assume:
+        - raw input samples $x \in \mathbb{R}^n$ with labels $y \in \{-1, 1\}$
+        - an infinite collection of *feature* functions $\phi_j : \mathbb{R}^n \rightarrow \{-1,1 \}$
+        - an infinite vector $\theta = \begin{bmatrix}\theta_1 & \theta_2 & \cdots \end{bmatrix}^T$ with a finite number of non-zero entries
+    - hypothesis:
+
+    $$
+    h_\theta(x) = \text{sign} \left(\sum_{j=1}^\infty \theta_j \phi_j(x) \right)
+    $$
+
+- define:
+
+$$
+\theta^T \phi(x) = \sum_{i=1}^\infty \theta_j \phi_j(x)
+$$
+
+- in boosting, the features $\phi_j$ are called **weak hypotheses**
+- given a training set $\left(x^{(1)}, y^{(1)} \right), \dots, \left(x^{(m)}, y^{(m)} \right)$:
+    - we call a vector $p = \left(p^{(1)}, \dots, p^{(m)} \right)$ a distribution on the examples if $p^{(i)} \geq 0 \hspace{.3em} \forall \hspace{.3em} i$ and
+
+    $$
+    \sum_{i=1}^m p^{(i)} = 1
+    $$
+
+    - we say that there is a *weak learner with margin* $\gamma > 0$ if for any distribution $p$ on the $m$ training examples there exists one weak hypothesis $\phi_j$ such that
+
+    $$
+    \sum_{i=1}^m p^{(i)} \mathbf{1} \left\{y^{(i)} \neq \phi_j \left(x^{(i)} \right) \right\} \leq \frac{1}{2} - \gamma
+    $$
+
+    - i.e., we assume that there is *some* classifier that does slightly better than random guessing on the dataset
+        - the existence of a weak learning algorithm is an assumption
+            - however, we can transform any weak learning algorithm into one with perfect accuracy
+    - in more generality, we assume we have access to a **weak learner**- an algorithm that takes as input a distribution (weights) $p$ on the training examples and returns a classifier doing slightly better than random
+        - given access to a weak learning algorithm, boosting can return a classifier with perfect accuracy on the training data (we ignore generalization for now)
+
 ### **1.1 the boosting algorithm**
 
   - roughly, boosting begins by assigning each training example in the dataset equal weight
@@ -68,77 +92,62 @@ My notes on John Duchi's [CS229 supplemental notes on boosting](http://cs229.sta
   - repeated reweighting of the training data coupled with a weak learner doing well on examples for which the classifier currently does poorly yields classifiers with good performance
   - specifically, the boosting algorithm performs **coordinate descent** on the exponential loss for classification problems
       - the objective:
-      
+
       $$
       J(\theta) = \frac{1}{m} \sum_{i=1}^m \exp \left(-y^{(i)} \theta^T \phi \left(x^{(i)} \right) \right)
       $$
-      
+
       - coordinate descent algorithm:
           1. choose a coordinate $j \in \mathbb{N}$
           2. update $\theta_j$: $\theta_j \gets \arg \min_{\theta_j} J(\theta)$
               - leave $\theta_k$ unchanged for all $k \neq j$
           - iterate until convergence
       - derivation of the coordinate update for coordinate $k$:
-          
+
           $$
-          \begin{align}
+          \begin{aligned}
           J(\theta) & = \frac{1}{m} \sum_{i=1}^m \exp \left(-y^{(i)} \theta^T \phi \left(x^{(i)} \right) \right) && \text{the objective function} \\
           J(\theta) & = \frac{1}{m} \sum_{i=1}^m \exp \left(-y^{(i)} \sum_{j \neq k} \theta_j \phi \left( x^{(i)} \right)\right) \exp \left(-y^{(i)} \theta_k \phi \left(x^{(i)} \right)\right) && \text{property of exp} \\
           J(\theta) & = \frac{1}{m} \sum_{i=1}^m w^{(i)} \exp \left(-y^{(i)} \theta_k \phi \left(x^{(i)} \right)\right) && \text{define } w^{(i)} = \exp \left(-y^{(i)} \sum_{j \neq k} \theta_j \phi \left( x^{(i)} \right)\right) \\
           & \text{to optimize coordinate }k:
-          \end{align}
+          \end{aligned}
           $$
-          
+
           $$
-          \begin{align}
+          \begin{aligned}
           \alpha^* & = \arg \min_\alpha \sum_{i=1}^m w^{(i)} \exp \left(-y^{(i)} \phi_k \left(x^{(i)}\right) \alpha \right) && \text{,where } \alpha = \theta^k \\
           \alpha^* & = \arg \min_\alpha \sum
-          \end{align}
+          \end{aligned}
           $$
-      
-      
-      
-      
+
+
+
+
           - define the **weights**:
-          
+
           $$
           w^{(i)} = \exp \left(-y^{(i)} \sum_{j \neq k} \theta_j \phi_j \left(x^{(i)} \right)\right)
           $$
-          
+
           - optimizing coordinate $k$ corresponds to minimizing
-          
+
           $$
           \sum_{i=1}^m w^{(i)} \exp \left(-y^{(i)} \phi_k \left(x^{(i)} \right) \alpha \right)
           $$
-          
+
           - w.r.t. $\alpha = \theta_k$
           - define:
-          
+
           $$
           W^+ := \sum_{i: y^{(i)}\phi_k \left(x^{(i)} \right)=1} w^{(i)} \hspace{3em} W^- := \sum_{i: y^{(i)}\phi_k \left(x^{(i)} \right)=-1} w^{(i)}
           $$
-          
+
           - these are the sums of the weights of examples that $\phi_k$ classifies correctly and incorrectly, respectively
           - finding $\theta_k$ is the same as choosing
-          
+
           $$
-          \begin{align}
+          \begin{aligned}
           \alpha & = \arg \min_\alpha \left\{W^+ e^{-\alpha} + W^- e^\alpha \right\} \\
           \alpha & = \frac{1}{2} \log \frac{W^+}{W^-}
-          \end{align}
+          \end{aligned}
           $$
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      

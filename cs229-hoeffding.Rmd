@@ -1,9 +1,33 @@
 ---
+title: "CS229 hoeffding inequality notes"
+author: James Chuang
+date: April 28, 2017
+mainfont: FreeSans
+linkcolor: "purple"
+header-includes:
+    \usepackage{enumitem}
+    \setlistdepth{9}
+    \setlist[itemize,1]{label=$\bullet$}
+    \setlist[itemize,2]{label=$\bullet$}
+    \setlist[itemize,3]{label=$\bullet$}
+    \setlist[itemize,4]{label=$\bullet$}
+    \setlist[itemize,5]{label=$\bullet$}
+    \setlist[itemize,6]{label=$\bullet$}
+    \setlist[itemize,7]{label=$\bullet$}
+    \setlist[itemize,8]{label=$\bullet$}
+    \setlist[itemize,9]{label=$\bullet$}
+    \renewlist{itemize}{itemize}{9}
 output:
-  html_document:
-    toc: TRUE
-    fig_width: 4.5
-    css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
+    pdf_document:
+        latex_engine: xelatex
+        toc: true
+        number_sections: false
+        fig_width: 4.5
+        df_print: tibble
+  # html_document:
+  #   toc: TRUE
+  #   fig_width: 4.5
+  #   css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
 ---
 
 My notes on John Duchi's [CS229 supplemental notes on Hoeffding's inequality](http://cs229.stanford.edu/materials.html).
@@ -14,203 +38,203 @@ My notes on John Duchi's [CS229 supplemental notes on Hoeffding's inequality](ht
       - given a random variable $Z$ with expectation $\mathbb{E}[Z]$, how likely is $Z$ to be close to its expectation?
       - more precisely, how close is it likely to be?
       - therefore, we would like to compute bounds of the following form for $t \geq 0$
-      
+
       $$
       P(Z \geq \mathbb{E}[Z] + t) \text{  and  } P(Z \leq \mathbb{E}[Z]-t)
       $$
-      
+
   - **Markov's inequality**
       - Let $Z \geq 0$ be a non-negative random variable. Then for all $t \geq 0$,
-      
+
       $$
       P(Z \geq t) \leq \frac{\mathbb{E}[Z]}{t}
       $$
-      
+
       - i.e., Markov's inequality puts a bound on the probability that a random variable is greater than a non-negative value $t$
       - Proof:
           - note: $P(Z \geq t) = \mathbb{E} \left[\mathbf{1} \left\{Z \geq t \right\} \right]$
               - consider the two possible cases for $Z$:
                   - if $Z \geq t$, then $\mathbf{1}\{Z \geq t \} = 1$:
-                  
+
                   $$
-                  \begin{align}
+                  \begin{aligned}
                   Z & \geq t \\
                   \frac{Z}{t} & \geq 1 \\
                   \frac{Z}{t} & \geq \mathbf{1}\{Z \geq t \}
-                  \end{align}
+                  \end{aligned}
                   $$
-                  
+
                   - if $Z < t$, then $\mathbf{1}\{Z \geq t \} = 0$:
-                  
+
                   $$
-                  \begin{align}
+                  \begin{aligned}
                   \frac{Z}{t} & \geq 0 && \text{Z and t both } > 0 \\
                   \frac{Z}{t} & \geq \mathbf{1}\{Z \geq t\}
-                  \end{align}
+                  \end{aligned}
                   $$
-                  
+
                   - so in general, $\frac{Z}{t} \geq \mathbf{1}\{Z \geq t\}$
           - thus:
-          
+
           $$
-          \begin{align}
+          \begin{aligned}
           P(Z \geq t) & = \mathbb{E}\left[\mathbf{1} \left\{Z \geq t \right\} \right] \\
           P(Z \geq t) & \leq \mathbb{E} \left[\frac{Z}{t} \right] \\
-          P(Z \geq t) & \leq \frac{\mathbb{E}[Z]}{t} 
-          \end{align}
+          P(Z \geq t) & \leq \frac{\mathbb{E}[Z]}{t}
+          \end{aligned}
           $$
-          
+
       - **note:** this is the proof given in the notes, but [this proof](http://mathworld.wolfram.com/MarkovsInequality.html) from Wolfram Alpha makes more sense to me
   - essentially all other bounds on probabilities are variations on Markov's inequality
       - the first variation uses second moments -- the variance -- of a random variable rather than simply its mean, and is known as Chebyshev's inequality
   - **Chebyshev's inequality**
       - Let $Z$ be any random variable with $\text{Var}(Z) < \infty$. Then, for $t \geq 0$,
-      
+
       $$
-      \begin{align}
+      \begin{aligned}
       P \left(\left( Z - \mathbb{E}[Z]\right)^2 \geq t^2 \right) & \leq \frac{\text{Var}(Z)}{t^2} \\
       \text{or equivalently,} \\
       P \left(\left\lvert Z - \mathbb{E}[Z]\right\rvert \geq t \right) &\leq \frac{\text{Var} (Z)}{t^2}\\
-      \end{align}
+      \end{aligned}
       $$
-      
+
       - i.e., Chebyshev's inequality puts a bound on the probability that a random variable is greater than $t$ away from its expected value $\mathbb{E}[Z]$
       - Proof:
-          
+
           $$
-          \begin{align}
+          \begin{aligned}
           & \quad  P \left( \left(Z - \mathbb{E}[Z] \right)^2 \geq t^2 \right) \\
           & \leq \frac{\mathbb{E}[\left(Z - \mathbb{E}[Z]\right)^2]}{t^2} && \text{by Markov's inequality} \\
           & \leq \frac{\text{Var}(Z)}{t^2}
-          \end{align}
+          \end{aligned}
           $$
-          
+
       - a nice consequence of Chebyshev's inequality:
           - averages of random variables with finite variance converge to their mean (this is the [**weak law of large numbers**](https://en.wikipedia.org/wiki/Law_of_large_numbers#Proof_using_Chebyshev.27s_inequality))
           - an example:
               - suppose $Z_i$ are i.i.d. with finite variance and $\mathbb{E}[Z_i] = 0$
               - define $\bar{Z} = \frac{1}{n} \sum_{i=1}^n Z_i$
               - then:
-              
+
               $$
-              \begin{align}
+              \begin{aligned}
               & \quad \text{Var}\left(\bar{Z} \right) \\
               & = \text{Var} \left(\frac{1}{n} \sum_{i=1}^n Z_i \right) && \text{def. } \bar{Z} \\
               & = \frac{1}{n^2} \text{Var} \left(\sum_{i=1}^n Z_i \right) && \text{property of variance} \\
               & = \frac{n \text{Var}\left(Z_1 \right)}{n^2} && \text{Var}\left(Z_i \right) \text{ are all equal, since } Z_i \text{ are i.i.d.} \\
               & = \frac{\text{Var} \left(Z_1 \right)}{n}
-              \end{align}
+              \end{aligned}
               $$
-          
+
               - in particular, for any $t \geq 0$ (remember $\mathbb{E}[Z_i] = 0$):
-              
+
               $$
               P \left(\left\lvert \frac{1}{n} \sum_{i=1}^n Z_i \right\rvert \geq t \right) \leq \frac{\text{Var}\left(Z_1 \right)}{nt^2} \qquad \text{Chebyshev's inequality}
               $$
-              
+
               - so, $P \left(\left\lvert \bar{Z} \right\rvert \geq t \right) \rightarrow 0$ for any $t>0$
-              
+
 ## **moment generating functions**
 
   - often, we want sharper -- even exponential -- bounds on the probability that a random variable exceeds its expectation by much
       - to accomplish this, we need a stronger condition than finite variance
       - **moment generating functions** are natural candidates for this condition:
           - for a random variable $Z$, the moment generating function of $Z$ is the function:
-          
+
           $$
           M_Z (\lambda) := \mathbb{E} \left[\exp (\lambda Z) \right]
           $$
-          
+
           - the moment generating function may be infinite for some $\lambda$
-          
+
 ### **Chernoff bounds**
 
   - **Chernoff bounds** use moment generating functions to give exponential deviation bounds
       - Let $Z$ be any random variable
       - then, for any $t \geq 0$
-      
+
       $$
-      \begin{align}
+      \begin{aligned}
       P \left(Z \geq \mathbb{E}[Z] + t \right) & \leq \min_{\lambda \geq 0} \mathbb{E} \left[e^{\lambda \left(Z - \mathbb{E}[Z] \right)} \right] e^{-\lambda t} \\
        & \leq \min_{\lambda \geq 0} M_{Z - \mathbb{E}[Z]} \left(\lambda \right) e^{-\lambda t} \\
        \\
        \text{and} \\
        P \left(Z \leq \mathbb{E}[Z] - t \right) & \leq \min_{\lambda \geq 0} \mathbb{E} \left[e^{\lambda \left(\mathbb{E}[Z]-Z \right)} \right] e^{-\lambda t} \\
        & \leq \min_{\lambda \geq 0} M_{\mathbb{E}[Z]-Z} \left(\lambda \right) e^{-\lambda t}
-      \end{align}
+      \end{aligned}
       $$
-      
+
       - proof of the first inequality (the second inequality is identical):
           - for any $\lambda > 0$:
               - $Z \geq \mathbb{E}[Z]+t$ iff $e^{\lambda Z} \geq e^{\lambda \mathbb{E}[Z]+ \lambda t}$, i.e. $e^{\lambda \left(Z- \mathbb{E}[Z] \right)} \geq e^{\lambda t}$
               - thus,
-              
+
               $$
-              \begin{align}
+              \begin{aligned}
               P\left(Z - \mathbb{E}[Z] \geq t \right) & = P\left(e^{\lambda \left(Z - \mathbb{E}[Z] \right)} \geq e^{\lambda t}\right) \\
               & \leq \mathbb{E} \left[e^{\lambda \left(Z - \mathbb{E}[Z] \right)} \right] e^{- \lambda t} && \text{by Markov's inequality}
-              \end{align}
+              \end{aligned}
               $$
-              
+
               - since the choice of $\lambda > 0$ did not matter, we can take the best one by minimizing the right side of the bound w.r.t. $\lambda$
                   - note that the bound still holds at $\lambda = 0$
       - the important result: **Chernoff bounds "play nicely" with summations**
           - this is a consequence of the moment generating function
           - assume that $Z_i$ are independent, then:
-          
+
           $$
-          \begin{align}
+          \begin{aligned}
           & \quad M_{Z_1 + \dots + Z_n} (\lambda) \\
           & = \mathbb{E} \left[\exp \left( \lambda \sum_{i=1}^n Z_i\right) \right] && \text{def. MGF} \\
           & = \mathbb{E} \left[\prod_{i=1}^n  \exp \left(\lambda Z_i \right)\right] && \text{just exponent properties} \\
           & = \prod_{i=1}^n \mathbb{E} \left[\exp\left(\lambda Z_i\right) \right] && Z_i \text{ are independent} \\
           & = \prod_{i=1}^n M_{Z_i} (\lambda)
-          \end{align}
+          \end{aligned}
           $$
-          
+
           - this means that **when we calculate a Chernoff bound of a sum of i.i.d. variables, we only need to calculate the moment generating function for one of them**:
               - suppose $Z_i$ are i.i.d. and (for simplicity) mean zero. Then:
-              
+
               $$
-              \begin{align}
+              \begin{aligned}
               P \left( \sum_{i=1}^n Z_i \geq t \right) & \leq \mathbb{E} \left[e^{\lambda \left(\sum_{i=1}^n Z_i \right)} \right]e^{-\lambda t} && \text{Chernoff bound with } \mathbb{E}\left[Z_i \right] = 0\\
               & \leq M_{\sum_{i=1}^n Z_i} (\lambda) e^{-\lambda t} && \text{rewrite in terms of MGF} \\
               & \leq \prod_{i=1}^n M_{Z_i} (\lambda) e^{-\lambda t} && \text{the rule derived above}\\
               & \leq \prod_{i=1}^n \mathbb{E} \left[ \exp \left(\lambda Z_i \right)\right] e^{- \lambda t} && \text{def. MGF}\\
-              & \leq \left(\mathbb{E} \left[e^{\lambda Z_1} \right] \right)^n e^{-\lambda t} && Z_i \text{ are i.i.d.} 
-              \end{align}
+              & \leq \left(\mathbb{E} \left[e^{\lambda Z_1} \right] \right)^n e^{-\lambda t} && Z_i \text{ are i.i.d.}
+              \end{aligned}
               $$
 
 ### **moment generating function examples**
 
   - now we give several examples of moment generating functions, which enable us to give a few nice deviation inequalities as a result
   - for all of our examples, we will have very convenient bounds of the form
-  
+
   $$
   M_Z(\lambda) = \mathbb{E} \left[e^{\lambda Z}\right] \leq \left(\frac{C^2 \lambda^2}{2} \right) \quad \text{for all } \lambda \in \mathbb{R}
   $$
-  
+
   - ,for some $C \in \mathbb{R}$ (which depends on the distribution of $Z$)
       - this form is 'nice' for applying Chernoff bounds
   - begin with the classical normal distribution, $Z \sim \mathcal{N}\left(0, \sigma^2 \right)$. Then,
-  
+
   $$
   \mathbb{E} \left[ \exp \left(\lambda Z \right)\right] = \exp \left(\frac{\lambda^2 \sigma^2}{2} \right)
   $$
-  
+
   - **DERIVATION GOES HERE**
-  
+
   - a second example is the **Rademacher random variable**, aka the random sign variable:
       - let $S = 1$ with probability $\frac{1}{2}$ and $S = -1$ with probability $\frac{1}{2}$:
-      
+
       $$
       \mathbb{E} \left[e^{\lambda S} \right] \leq \left(\frac{\lambda^2}{2} \right)
       $$
-      
+
       - derivation:
-      
+
       $$
-      \begin{align}
+      \begin{aligned}
       \mathbb{E} \left[e^{\lambda S} \right]
       & = \mathbb{E} \left[\sum_{k=0}^\infty \frac{\left(\lambda S \right)^k}{k !} \right] && \text{Taylor expansion: } e^x = \sum_{k=0}^\infty \frac{x^k}{k!} \\
       & = \sum_{k=0}^\infty \frac{\lambda^k \mathbb{E} \left[S^k \right]}{k!} \\
@@ -219,14 +243,14 @@ My notes on John Duchi's [CS229 supplemental notes on Hoeffding's inequality](ht
       & \leq \sum_{k=0}^\infty \frac{\left(\lambda^2 \right)^k}{2^k \cdot k!} && (2k)! \geq 2k \cdot k! \text{ for all } k = 0, 1, 2, \dots \\
       & \leq \sum_{k=0}^\infty \left(\frac{\lambda^2}{2} \right)^k \frac{1}{k!} \\
       & \leq \exp \left(\frac{\lambda^2}{2} \right) && \text{Taylor expansion}
-      \end{align}
+      \end{aligned}
       $$
-      
+
       - we can apply this inequality in a Chernoff bound to see how large a sum of i.i.d. random signs is likely to be:
       - $Z = \sum_{i=1}^n S_i$, where $S_i \in \left\{\pm 1 \right\}$, so $\mathbb{E}[Z] = 0$
-      
+
       $$
-      \begin{align}
+      \begin{aligned}
       P \left(Z > t \right) & \leq \mathbb{E} \left[e^{\lambda Z} \right]e^{\lambda t} \\
       & \leq \mathbb{E} \left[e^{\lambda S_1} \right]^n e^{-\lambda t} \\
       & \leq \exp \left(\frac{n \lambda^2}{2} \right) e^{-\lambda t} \\
@@ -238,9 +262,9 @@ My notes on John Duchi's [CS229 supplemental notes on Hoeffding's inequality](ht
       \\
       P(Z \geq t) & \leq \exp \left(- \frac{t^2}{2n} \right) \\
       P\left(\sum_{i=1}^n  S_i \geq \sqrt{2n \log \frac{1}{\delta}} \right) & \leq \delta && \text{let } t = \sqrt{2n \log \frac{1}{\delta}}
-      \end{align}
+      \end{aligned}
       $$
-      
+
       - so, $Z = \sum_{i=1}^n S_i = O\left(\sqrt{n} \right)$ with extremely high probability- the sum of $n$ independent random signs is essentially never larger than $O(\sqrt{n})$
 
 ## **Hoeffding's lemma and Hoeffding's inequality**
@@ -248,9 +272,9 @@ My notes on John Duchi's [CS229 supplemental notes on Hoeffding's inequality](ht
   - **Hoeffding's inequality**: a powerful technique for bounding the probability that sums of bounded random variables are too large or too small
       - perhaps the most important inequality in learning theory
       - Let $Z_1, \dots, Z_n$ be independent bounded random variables with $Z_i \in \left[a, b \right]$ for all $i$, where $-\infty < a < b < \infty$. Then:
-      
+
       $$
-      \begin{align}
+      \begin{aligned}
       P \left(\frac{1}{n} \sum_{i=1}^n \left(Z_i - \mathbb{E}\left[Z_i \right] \right) \geq t \right) & \leq \exp \left(- \frac{2nt^2}{\left(b-a \right)^2} \right) \\
       \\
       \text{and}\\
@@ -258,84 +282,84 @@ My notes on John Duchi's [CS229 supplemental notes on Hoeffding's inequality](ht
       P \left(\frac{1}{n} \sum_{i=1}^n \left(Z_i - \mathbb{E}\left[Z_i \right] \right) \leq -t \right) & \leq \exp \left(- \frac{2nt^2}{\left(b-a \right)^2} \right) \\
       \\
       \text{for all } t \geq 0
-      \end{align}
+      \end{aligned}
       $$
-      
+
       - proof of Hoeffding's inequality using Chernoff bounds and Hoeffding's lemma:
           - **Hoeffding's lemma**:
               - Let $Z$ be a bounded random variable with $Z \in [a,b]$. Then,
-              
+
               $$
               \mathbb{E} \left[\exp \left(\lambda \left(Z - \mathbb{E}[Z] \right) \right) \right] \leq \left(\frac{\lambda^2 \left(b-a \right)^2}{8} \right) \quad \text{for all } \lambda \in \mathbb{R}
               $$
-              
+
               - A proof of a slightly weaker version of this lemma with a factor of $2$ instead of $8$ using the random sign moment generating bound and **Jensen's inequality**
                   - Jensen's inequality states: if $f: \mathbb{R} \rightarrow \mathbb{R}$ is a *convex* function, then:
-                  
+
                   $$
                   f \left(\mathbb{E} [Z] \right) \leq \mathbb{E} \left[f(Z) \right]
                   $$
-                  
+
                   - to remember this inequality:
                       - think of $f(t) = t^2$
                       - note that if $\mathbb{E}[Z] = 0$, then $f \left(\mathbb{E} [Z]\right) = 0$, while we generally have $\mathbb{E}[Z^2] > 0$
                   - we will use a technique in probability theory known as **symmetrization** (this is a common technique in probability theory, machine learning, and statistics):
                       - Let $Z^\prime$ be an independent copy of $Z$ with the same distribution, so that $Z^\prime \in [a,b]$ and $\mathbb{E}[Z^\prime] = \mathbb{E}[Z]$, but $Z$ and $Z^\prime$ are independent. Then:
-                      
+
                       $$
-                      \begin{align}
+                      \begin{aligned}
                       & \quad \mathbb{E}_Z \left[\exp \left(\lambda \left(Z - \mathbb{E}_Z [Z] \right) \right) \right] \\
                       & = \mathbb{E}_Z \left[\exp \left(\lambda \left(Z - \mathbb{E}_{Z^\prime}[Z^\prime] \right) \right) \right] && \mathbb{E}_Z \text{ and } \mathbb{E}_{Z^\prime} \text{ indicate expectations w.r.t. } Z \text{ and } Z^{\prime} \\
                       & \leq \mathbb{E}_Z \left[\mathbb{E}_{Z^\prime} \exp \left(\lambda \left(Z - Z^\prime \right) \right)\right] && \text{Jensen's inequality applied to } f(x) = e^{-x}
-                      \end{align}
+                      \end{aligned}
                       $$
-                      
-                      - so, we have: 
-                      
+
+                      - so, we have:
+
                       $$
-                      \begin{align}
+                      \begin{aligned}
                       \mathbb{E}[\exp \left(\lambda \left(Z - \mathbb{E}[Z] \right) \right)] \leq \mathbb{E} \left[\exp \left(\lambda \left(Z - Z^\prime \right) \right) \right]
-                      \end{align}
+                      \end{aligned}
                       $$
-                      
+
                       - now, we note the following: the difference $Z - Z^\prime$ is symmetric about zero, so that if $S \in \left\{-1,1 \right\}$ is a random sign variable, then $S (Z - Z^\prime)$ has exactly the same distribution as $Z - Z^\prime$
-                      
+
                       $$
-                      \begin{align}
+                      \begin{aligned}
                       \mathbb{E}_{Z, Z^\prime} \left[\exp \left(\lambda \left(Z - Z^\prime \right) \right) \right] & = \mathbb{E}_{Z, Z^\prime, S} \left[\exp \left(\lambda S \left(Z - Z^\prime \right) \right) \right] \\
                       & = \mathbb{E}_{Z, Z^\prime} \left[\mathbb{E}_S \left[\exp \left(\lambda S \left(Z - Z^\prime \right) \right) \right] \mid Z, Z^\prime \right] \\
-                      \end{align}
+                      \end{aligned}
                       $$
-                      
+
                       - now, use inequality (3) from the notes (i.e., $\mathbb{E} \left[e^{\lambda S} \right] \leq \exp \left(\frac{\lambda^2}{2} \right) \hspace{.4em} \forall \hspace{.4em} \in \mathbb{R}$):
-                      
+
                       $$
                       \mathbb{E}_S \left[\exp \left(\lambda S \left(Z - Z^\prime \right) \right) \mid Z, Z^\prime \right] \leq \exp \left(\frac{\lambda^2 \left(Z - Z^\prime \right)^2}{2} \right)
                       $$
-                      
+
                       - by assumption, we have $\left\lvert Z - Z^\prime \right\rvert \leq (b-a)$, so $(Z - Z^\prime) \leq (b-a)^2$, giving:
-                      
+
                       $$
                       \mathbb{E}_{Z, Z^\prime} \left[\exp \left(\lambda \left(Z - Z^\prime \right) \right) \right] \leq \exp \left(\frac{\lambda^2 \left(b-a \right)^2}{2} \right)
                       $$
-                      
+
                       - this is the result, with a factor of 2 instead of 8
                   - now, use Hoeffding's lemma with the Chernoff bound to prove Hoeffding's inequality:
-                  
+
                   $$
-                  \begin{align}
+                  \begin{aligned}
                   P \left(\frac{1}{n} \sum_{i=1}^n \left(Z_i - \mathbb{E}\left[Z_i \right] \right) \geq t \right) & = P \left(\sum_{i=1}^n \left(Z_i - \mathbb{E}\left[Z_i \right] \right) \geq nt \right) \\
                   & \leq \mathbb{E} \left[\exp \left(\lambda \sum_{i=1}^n \left(Z_i - \mathbb{E}\left[Z_i \right] \right) \right) \right] e^{-\lambda nt} && \text{Chernoff bound}\\
                   & \leq \left(\prod_{i=1}^n \mathbb{E} \left[e^{\lambda \left(Z_i - \mathbb{E}[Z_i] \right)} \right] \right) e^{- \lambda nt} \\
                   & \leq \left(\prod_{i=1}^n e^{\frac{\lambda^2 \left(b-a \right)^2}{8}} \right) e^{-\lambda nt} && \text{Hoeffding's lemma}
-                  \end{align}
+                  \end{aligned}
                   $$
-                  
+
                   - rewriting and minimizing over $\lambda \geq 0$:
-                  
+
                   $$
-                  \begin{align}
+                  \begin{aligned}
                   P \left(\frac{1}{n} \sum_{i=1}^n \left(Z_i - \mathbb{E} \left[Z_i \right] \right) \geq t \right) & \leq \min_{\lambda \geq 0} \exp \left(\frac{n \lambda^2 \left(b-a \right)^2}{8} - \lambda nt \right) \\
                   & \leq \exp \left(- \frac{2nt^2}{\left(b-a \right)^2} \right)
-                  \end{align}
+                  \end{aligned}
                   $$

@@ -1,9 +1,33 @@
 ---
+title: "CS229 binary classification and general loss function notes"
+author: James Chuang
+date: April 7, 2017
+mainfont: FreeSans
+linkcolor: "purple"
+header-includes:
+    \usepackage{enumitem}
+    \setlistdepth{9}
+    \setlist[itemize,1]{label=$\bullet$}
+    \setlist[itemize,2]{label=$\bullet$}
+    \setlist[itemize,3]{label=$\bullet$}
+    \setlist[itemize,4]{label=$\bullet$}
+    \setlist[itemize,5]{label=$\bullet$}
+    \setlist[itemize,6]{label=$\bullet$}
+    \setlist[itemize,7]{label=$\bullet$}
+    \setlist[itemize,8]{label=$\bullet$}
+    \setlist[itemize,9]{label=$\bullet$}
+    \renewlist{itemize}{itemize}{9}
 output:
-  html_document:
-    toc: TRUE
-    fig_width: 4.5
-    css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
+    pdf_document:
+        latex_engine: xelatex
+        toc: true
+        number_sections: false
+        fig_width: 4.5
+        df_print: tibble
+  # html_document:
+  #   toc: TRUE
+  #   fig_width: 4.5
+  #   css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
 ---
 
 My notes on John Duchi's [CS229 binary classification and general loss function supplemental notes](http://cs229.stanford.edu/materials.html).
@@ -18,22 +42,22 @@ My notes on John Duchi's [CS229 binary classification and general loss function 
     1. pick a representation for the hypothesis class
     2. pick a loss function to minimize
     - in binary classification, often use hypothesis of the form:
-    
+
     $$
     h_\theta(x) = \theta^T x
     $$
     - then, classify based on the sign of $\theta^T x$, i.e. $\text{sign}(\theta^Tx)$
         - an example $(x,y)$ is classified correctly if:
-        
+
         $$
         \text{sign}(h_\theta(x)) = y
         $$
         - or equivalently, if:
-        
+
         $$
         y \theta^T x > 0
         $$
-        
+
         - $y \theta^T x$ is called the **margin** for the example $(x,y)$
         - often (not always), $h_\theta(x) = x^T \theta$ is interpreted as a measure of the confidence with which the parameter vector $\theta$ assigns a label for the point $x$
             - $x^T \theta$ very negative (positive), then we more strongly believe that the label $y$ is negative (positive)
@@ -44,11 +68,11 @@ My notes on John Duchi's [CS229 binary classification and general loss function 
             - $z = y x^T \theta$ denote the margin
             - $\varphi : \mathbb{R} \rightarrow \mathbb{R}$ be the loss function
         - for a particular loss function, the empirical risk to minimize is then:
-        
+
         $$
         J(\theta) = \frac{1}{m} \sum_{i=1}^m \varphi \left(y^{(i)} \theta^T x^{(i)} \right)
         $$
-        
+
         - desired behavior:
             - want $y^{(i)} \theta^T x^{(i)}$ positive for each training example $i = 1, \dots, m$
             - should penalize $\theta$ for which $y^{(i)} \theta^T x^{(i)} < 0$ frequently in the training data
@@ -56,19 +80,19 @@ My notes on John Duchi's [CS229 binary classification and general loss function 
             - $\varphi(z)$ small if $z> 0$ (margin is positive)
             - $\varphi(z)$ large if $z< 0$ (margin is negative)
         - a natural choice is then **zero-one loss**:
-        
+
         $$
         \varphi_{\text{zo}}(z) =  \begin{cases}
                                   1 & \text{if } z \leq 0 \\
                                   0 & \text{if } z > 0
                                   \end{cases}
         $$
-        
+
         - with zero-one loss, the risk $J(\theta)$ is the average number of misclassifications that the parameter $\theta$ makes on the training data
         - negatives:
             - zero-one loss is discontinuous, non-convex, NP-hard to minimize
                 - therefore, prefer losses which satisfy:
-                
+
                 $$
                 \begin{cases}
                 \varphi(z) \rightarrow 0 & \text{as } z \rightarrow \infty \\
@@ -77,134 +101,134 @@ My notes on John Duchi's [CS229 binary classification and general loss function 
                 $$
         - three loss functions commonly used in ML:
             - **logistic loss**
-            
+
             $$
             \varphi_{\text{logistic}}(z) = \log \left(1+ e^{-z} \right)
             $$
-            
+
             - **hinge (SVM) loss**
-            
+
             $$
-            \begin{align}
+            \begin{aligned}
             \varphi_{\text{hinge}}(z) & = [1-z]_+ \\
                                       & = \max \left\{1-z , 0\right\}
-            \end{align}
+            \end{aligned}
             $$
-            
+
             - **exponential loss**
-            
+
             $$
             \varphi_{\text{exp}}(z) = e^{-z}
             $$
-            
+
         - minimizing different loss functions leads to different ML algorithms:
             - logistic loss $\rightarrow$ logistic regression
             - hinge loss $\rightarrow$ support vector machines
             - exponential loss $\rightarrow$ boosting
-            
+
 ## **logistic regression**
 
   - use binary labels $y \in \{-1, 1 \}$
   - use logistic loss:
-  
+
   $$
   \varphi_{\text{logistic}}(yx^T \theta) = \log \left(1 + \exp \left(-yx^T \theta \right) \right)
   $$
-  
+
   - logistic regression corresponds to choosing $\theta$ to minimize the empirical risk:
-  
+
   $$
-  \begin{align}
+  \begin{aligned}
   J(\theta) & = \frac{1}{m} \sum_{i=1}^m \varphi_{\text{logistic}} \left(y^{(i)} \theta^T x^{(i)} \right) \\
             & = \frac{1}{m} \sum_{i=1}^m \log \left(1 + \exp \left(-y^{(i)} \theta^T x^{(i)} \right) \right)
-  \end{align}
+  \end{aligned}
   $$
-  
+
   - **probabilistic interpretation:**
       - define **sigmoid**, aka **logistic** function:
-      
+
       $$
       g(z) = \frac{1}{1+e^{-z}}
       $$
-      
+
       - the sigmoid function satisfies
-      
+
       $$
       g(z) + g(-z) = \frac{1}{1+e^{-z}} + \frac{1}{1+e^{z}} = \frac{e^z}{1+e^z} + \frac{1}{1+e^z} = 1
       $$
-      
+
       - therefore, the sigmoid function can be used to define a probability model for binary classification
       - for $y \in \left\{-1, 1 \right\}$, define the **logistic model** for classification:
-      
+
       $$
       p \left(Y=y \mid x; \theta \right) = g \left(yx^T \theta \right) = \frac{1}{1 + e^{-yx^T \theta}}
       $$
-      
+
       - interpretation:
           - margin $yx^T \theta$ is very positive $\rightarrow p(Y=y \mid x; \theta) = g(yx^T \theta) \approx 1$
           - margin $yx^T \theta$ is very negative $\rightarrow p(Y=y \mid x; \theta) = g(yx^T \theta) \approx 0$
       - redefine the hypothesis class as:
-      
+
       $$
       h_\theta(x) = g(\theta^T x) = \frac{1}{1+ e^{-\theta^Tx}}
       $$
-      
+
       - get likelihood of the training data:
-      
+
       $$
-      \begin{align}
+      \begin{aligned}
       L(\theta) & = \prod_{i=1}^m p \left(Y = y^{(i)} \mid x^{(i)}; \theta \right) \\
                 & = \prod_{i=1}^m h_\theta \left(y^{(i)}x^{(i)} \right) \\
       l(\theta) & = \sum_{i=1}^m \log h_\theta \left(y^{(i)} x^{(i)} \right) &&\text{get log-likelihood} \\
                 & = - \sum_{i=1}^m \left(1 + e^{-y^{(i)}\theta^T x^{(i)}} \right) \\
                 & = -m J(\theta) && J(\theta) \text{ is the logistic regression risk (see above)} \\
-      \end{align}
+      \end{aligned}
       $$
-      
+
       - therefore, maximum likelihood in the logistic model is equivalent to minimizing the average logistic loss
   - **gradient descent methods**
       - to fit the logistic regression model, consider gradient-descent-based minimization
       - the derivative of the logistic loss:
-      
+
       $$
-      \begin{align}
+      \begin{aligned}
       & \quad \frac{d}{dz} \varphi_{\text{logistic}}(z) \\
       & = \varphi^\prime_{\text{logistic}}(z) \\
       & = \frac{1}{1+e^{-z}} \cdot \frac{d}{dz} e^{-z} \\
       & = - \frac{e^{-z}}{1+e^{-z}} \\
       & = - \frac{1}{1+e^z} \\
       & = -g(-z)
-      \end{align}
+      \end{aligned}
       $$
-      
+
       - for a single training example $(x,y)$ (applying chain rule), we have:
-      
+
       $$
-      \begin{align}
+      \begin{aligned}
       & \quad \frac{\partial}{\partial \theta_k} \phi_{\text{logistic}}(yx^T \theta) \\
       & = -g \left(-yx^T \theta \right) \frac{\partial}{\partial \theta_k} \left(yx^T \theta \right) \\
       & = -g \left(-yx^T \theta \right) yx_k
-      \end{align}
+      \end{aligned}
       $$
-      
+
       - thus, a stochastic gradient procedure for minimizing $J(\theta)$ iteratively performs the following for iterations $t = 1, 2, \dots$, where $\alpha_t$ is a step size at time $t$:
           1. Choose an example $i \in \left\{1, \dots, m \right\}$ uniformly at random
           2. Perform the gradient update
-          
+
           $$
-          \begin{align}
+          \begin{aligned}
           \theta^{(t+1)} & = \theta^{(t)} - \alpha_t \cdot \nabla_\theta \varphi_{\text{logistic}} \left(y^{(i)} x^{(i)T} \theta^{(t)} \right) \\
           & = \theta^{(t)} + \alpha_t g \left(-y^{(i)}x^{(i)T}\theta^{(t)} \right) y^{(i)} x^{(i)} \\
           & = \theta^{(t)} + \alpha_t h_{\theta^{(t)}} \left(-y^{(i)}x^{(i)} \right) y^{(i)} x^{(i)}
-          \end{align}
+          \end{aligned}
           $$
-          
+
           - intuition:
               - if our current hypothesis $h_{\theta^{(t)}}$ assigns probability close to 1 for the *incorrect* label $-y^{(i)}$:
                   - try to reduce the loss by moving $\theta$ in the direction of $y^{(i)}x^{(i)}$
               - conversely, if current hypothesis $h_{\theta^{(t)}}$ assigns probability close to 0 for the incorrect label $-y^{(i)}$:
                   - update essentially does nothing
-                  
+
 ## **general loss functions**
 
   - supervised learning:
@@ -219,7 +243,7 @@ My notes on John Duchi's [CS229 binary classification and general loss function 
               - make predictions based on $\theta^Tx$ for some vector $\theta$
               - construct a loss function $\mathcal{L}: \mathbb{R} \times \mathcal{Y} \rightarrow \mathbb{R}$
               - given a training set of pairs $\left\{x^{(i)}, y^{(i)} \right\}$, choose $\theta$ by minimizing the empirical risk
-              
+
               $$
               J(\theta) = \frac{1}{m} \sum_{i=1}^m \mathcal{L} \left(\theta^T x^{(i)}, y^{(i)} \right)
               $$
@@ -227,46 +251,46 @@ My notes on John Duchi's [CS229 binary classification and general loss function 
 ## **the representer theorem**
 
   - consider an empirical risk with $\ell_2$-regularization, i.e. the **regularized risk**
-  
+
   $$
   J_\lambda (\theta) = \frac{1}{m} \sum_{i=1}^m \mathcal{L} \left(\theta^T x^{(i)}, y^{(i)} \right) + \frac{\lambda}{2} \lVert \theta \rVert_2^2
   $$
-  
+
   - consider the structure of any $\theta$ that minimizes the risk
       - assume that for each fixed target $y \in \mathcal{Y}$, the loss $\mathcal{L}(z,y)$ is convex in $z$
           - this is true for linear regression, binary/multiclass logistic regression, and many other losses we will consider
           - under these assumptions, the solution (i.e. the $\theta$ that minimizes the risk) can always be written as a *linear combination* of the input variables $x^{(i)}$
           - this is the **representer theorem**:
               - Suppose in the definition of the regularized risk that $\lambda \geq 0$. Then there is a minimizer of the regularized risk that can be written
-              
+
               $$
               \theta = \sum_{i=1}^m \alpha_i x^{(i)}
               $$
-              
+
               - where $\alpha_i$ are real-valued weights
               - an informal proof
                   - assume that $\mathcal{L}(z,y)$ is differentiable w.r.t. $z$, and $\lambda > 0$
-                  
+
                   $$
-                  \begin{align}
+                  \begin{aligned}
                   J_\lambda (\theta) & = \frac{1}{m} \sum_{i=1}^m \mathcal{L} \left(\theta^T x^{(i)}, y^{(i)} \right) + \frac{\lambda}{2} \lVert \theta \rVert_2^2 && \text{the regularized risk} \\
                   \nabla J_\lambda(\theta) & = \frac{1}{m} \sum_{i=1}^m\nabla_\theta \mathcal{L} \left(\theta^T x^{(i)}, y^{(i)} \right) + \lambda \nabla_\theta \frac{1}{2} \lVert \theta \rVert_2^2 \\
                   \nabla J_\lambda(\theta) & = \frac{1}{m} \sum_{i=1}^m \mathcal{L}^\prime \left(\theta^T x^{(i)}, y^{(i)} \right) x^{(i)} + \lambda \theta = \vec{0} && \nabla J_\lambda(\theta) = 0 \text{ at the minimum} \\
                   \vec{0} & = \frac{1}{m} \sum_{i=1}^m w_i x^{(i)} + \lambda \theta  && \text{let } w_i = \mathcal{L}^\prime \left(\theta^T x^{(i)}, y^{(i)} \right) \\
                   \theta & = -\frac{1}{\lambda m} \sum_{i=1}^m w_i x^{(i)} \\
                   \theta & = \sum_{i=1}^m \alpha_i x^{(i)} && \text{let } \alpha_i = - \frac{w_i}{\lambda m}
-                  \end{align}
+                  \end{aligned}
                   $$
 
 ## **nonlinear features and kernels**
 
   - the representer theorem means that the parameter vector $\theta$ can always be written as a linear combination of the data $\left\{x^{(i)} \right\}_{i=1}^m$
       - this means we can **always** make predictions
-      
+
       $$
       \theta^T x = x^T \theta = \sum_{i=1}^m \alpha_i x^T x^{(i)}
       $$
-      
+
       - i.e., in **any** learning algorithm, we can replace all appearances of $\theta^Tx$ with $\sum_{i=1}^m \alpha_i x^{(i)T}x$, and then minimize directly over $\alpha \in \mathbb{R}^m$
           - consider this idea in more generality:
               - "original" input values = **attributes**
@@ -275,50 +299,50 @@ My notes on John Duchi's [CS229 binary classification and general loss function 
                   - to learn with features $\phi(x)$, simply replace $x$ everywhere in the algorithm with $\phi(x)$
                   - write the algorithm entirely in terms of inner products $\langle x, z \rangle$, and simply replace the inner products with $\langle \phi(x), \phi(z) \rangle$
                   - define the corresponding **kernel** to be
-                  
+
                   $$
                   K(x,z) = \phi(x)^T \phi(z)
                   $$
-                  
+
                   - then, replace $\langle x,z \rangle$ with $K(x,z)$
                   - kernelizing the regularized risk
-                  
+
                   $$
-                  \begin{align}
+                  \begin{aligned}
                   J_\lambda (\theta) & = \frac{1}{m} \sum_{i=1}^m \mathcal{L} \left(\theta^T x^{(i)}, y^{(i)} \right) + \frac{\lambda}{2} \left\lVert \theta \right\rVert_2^2 && \text{the regularized risk} \\
                   J_\lambda (\alpha) & = \frac{1}{m} \sum_{i=1}^m \mathcal{L} \left(\phi \left(x^{(i)} \right)^T \sum_{j=1}^m \alpha_j \phi \left(x^{(j)} \right), y^{(i)} \right) + \frac{\lambda}{2} \left\lVert \alpha_i \phi \left(x^{(i)} \right) \right\rVert_2^2 && \theta = \sum_{i=1}^m \alpha_i \phi \left(x^{(i)} \right) \\
                                     & = \frac{1}{m} \sum_{i=1}^m \mathcal{L} \left( \sum_{j=1}^m \alpha_j \phi \left(x^{(i)} \right)^T \phi \left(x^{(j)} \right), y^{(i)} \right) + \frac{\lambda}{2} \sum_{i=1}^m \sum_{j=1}^m \alpha_i \alpha_j \phi \left(x^{(i)} \right)^T \phi \left(x^{(j)} \right) \\
                                     & = \frac{1}{m} \sum_{i=1}^m \mathcal{L} \left(\sum_{j=1}^m \alpha_j K \left(x^{(i)}, x^{(j)} \right), y^{(i)} \right) + \frac{\lambda}{2} \sum_{i,j} \alpha_i \alpha_j K \left(x^{(i)}, x^{(j)} \right)
-                  \end{align}
+                  \end{aligned}
                   $$
-  
+
                   - i.e., we can write the entire loss function to be minimized in terms of the kernel matrix
-                  
+
                   $$
                   K = \left[K \left(x^{(i)}, x^{(j)} \right) \right]_{i,j=1}^m \in \mathbb{R}^{m \times m}
                   $$
-                  
+
                   - we could compute $K(x,z)$ by finding $\phi(x)$ and $\phi(z)$ and taking their inner product
                       - however, $K(x,z)$ may be very inexpensive to calculate, even though $\phi(x)$ may be very expensive or impossible to calculate
                       - by using an efficient way to calculate $K(x,z)$, we can learn in the high dimensional feature space given by $\phi$, but without ever having to explicitly calculate or represent vectors $\phi(x)$ (this is the **kernel trick**)
                   - examples of kernels:
                       - **Gaussian/Radial Basis Function (RBF)** kernel:
-                      
+
                       $$
                       K(x,z) = \exp \left(- \frac{1}{2 \tau^2} \lVert x-z \rVert_2^2 \right)
                       $$
-                      
+
                       - min-kernel (applicable when $x \in \mathbb{R}$)
-                      
+
                       $$
                       K(x,z) = \min \{x,z\}
                       $$
-                      
+
 ## **stochastic gradient descent for kernelized machine learning**
 
   - let $K \in \mathbb{R}^{m \times m}$ denote the kernel matrix
   - for shorthand, define the vectors
-  
+
   $$
   K^{(i)} = \begin{bmatrix}
             K \left(x^{(i)}, x^{(1)} \right) \\
@@ -327,9 +351,9 @@ My notes on John Duchi's [CS229 binary classification and general loss function 
             K \left(x^{(i)}, x^{(m)} \right)
             \end{bmatrix}
   $$
-  
+
   - then,
-  
+
   $$
   K = \begin{bmatrix}
       \mid    & \mid    &         &  \mid \\
@@ -337,29 +361,29 @@ My notes on John Duchi's [CS229 binary classification and general loss function 
       \mid    & \mid    &         &  \mid
       \end{bmatrix}
   $$
-  
+
   - so the regularized risk can be written as:
-  
+
   $$
   J_\lambda(\alpha) = \frac{1}{m} \sum_{i=1}^m \mathcal{L} \left(K^{(i)T} \alpha, y^{(i)} \right) + \frac{\lambda}{2} \alpha^T K \alpha
   $$
-  
+
   - consider taking a stochastic gradient of this risk:
-  
+
   $$
-  \begin{align}
+  \begin{aligned}
   J_\lambda(\alpha)                 & = \frac{1}{m} \sum_{i=1}^m \mathcal{L} \left(K^{(i)T} \alpha, y^{(i)} \right) + \frac{\lambda}{2} \alpha^T K \alpha \\
   \nabla_\alpha J_\lambda (\alpha)  & = \frac{1}{m} \sum_{i=1}^m \nabla_\alpha \mathcal{L} \left(K^{(i)T} \alpha, y^{(i)} \right) + \lambda \nabla_\alpha \left[\frac{1}{2} \alpha^T K \alpha \right] \\
                                     & = \frac{1}{m} \sum_{i=1}^m \mathcal{L}^\prime \left(K^{(i)T} \alpha, y^{(i)} \right) K^{(i)} + \lambda \sum_{i=1}^m K^{(i)} \alpha_i
-  \end{align}
+  \end{aligned}
   $$
-  
+
   - if we choose a random index $i \in \{1, \dots, m \}$, a stochastic gradient for $J_\lambda(\alpha)$ is then:
-  
+
   $$
   \mathcal{L}^\prime \left(K^{(i)T}\alpha , y^{(i)}\right) K^{(i)} + m \lambda K^{(i)} \alpha_i
   $$
-  
+
   - pseudocode for SGD for kernel supervised learning problems:
       - input:
           - loss function $\mathcal{L}$
@@ -369,28 +393,28 @@ My notes on John Duchi's [CS229 binary classification and general loss function 
       - **iterate** for $t = 1, 2, \dots$
           1. Choose index $i \in \{1, \dots, m \}$ uniformly at random
           2. Update
-          
+
           $$
           \alpha \gets \alpha - \eta_t \left[\mathcal{L}^\prime \left(K^{(i)T} \alpha, y^{(i)} \right) K^{(i)} + m \lambda K^{(i)} \alpha_i \right]
           $$
       - note: because the $\lambda K^{(i)}\alpha_i$ term is multiplied by $m$ to keep the gradient unbiased, it is important that $\lambda>0$ not be too large, as the algorithm can be unstable otherwise
       - note: a common stepsize is $\eta_t = \frac{1}{\sqrt{t}}$, or a constant multiple thereof
-  
+
 ## **support vector machines**
 
   - one approach to SVMs:
       - use the margin-based loss function
-      
+
       $$
       \mathcal{L}(z,y) = \left[1-yz \right]_+ = \max \{0, 1-yz \}
       $$
-      
+
       - the empirical regularized risk is then:
-      
+
       $$
       J_\lambda(\alpha) = \frac{1}{m} \sum_{i=1}^m \left[1-y^{(i)} K^{(i)T} \alpha \right]_+ + \frac{\lambda}{2} \alpha^T K \alpha
       $$
-      
+
 ## **gaussian/RBF kernel example**
 
 $$
@@ -402,28 +426,28 @@ $$
       - for large $\tau$, the kernel function $K$ is much smoother
   - the feature function $\phi$ for the RBF kernel is infinite dimensional (it is the Fourier transform of the Gaussian distribution with mean zero and variance $\tau$^2)
   - to make a new prediction:
-  
+
   $$
-  \begin{align}
+  \begin{aligned}
   & \quad \theta^Tx \\
   & = \sum_{i=1}^m \alpha_i x^T x^{(i)} && \text{representer theorem} \\
   & = \sum_{i=1}^m K \left(x^{(i)}, x \right) \alpha_i && \text{substitute kernel function} \\
   & = \sum_{i=1}^m \exp \left(- \frac{1}{2\tau^2} \lVert x^{(i)}-x\rVert_2^2 \right) \alpha_i
-  \end{align}
+  \end{aligned}
   $$
-  
+
   - this represents something like a weighting depending on how close $x$ is to each $x^{(i)}$
       - i.e., the contribution of weight $\alpha_i$ is scaled by the similarity of $x$ to $x^{(i)}$ as determined by the kernel function
   - large $\tau \rightarrow$ a very simple, close to linear classifier
   - small $\tau \rightarrow$ a variable, highly non-linear classifier
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
+
+
+
+
+

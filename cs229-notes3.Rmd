@@ -1,9 +1,33 @@
 ---
+title: "CS229 lecture 3 notes"
+author: James Chuang
+date: February 6, 2017
+mainfont: FreeSans
+linkcolor: "purple"
+header-includes:
+    \usepackage{enumitem}
+    \setlistdepth{9}
+    \setlist[itemize,1]{label=$\bullet$}
+    \setlist[itemize,2]{label=$\bullet$}
+    \setlist[itemize,3]{label=$\bullet$}
+    \setlist[itemize,4]{label=$\bullet$}
+    \setlist[itemize,5]{label=$\bullet$}
+    \setlist[itemize,6]{label=$\bullet$}
+    \setlist[itemize,7]{label=$\bullet$}
+    \setlist[itemize,8]{label=$\bullet$}
+    \setlist[itemize,9]{label=$\bullet$}
+    \renewlist{itemize}{itemize}{9}
 output:
-  html_document:
-    toc: TRUE
-    fig_width: 4.5
-    css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
+    pdf_document:
+        latex_engine: xelatex
+        toc: true
+        number_sections: false
+        fig_width: 4.5
+        df_print: tibble
+  # html_document:
+  #   toc: TRUE
+  #   fig_width: 4.5
+  #   css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
 ---
 
 My notes on Andrew Ng's [CS229 lecture 3 notes](http://cs229.stanford.edu/materials.html).
@@ -21,7 +45,7 @@ Consider logistic regression:
         - similarly, a prediction $y=0$ is a very confident one if $\theta^Tx \ll 0$
             - therefore, a good fit to the data would be to find $\theta$ such that $\theta^Tx^{(i)} \gg 0$ whenever $y^{(i)}=1$, and $\theta^Tx^{(i)} \ll 0$ whenever $y^{(i)}= 0$.
     - geometrically, points far away from the ***separating hyperplane*** can be predicted with higher confidence than points close to the separating hyperplane
-    
+
 ## **2. Notation**
 
 Consider a linear classifier for a binary classification problem with labels $y$ and features $x$:
@@ -29,19 +53,19 @@ Consider a linear classifier for a binary classification problem with labels $y$
   - $y \in \left\{-1, 1 \right\}$
   - parameters $w, b$ (treat the bias/intercept $b$ separately from the weights $w$)
   - write classifier as:
-  
+
   $$
-  \begin{align}
+  \begin{aligned}
   h_{w,b}(x) & = g(w^Tx + b) \\
   \\
   g(z) & =  \begin{cases}
           1 & \text{if } z \geq 0 \\
           -1 & \text{otherwise}
           \end{cases}
-  \end{align}
+  \end{aligned}
   $$
   Note that from the definition of $g$, this classifier directly predicts either $1$ or $-1$ without first going through the intermediate step of estimating the probability of $y$ being $1$, as in logistic regression.
-  
+
 ## **3. Functional and geometric margins**
 
 ##### **Functional margins**
@@ -71,23 +95,23 @@ The functional margin simply tells you whether a particular point is properly cl
 
 The vector $w$ is orthogonal to the separating hyperplane defined by $w^Tx + b = 0$. To see this, consider two points $x_1$ and $x_2$ on the hyperplane (see ESL Ch. 4.5):
 $$
-\begin{align}
+\begin{aligned}
 w^Tx_1+b &= w^Tx_2+b = 0 & \text{by def. of the hyperplane} \\
 w^Tx_1 &= w^Tx_2 \\
 w^T(x_1 - x_2) & = 0 \\
 \therefore \quad& w \perp \left\{x: w^Tx+b=0\right\}
-\end{align}
+\end{aligned}
 $$
 The **geometric margin** $\gamma^{(i)}$ is the distance from a training example $\left(x^{(i)}, y^{(i)} \right)$to the separating hyperplane. The projection of $x^{(i)}$ onto the separating hyperplane is the point $x^{(i)}-\gamma^{(i)} \frac{w}{\lVert w \rVert}$ (remember that $\gamma^{(i)} \in \mathbb{R}$ is just a scalar). Since this point is on the decision boundary, it satisfies $w^Tx+b=0$:
 
 $$
-\begin{align}
+\begin{aligned}
 w^T \left(x^{(i)}-\gamma^{(i)} \frac{w}{\lVert w \rVert} \right) + b & = 0 \\
 w^Tx^{(i)} - \gamma^{(i)} \frac{1}{\lVert w \rVert} w^T w + b & = 0 \hspace{7em} w^Tw = \lVert w \rVert^2\\
 \gamma^{(i)} \lVert w \rVert & = w^Tx^{(i)} + b \\
 \gamma^{(i)} & = \frac{w^Tx^{(i)} + b}{\lVert w \rVert} \\
 \gamma^{(i)} & = \left(\frac{w}{\lVert w \rVert} \right)^T x^{(i)} + \frac{b}{\lVert w \rVert}
-\end{align}
+\end{aligned}
 $$
 To account for training examples on the other side of the decision boundary, we define the **geometric margin** of $\left(w,b \right)$ w.r.t. a training example $\left(x^{(i)}, y^{(i)} \right)$ to be:
 
@@ -112,20 +136,20 @@ Given a training set, a natural criterion is to set a decision boundary that max
 Assume a training set that is linearly separable, i.e. a separating hyperplane can separate the two classes. Finding the hyperplane that maximizes the geometric margin is an optimization problem:
 
 $$
-\begin{align}
+\begin{aligned}
 \max_{\gamma, w, b} \quad & \gamma \\
 \text{s.t.} \quad & y^{(i)} \left(w^Tx^{(i)} + b \right) \geq \gamma, \quad i=1, \dots, m \\
                   & \lVert w \rVert = 1
-\end{align}
+\end{aligned}
 $$
 
 The above optimization problem is non-convex and therefore difficult to solve (due to the $\lVert w \rVert=1$ constraint). We can transform the problem, remembering that $\gamma$ is the geometric margin and $\hat{\gamma}$ is the functional margin:
 
 $$
-\begin{align}
+\begin{aligned}
 \max_{\hat{\gamma}, w, b} \quad  & \frac{\hat{\gamma}}{\lVert w \rVert} \\
 \text{s.t.} \quad & y^{(i)} \left(w^Tx^{(i)} + b \right) \geq \hat{\gamma}, \quad i=1, \dots, m
-\end{align}
+\end{aligned}
 $$
 
 This problem is equivalent since the geometric and functional margins are related by $\gamma = \frac{\hat{\gamma}}{\lVert w \rVert}$. This is better, since the $\lVert w \rVert=1$ constraint is gone, but the problem is still non-convex. To simplify it further, remember that $w$ and $b$ can be arbitrarily scaled without changing anything, and set the scaling by constraining the geometric margin of $w,b$ w.r.t. the training set to 1:
@@ -135,11 +159,11 @@ $$
 $$
 
 $$
-\begin{align}
+\begin{aligned}
 \max_{\gamma, w, b} \quad  & \frac{1}{\lVert w \rVert} \\
 = \min_{\gamma, w, b} \quad & \frac{1}{2} \lVert w \rVert^2  \\
 \text{s.t.} \quad & y^{(i)} \left(w^Tx^{(i)} + b \right) \geq 1, \quad i=1, \dots, m
-\end{align}
+\end{aligned}
 $$
 
 This optimization problem has a convex quadratic objective and linear constraints. Solving it (using quadratic programming) gives the ***optimal margin classifier***. In order to solve this, we will use the method of Lagrange multipliers generalized to include inequality constraints in addition to equality constraints.
@@ -149,10 +173,10 @@ This optimization problem has a convex quadratic objective and linear constraint
 Consider the following problem:
 
 $$
-\begin{align}
+\begin{aligned}
 \min_w \quad      & f(w) \\
 \text{s.t.} \quad & h_i(w) = 0, \quad i = 1, \dots, l
-\end{align}
+\end{aligned}
 $$
 This can be solved with [Lagrange multipliers](https://en.wikipedia.org/wiki/Lagrange_multiplier). Define the ***Lagrangian***:
 
@@ -168,11 +192,11 @@ $$
 This can be generalized to constrained optimization problems with inequality as well as equality constraints. Consider the following, called the ***primal*** optimization problem:
 
 $$
-\begin{align}
+\begin{aligned}
 \min_w \quad      & f(w) \\
 \text{s.t.} \quad & g_i(w) \leq 0, \quad i=1, \dots, k \\
                   & h_i(w) = 0, \quad i=1, \dots, k
-\end{align}
+\end{aligned}
 $$
 To solve it, start by defining the ***generalized Lagrangian***
 
@@ -188,10 +212,10 @@ $$
 where the "$\mathcal{P}$" subscript stands for "primal". Let some $w$ be given. If $w$ violates any of the primal constraints (i.e., $g_i(w) > 0$ or $h_i(w) \neq 0$ for some $i$), then:
 
 $$
-\begin{align}
+\begin{aligned}
 \theta_{\mathcal{P}}(w) & = \max_{\alpha, \beta: \alpha_i \geq 0} \left( f(w) + \sum_{i=1}^k \alpha_i g_i(w) + \sum_{i=1}^\ell \beta_i h_i(w) \right)\\
                         & = \infty
-\end{align}
+\end{aligned}
 $$
 
 Conversely, if the constraints are satisfied for a particular $w$, then $\theta_{\mathcal{P}}(w) = f(w)$. Hence,
@@ -228,10 +252,10 @@ This is the same as the primal problem, except that the order of the max and min
 The primal and dual problems are related in the following way:
 
 $$
-\begin{align}
+\begin{aligned}
 d^* & \leq p^* \\
 \max_{\alpha, \beta: \alpha_i \geq 0} \min_w \mathcal{L}(w, \alpha, \beta) & \leq \min_w \max_{\alpha, \beta: \alpha_i \geq 0} \mathcal{L}(w, \alpha, \beta) \hspace{3em} \text{because } \max \min f \leq \min \max f
-\end{align}
+\end{aligned}
 $$
 Under certain conditions, $d^* = p^*$, so that the solution can be found by solving the dual problem instead of the primal problem. What are the conditions?
 
@@ -242,33 +266,33 @@ Under these assumptions, there must exist $w^*, \alpha^*, \beta^*$ such that:
   - $w^*$ is the solution to the primal problem
   - $\alpha^*, \beta^*$ are the solution to the dual problem
   - $p^* = d^* = \mathcal{L}(w^*, \alpha^*, \beta^*)$
-  
+
 If some $w^*, \alpha^*, \beta^*$ satisfy the **Karush-Kuhn-Tucker (KKT) conditions**, then it is also a solution to the primal and dual problems:
 
 $$
-\begin{align}
+\begin{aligned}
 \frac{\partial}{\partial w_i} \mathcal{L}(w^*, \alpha^*, \beta^*)     & = 0, \quad i=1, \dots, n \\
 \frac{\partial}{\partial \beta_i} \mathcal{L}(w^*, \alpha^*, \beta^*) & = 0, \quad i=1, \dots, l \\
 \alpha_i^* g_i (w^*)                                                  & = 0, \quad i=1, \dots, k & \text{the }\textbf{dual complementarity}\text{ condition}\\
 g_i (w^*)                                                             & \leq 0, \quad i=1, \dots, k \\
-\alpha_i^*                                                            & \geq 0, \quad i=1, \dots, k 
-\end{align}
+\alpha_i^*                                                            & \geq 0, \quad i=1, \dots, k
+\end{aligned}
 $$
 The **dual complementarity** condition above implies:
 
   - if $\alpha_i^* > 0$, then $g_i(w^*)=0$
       - i.e, the $g_i(w) \leq 0$ constraint is **active** (holds with equality $g_i(w) = 0$ rather than w/inequality)
       - later, this is important for showing that the SVM has only a small number of support vectors
-      
+
 ## **6. Optimal margin classifiers**
 
 The primal optimization problem for finding the optimal margin classifier, derived in section 4:
 
 $$
-\begin{align}
+\begin{aligned}
 \min_{\gamma, w, b} \quad & \frac{1}{2} \lVert w \rVert^2 \\
 \text{s.t.}         \quad & y^{(i)} \left(w^Tx^{(i)} +b\right) \geq 1, \quad i=1, \dots, m
-\end{align}
+\end{aligned}
 $$
 
 The constraints can be written as:
@@ -286,36 +310,36 @@ $$
 Find the dual form $\theta_{\mathcal{D}} = \min_{w,b} \mathcal{L}(w, b, \alpha)$. Start by taking derivatives w.r.t. $w$ and $b$ and setting to zero:
 
 $$
-\begin{align}
+\begin{aligned}
 \mathcal{L}(w, b, \alpha)           & = \frac{1}{2} \lVert w \rVert^2 - \sum_{i=1}^m \alpha_i \left[y^{(i)} \left(w^Tx^{(i)}+b \right) -1\right] \\
 \nabla_w \mathcal{L}(w, b, \alpha)  & = w - \sum_{i=1}^m \alpha_i y^{(i)}x^{(i)} = 0 \\
 w & = \sum_{i=1}^m \alpha_i y^{(i)}x^{(i)}
-\end{align}
+\end{aligned}
 $$
 
 $$
-\begin{align}
+\begin{aligned}
 \mathcal{L}(w, b, \alpha)           & = \frac{1}{2} \lVert w \rVert^2 - \sum_{i=1}^m \alpha_i \left[y^{(i)} \left(w^Tx^{(i)}+b \right) -1\right] \\
 \frac{\partial}{\partial b}\mathcal{L}(w, b, \alpha) & = - \sum_{i=1}^m \alpha_i y^{(i)} = 0 \\
 \sum_{i=1}^m \alpha_i y^{(i)} & = 0
-\end{align}
+\end{aligned}
 $$
 
 $$
-\begin{align}
+\begin{aligned}
 \mathcal{L}(w, b, \alpha) & = \frac{1}{2} \lVert w \rVert^2 - \sum_{i=1}^m \alpha_i \left[y^{(i)} \left(w^Tx^{(i)}+b \right) -1\right] & \text{plug in }w \\
   & = \frac{1}{2} \sum_{i,j=1}^m  y^{(i)} y^{(j)} \alpha_i  \alpha_j \left(x^{(i)} \right)^Tx^{(j)} - \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left(x^{(i)} \right)^T x^{(j)} - b \sum_{i=1}^m \alpha_i y^{(i)} + \sum_{i=1}^m \alpha_i & \sum_{i=1}^m \alpha_i y^{(i)} & = 0 \\
   & = \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left(x^{(i)} \right)^T x^{(j)}
-\end{align}
+\end{aligned}
 $$
 
 The dual optimization problem:
 $$
-\begin{align}
+\begin{aligned}
 \max_{\alpha} W(\alpha) & = \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left(x^{(i)} \right)^T x^{(j)} \\
 \text{s.t.} \hspace{.5em} \alpha_i & \geq 0, \quad i = 1, \dots, m \\
-          & \sum_{i=1}^m \alpha_i y^{(i)} = 0 
-\end{align}
+          & \sum_{i=1}^m \alpha_i y^{(i)} = 0
+\end{aligned}
 $$
 The conditions for $p^* = d^*$ and the KKT conditions to hold are satisfied in the above problem. If we solve this maximization problem w.r.t. the $\alpha_i$'s for the optimal $\alpha_i$'s, we can solve for the $w$ by the above equation ($w = \sum_{i=1}^m \alpha_i y^{(i)} x^{(i)}$).
 
@@ -327,10 +351,10 @@ $$
 Suppose the model has been fit to a training set. To make a prediction at a new input point $x$, calculate $w^Tx+b$, and predict $y=1$ iff this quantity is bigger than zero.
 
 $$
-\begin{align}
+\begin{aligned}
 w^Tx + b  & = \left( \sum_{i=1}^m \alpha_i y^{(i)} x^{(i)} \right)^Tx + b \\
           & = \sum_{i=1}^m \alpha_i y^{(i)} \langle x^{(i)}, x\rangle + b
-\end{align}
+\end{aligned}
 $$
 Hence, if we've found the $\alpha_i$'s, in order to make a prediction, we need to calculate a quantity that only depends on the inner product between $x$ and the points in the training set. Also, the $\alpha_i$'s will all be zero except for the support vectors. Thus, many of the terms in the sum will be zero, meaning that we only need to find the inner products between $x$ and the support vectors in order to make a prediction.
 
@@ -349,7 +373,7 @@ By using different kernels, the optimal margin classifier generalizes to the ***
             \end{bmatrix}
   $$
 
-Rather than applying an SVM using the original input attributes $x$, we may instead want to learn using some features $\phi(x)$. Since the SVM algorithm can be written entirely in terms of the inner products $\langle x,z \rangle$, this entails replacing all those inner products with $\langle \phi(x), \phi(z)\rangle$. Specifically, given a feature mapping $\phi$, we define the corresponding ***kernel*** to be 
+Rather than applying an SVM using the original input attributes $x$, we may instead want to learn using some features $\phi(x)$. Since the SVM algorithm can be written entirely in terms of the inner products $\langle x,z \rangle$, this entails replacing all those inner products with $\langle \phi(x), \phi(z)\rangle$. Specifically, given a feature mapping $\phi$, we define the corresponding ***kernel*** to be
 $$
 K(x,z) = \phi(x)^T \phi(z)
 $$
@@ -363,15 +387,15 @@ K(x,z) = (x^Tz)^2
 $$
 This can also be written as
 $$
-\begin{align}
+\begin{aligned}
 K(x,z)  & = \left(\sum_{i=1}^n x_i z_i \right) \left(\sum_{i=1}^n x_i z_i \right) \\
         & = \sum_{i=1}^n \sum_{j=1}^n x_i x_j z_i z_j \\
         & = \sum_{i,j=1}^n \left(x_i x_j \right) \left(z_i z_j \right) \\
         & = \phi(x)^T \phi(z), \hspace{2em} \text{where} \\
         & & \phi(x) = \begin{bmatrix}
                       x_1x_1 \\ x_1x_2 \\ x_1x_3 \\ x_2x_1 \\ x_2x_2 \\ x_2x_3 \\ x_3x_1 \\ x_3x_2 \\ x_3x_3
-                      \end{bmatrix}\text{(for } n=3 \text{)} 
-\end{align}
+                      \end{bmatrix}\text{(for } n=3 \text{)}
+\end{aligned}
 $$
 
 Calculating the high-dimensional $\phi(x)$ requires $O(n^2)$ time, while calculating $K(x,z)$ requires only $O(n)$ time -- linear in the dimension of the input attributes.
@@ -379,14 +403,14 @@ Calculating the high-dimensional $\phi(x)$ requires $O(n^2)$ time, while calcula
 Consider a related kernel,
 
 $$
-\begin{align}
+\begin{aligned}
 K(x,z)  & = \left(x^Tz + c \right)^2 \\
         & = \left(x^Tz \right)^2 + 2c\left(x^Tz \right) + c^2 \\
         & = \sum_{i,j=1}^n \left(x_i x_j \right)\left(z_i z_j \right) + \sum_{i=1}^n \left(\sqrt{2c} x_i \right) \left(\sqrt{2c} z_i \right) + c^2 \\
         & \hspace{5em} \phi(x) =  \begin{bmatrix}
                                   x_1x_1 \\ x_1x_2 \\ x_1x_3 \\ x_2x_1 \\ x_2x_2 \\ x_2x_3 \\ x_3x_1 \\ x_3x_2 \\ x_3x_3 \\\sqrt{2c} x_1 \\ \sqrt{2c} x_2 \\ \sqrt{2c} x_3 \\ c
                                   \end{bmatrix} \\
-\end{align}
+\end{aligned}
 $$
 
 , where the parameter $c$ controls the relative weighting between the $x_i$ (first order) and the $x_i x_j$ (second order) terms.
@@ -408,32 +432,32 @@ might be a reasonable measure of the similarity of $x$ and $z$, as it is near $1
       $$
           - note that the notation $K$ is overloaded to denote both the kernel function $K(x,z)$ and the kernel matrix $K$
       - if $K$ is a valid kernel, then
-      
+
       $$
-      \begin{align}
+      \begin{aligned}
       & \hspace{1.3em} K_{ij} \\
       & = K \left(x^{(i)}, x^{(j)} \right) \\
       & = \phi \left(x^{(i)} \right)^T \phi \left(x^{(j)} \right) \\
       & = \phi \left(x^{(j)} \right)^T \phi \left(x^{(i)} \right) \\
       & = K \left(x^{(j)}, x^{(i)} \right) \\
       & = K_{ji}
-      \end{align}
+      \end{aligned}
       $$
-      
+
       - therefore, $K$ for a valid kernel is symmetric
       - in addition, let $\phi_k(x)$ denote the $k$-th coordinate of the vector $\phi(x)$. Then, for any vector $z$:
-      
+
       $$
-      \begin{align}
+      \begin{aligned}
       z^TKz & = \sum_i \sum_j z_i K_{ij} z_j \\
             & = \sum_i \sum_j z_i \phi \left(x^{(i)} \right)^T \phi \left(x^{(j)} \right) z_j & \text{def. }K\\
             & = \sum_i \sum_j z_i \sum_k \phi_k  \left(x^{(i)} \right) \phi_k \left(x^{(j)} \right) z_j \\
             & = \sum_k \sum_i \sum_j z_i \phi_k  \left(x^{(i)} \right) \phi_k \left(x^{(j)} \right) z_j \\
             & = \sum_k \left(\sum_i z_i \phi_k \left(x^{(i)} \right)\right)^2 \\
             & \geq 0
-      \end{align}
+      \end{aligned}
       $$
-      
+
       - therefore, if $K$ is a valid kernel (i.e., it corresponds to some feature mapping $\phi$), then the corresponding Kernel matrix $K \in \mathbb{R}^{m \times m}$ is symmetric positive semidefinite
           - this is a necessary and sufficient condition for $K$ to be a valid kernel (aka a Mercer kernel)
           - Theorem (Mercer). Let $K : \mathbb{R}^n \times \mathbb{R}^n \mapsto \mathbb{R}$ be given. Then for $K$ to be a valid (Mercer) kernel, it is necessary and sufficient that for any $\left\{x^{(1)}, \dots, x^{(m)} \right\}, (m < \infty)$, the corresponding kernel matrix is symmetric and positive semi-definite
@@ -447,45 +471,45 @@ might be a reasonable measure of the similarity of $x$ and $z$, as it is near $1
               - therefore, can implicitly work in $26^k$-dimensional feature space, without ever explicitly computing feature vectors in this space
   - the kernel trick is applicable beyond SVMs
       - can be applied to any learning algorithm that can be written in terms of only inner products $\langle x,z \rangle$ between input attribute vectors by replacing the inner product with a kernel $K(x,z)$
-      
+
 ## **8. Regularization and the non-separable case**
 
   - the derivation of the SVM so far assumes the data is linearly separable
       - mapping data to a high dimensional feature space via $\phi$ increases the likelihood that the data is separable, but does not guarantee it
       - also, in some cases, finding a separating hyperplane might not be ideal, since it might be susceptible to outliers
           - therefore, reformulate the problem using $\ell_1$ (lasso) regularization:
-          
+
           $$
-          \begin{align}
+          \begin{aligned}
           \min_{\gamma, w, b} \quad & \frac{1}{2} \lVert w \rVert^2 + C \sum_{i=1}^m \xi_i \\
           \text{s.t.}         \quad & y^{(i)} \left(w^T x^{(i)} + b \right) \geq 1- \xi_i, \quad i = 1, \dots, m \\
                                     & \xi_i \geq 0, \quad i=1, \dots, m
-          \end{align}
+          \end{aligned}
           $$
-          
+
           - examples are now permitted to have (functional) margin less than 1:
               - if an example has functional margin $1- \xi_i \quad (\xi > 0)$, we pay a cost of the objective function being increased by $C \xi_i$
                   - $C$ controls the weighting between the goals of minimizing $\lVert w \rVert^2$ (which makes the margin large) and of ensuring that most examples have functional margin at least 1
           - the Lagrangian:
-          
+
           $$
           \mathcal{L} \left(w, b, \xi, \alpha, r \right) = \frac{1}{2} w^T w + C \sum_{i=1}^m \xi_i - \sum_{i=1}^m \alpha_i \left[y^{(i)} \left(x^Tw+b \right) - 1 + \xi_i \right] - \sum_{i=1}^m r_i \xi_i
           $$
-          
+
           - to get the dual form:
               - set derivatives w.r.t $w$ and $b$ to zero
               - substitute back in and simplify
-              
+
           $$
-          \begin{align}
+          \begin{aligned}
           \max_\alpha \quad & W(\alpha) = \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left\langle x^{(i)} x^{(j)}\right\rangle \\
           \text{s.t.} \quad & 0 \leq \alpha_i \leq C, \quad i=1, \dots, m \\
                             & \sum_{i=1}^m \alpha_i y^{(i)} = 0
-          \end{align}
+          \end{aligned}
           $$
-          
+
           - $w$ in terms of $\alpha_i$'s is the same as the non-regularized case:
-          
+
           $$
           w = \sum_{i=1}^m \alpha_i y^{(i)} x^{(i)},
           $$
@@ -497,30 +521,30 @@ might be a reasonable measure of the similarity of $x$ and $z$, as it is near $1
               - note that adding $\ell_1$ regularization only has the effect of changing $0 \leq \alpha_i$ to $0 \leq \alpha_i \leq C$
               - the calculation for $b^*$ also has to be modified
           - the KKT dual-complementarity conditions:
-          
+
           $$
-          \begin{align}
+          \begin{aligned}
           \alpha_i = 0 & \Longrightarrow y^{(i)} \left(w^T x^{(i)} + b \right) \geq 1 \\
           \alpha_i = C & \Longrightarrow y^{(i)} \left(w^T x^{(i)} + b \right) \leq 1 \\
           0 < \alpha_i < C & \Longrightarrow y^{(i)} \left(w^T x^{(i)} + b \right) = 1 \\
-          \end{align}
+          \end{aligned}
           $$
-          
+
           To solve the dual problem, we use the ***sequential minimal optimization (SMO) algorithm***.
-          
+
 ## **9. The SMO algorithm**
 
   - SMO, by John Platt, is an efficient way of solving the dual problem in the derivation of the SVM
   - first, a digression about coordinate ascent:
-  
+
 ### **9.1 Coordinate ascent**
 
   - consider the unconstrained optimization problem
-  
+
   $$
   \max_\alpha W(\alpha_1, \alpha_2, \dots, \alpha_m)
   $$
-  
+
   - gradient ascent and Newton's method could both solve this
   - now we consider ***coordinate ascent***:
       - Loop until convergence:
@@ -528,56 +552,56 @@ might be a reasonable measure of the similarity of $x$ and $z$, as it is near $1
               - $\alpha_i \gets \arg \max_{\hat{\alpha}_i} W \left(\alpha_1, \dots, \alpha_{i=1}, \hat{\alpha}_i, \alpha_{i+1}, \dots, \alpha_m \right)$
       - in the innermost loop, $W$ is reoptimized w.r.t *just* the parameter $\alpha_i$, holding all other variables fixed
       - when $W$ is of a form s.t. the $\arg \max$ can be found efficiently, coordinate ascent can be fairly efficient
-      
+
 ### **9.2 SMO**
 
   - the dual optimization problem for SVM with $\ell_1$ regularization:
-  
+
   $$
-  \begin{align}
+  \begin{aligned}
   \max_\alpha \quad & W(\alpha) = \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j \left\langle x^{(i)} x^{(j)}\right\rangle \\
   \text{s.t.} \quad & 0 \leq \alpha_i \leq C, \quad i=1, \dots, m \\
                     & \sum_{i=1}^m \alpha_i y^{(i)} = 0
-  \end{align}
+  \end{aligned}
   $$
-  
+
   - suppose we have a set of $\alpha_i$'s that satisfy the above constraints
       - then suppose we want to take a coordinate ascent step optimizing w.r.t $\alpha_1$ holding $\alpha_2, \dots, \alpha_m$ fixed. Progress is not possible, because:
-      
+
       $$
-      \begin{align}
+      \begin{aligned}
       \alpha_1 y^{(1)}  & = - \sum_{i=2}^m \alpha_i y^{(i)} \\
       \alpha_1          & = -y^{(1)} \sum_{i=2}^m \alpha_i y^{(i)} & \text{remember } y^{(1)} \in \{-1,1\}
-      \end{align}
+      \end{aligned}
       $$
-      
+
       - $\alpha_1$ is uniquely determined by the other $\alpha_i$'s- thus, to update the $\alpha_i$'s, we must update at least two of them simultaneously to keep satisfying the constraints, motivating the SMO algorithm:
           - repeat until convergence:
               1. Select some pair $\alpha_i$ and $\alpha_j$ to update next (using some heuristic that tries to pick the two that will allow the biggest progress towards the global max)
               2. Reoptimize $W(\alpha)$ w.r.t. $\alpha_i$ and $\alpha_j$, holding the other $\alpha_k$'s $(k \neq i,j)$ fixed
       - suppose we currently have $\alpha_i$'s that satisfy the constraints
           - suppose we decide to hold $\alpha_3, \dots, \alpha_m$ fixed, and reoptimize $W(\alpha_1, \alpha_2, \dots, \alpha_m)$ w.r.t. $\alpha_1$ and $\alpha_2$
-          
+
           $$
-          \begin{align}
+          \begin{aligned}
           \alpha_1y^{(1)} + \alpha_2 y^{(2)} & = - \sum_{i=3}^m \alpha_i y^{(i)} & \text{RHS is constant, set to }\zeta \\
           \alpha_1y^{(1)} + \alpha_2 y^{(2)} & = \zeta
-          \end{align}
+          \end{aligned}
           $$
           - See the figure in the notes:
               - $\alpha_1$ and $\alpha_2$ must lie within the box $[0,C] \times [0,C]$
                   - in order to lie within the box and satisfy $\alpha_1y^{(1)} + \alpha_2 y^{(2)} = \zeta$, $\quad L \leq \alpha_2 \leq H$, where $L$ is a lower bound
           - get $\alpha_1$ as a function of $\alpha_2$:
-          
+
           $$
-          \begin{align}
+          \begin{aligned}
           \alpha_1y^{(1)} + \alpha_2 y^{(2)}  & = \zeta  \\
           \alpha_1y^{(1)}                     & = \zeta - \alpha_2 y^{(2)}  & y^{(1)} \in \{-1,1 \} \\
           \alpha_1                            & = \left(\zeta - \alpha_2 y^{(2)} \right)y^{(1)}
-          \end{align}
+          \end{aligned}
           $$
           - substitute back into $W(\alpha)$:
-          
+
           $$
           W(\alpha_1, \alpha_2, \dots, \alpha_m) = W \left(\left(\zeta - \alpha_2 y^{(2)} \right)y^{(1)}, \alpha_2, \dots, \alpha_m \right)
           $$
@@ -585,7 +609,7 @@ might be a reasonable measure of the similarity of $x$ and $z$, as it is near $1
               - ignoring the "box" constraints, this function can easily be solving by setting the derivative to zero and solving
               - let $\alpha_2^{\text{new, unclipped}}$ denote the resulting value of $\alpha_2$
                   - we can find the optimal $\alpha_2$ by "clipping" it to the $[L, H]$ interval specified by the box constraint:
-                  
+
                   $$
                   \alpha_2^{\text{new}} = \begin{cases}
                                           H                                 & \text{if } \alpha_2^{\text{new, unclipped}} > H \\
@@ -598,4 +622,4 @@ might be a reasonable measure of the similarity of $x$ and $z$, as it is near $1
           - details left unresolved here:
               - heuristic for choosing next $\alpha_i, \alpha_j$ to update
               - how to update $b$
-  
+

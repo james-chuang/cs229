@@ -1,14 +1,26 @@
 ---
+title: "CS229 problem set 2"
+author: James Chuang
+date: May 2, 2017
+mainfont: FreeSans
+linkcolor: "purple"
 output:
-  html_document:
-    toc: TRUE
-    fig_width: 4.5
-    css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
+    pdf_document:
+        latex_engine: xelatex
+        toc: true
+        toc_depth: 4
+        number_sections: false
+        fig_width: 4.5
+        df_print: tibble
+  # html_document:
+  #   toc: TRUE
+  #   fig_width: 4.5
+  #   css: /home/ebosi/github/james-chuang.github.io/_sass/_style.scss
 ---
 
 # **CS229 Autumn 2016 Problem Set #2**
 
-### **1. Constructing kernels** 
+### **1. Constructing kernels**
 
 In class, we saw that by choosing a kernel $K(x,z) = \phi(x)^T \phi(z)$, we can implicitly map data to a high dimensional space, and have the SVM algorithm work in that space. One way to generate kernels is to explicitly define the mapping $\phi$ to a higher dimensional space, and then work out the corresponding $K$.
 
@@ -22,68 +34,54 @@ For each of the functions $K$ below, state whether it is necessarily a kernel. I
 
 **(a)** $K(x,z) = K_1(x,z) + K_2(x,z)$
 
-___
 The kernel matrix corresponding to $K(x,z)$ is symmetric since it is the sum of the two valid kernel matrices (i.e. symmetric matrices) $K_1$ and $K_2$. Therefore, $K(x,z)$ is PSD and therefore a valid kernel if $\forall \hspace{.2em}z, z^TKz \geq 0$:
 $$
-\begin{align}
+\begin{aligned}
 & \qquad z^TKz \\
 & = z^T \left(K_1 + K_2 \right)z \\
 & = z^TK_1z + z^TK_2z && \text{matrix mult. distributive over addition} \\
 & \geq 0  && z^TK_1z \geq 0, \quad z^TK_2z \geq 0 \text{ since they are valid kernels} \\
 & \therefore K \text{ is a valid kernel}
-\end{align}
+\end{aligned}
 $$
-
-___
 
 **(b)** $K(x,z) = K_1(x,z) - K_2(x,z)$:
 
-___
 Similar to 1a, $K(x,z)$ is symmetric since it is the difference of two symmetric matrices.
 $$
-\begin{align}
+\begin{aligned}
 & \qquad z^TKz \\
 & = z^T \left(K_1 - K_2 \right) z \\
 & = z^T K_1z - z^TK_2z &\text{matrix mult. distributive over addition} \\
 & \geq 0 \quad \text{only if } z^TK_1z > z^TK_2z \\
 & \therefore K \text{ is not a valid kernel}
-\end{align}
+\end{aligned}
 $$
 
-___
-
 **(c)** $K(x,z) = aK_1(x,z)$
-
-___
 
 $K(x,z)$ is symmetric because it is a symmetric matrix $K_1$ scaled by a scalar $a$.
 
 $$
-\begin{align}
+\begin{aligned}
 & \qquad z^TKz \\
 & = z^T\left(aK_1 \right)z \\
 & = az^TK_1z \\
 & \geq 0 & a \in \mathbb{R}^+,\quad z^TK_1z \geq 0 \hspace{.5em}\forall z \\
 & \therefore K \text{ is a valid kernel}
-\end{align}
+\end{aligned}
 $$
-
-___
 
 **(d)** $K(x,z) = -aK_1(x,z)$
 
-___
 By the same logic as 1c, $K$ is not a valid kernel.
-
-___
 
 **(e)** $K(x,z) = K_1(x,z)K_2(x,z)$
 
-___
 $K(x,z)$ is symmetric since scalar multiplication is commutative.
 
 $$
-\begin{align}
+\begin{aligned}
         &&& K_1 \text{ is a kernel, so } \exists \hspace{.3em} \phi^{(1)} \text{ such that } K_1(x,z) = \left(\phi^{(1)}(x)\right)^T \left(\phi^{(1)}(z) \right)\\
 K(x,z)  & = K_1(x,z) K_2 (x,z) && K_2 \text{ is a kernel, so } \exists \hspace{.3em} \phi^{(2)} \text{ such that } K_2(x,z) = \left(\phi^{(2)}(x)\right)^T \left(\phi^{(2)}(z) \right) \\
         & = \sum_i \phi_i^{(1)}(x) \phi_i^{(1)}(z) \sum_j \phi_j^{(2)} (x) \phi_j^{(2)}(z) \\
@@ -91,34 +89,22 @@ K(x,z)  & = K_1(x,z) K_2 (x,z) && K_2 \text{ is a kernel, so } \exists \hspace{.
         & = \sum_i \sum_j \left[\phi_i^{(1)}(x) \phi_j^{(2)}(x) \right] \left[\phi_i^{(1)}(z) \phi_j^{(2)}(z) \right] && \text{def } \psi (\cdot) = \phi^{(1)}(\cdot) \phi^{(2)} (\cdot) \\
         & = \sum_{(i,j)} \psi_{i,j}(x) \psi_{i,j}(z) \\
 K(x,z)  & = \psi(x)^T \psi(z), \quad \therefore K \text{ is a valid kernel}.
-\end{align}
+\end{aligned}
 $$
-
-___
 
 **(f)** $K(x,z) = f(x)f(z)$
 
-___
 $K(x,z)$ is symmetric since scalar multiplication is commutative.
 
 Let $f(x) = \psi(x)$ as in 1e., then $K$ is a valid kernel.
 
-___
-
 **(g)** $K(x,z) = K_3(\phi(x), \phi(z))$
 
-___
 $K_3$ is a valid kernel for any finite set $\left\{x^{(1)}, \dots, x^{(m)} \right\}$. This includes the set $\left\{\phi\left(x^{(1)} \right), \dots, \phi \left(x^{(m)} \right) \right\}$, so K is also a valid kernel.
-
-___
 
 **(h)** $K(x,z) = p(K_1(x,z))$
 
-
-___
 Combining the results from 1a (sum), 1c (scalar product), 1e (powers), and 1f (constant term), any polynomial of a kernel $K_1$ will also be a kernel.
-
-___
 
 ### **2. Kernelizing the Perceptron**
 
@@ -138,33 +124,26 @@ Let $K$ be a Mercer kernel corresponding to some very high-dimensional feature m
 
 **(a)** How you will (implicitly) represent the high-dimensional parameter vector $\theta^{(i)}$, including how the initial value $\theta^{(0)} = \vec{0}$ is represented (note that $\theta^{(i)}$ is now a vector whose dimension is the same as the feature vectors $\phi(x)$);
 
-___
 Since $\alpha$ is used to represent the learning rate, use $\beta$ to represent the coefficients in the representer theorem:
 
 $$
-\begin{align}
+\begin{aligned}
   \theta^{(i)}  & = \sum_{\ell=1}^i \beta_\ell \phi \left(x^{(\ell)} \right) && \text{representer theorem; substitute }\phi(x) \text{ for }x \\
                 & && \phi \left(x^{(\ell)} \right)\text{ cannot be calculated explicitly,} \\
                 & && \text{but it doesn't need to be, as seen below} \\
   \text{initial value } \theta^{(0)} & \text{ is the empty sum above}
-\end{align}
+\end{aligned}
 $$
-
-___
 
 **(b)** How you will efficiently make a prediction on a new input $x^{(i+1)}$. I.e., how you will compute $h_{\theta^{(i)}} \left(x^{(i+1)} \right) = g \left(\theta^{(i)T} \phi \left(x^{(i+1)} \right) \right)$, using your representation of $\theta^{(i)}$; and
 
-___
-
 $$
-\begin{align}
+\begin{aligned}
 h_{\theta^{(i)}} \left(x^{(i+1)} \right)  & = g \left( \theta^{(i)T} \phi \left(x^{(i+1)} \right)\right) \\
                                           & = g \left( \sum_{\ell=1}^i \beta_\ell \phi \left(x^{(\ell)} \right)^T \phi \left(x^{(i+1)} \right)\right) \\
                                           & = g \left( \sum_{\ell=1}^i \beta_\ell K \left(x^{(\ell)}, x^{(i+1)} \right)  \right)
-\end{align}
+\end{aligned}
 $$
-
-___
 
 **(c)** How you will modify the update rule given above to perform an update to $\theta$ on a new training example $\left(x^{(i+1)}, y^{(i+1)} \right)$; i.e., using the update rule corresponding to the feature mapping $\phi$:
 
@@ -173,25 +152,21 @@ $$
 $$
 [Hint: our discussion of the representer theorem may be useful.]
 
-___
-
 $$
-\begin{align}
+\begin{aligned}
 \theta^{(i+1)}  & = \sum_{\ell=1}^{i+1} \beta_\ell \phi \left(x^{(\ell)} \right) && \text{from part a} \\
                 & = \theta^{(i)} + \beta_{i+1} \phi \left(x^{(i+1)} \right) && \text{the update is the previous } \theta \\
                 &&& \text{plus the next training example weighted by } \beta_{(i+1)} \\
                 & = \theta^{(i)} + \alpha \left(y^{(i)} - h_{\theta^{(i)}} \left(\phi \left(x^{(i+1)} \right) \right) \right) \phi \left(x^{(i)} \right) && \text{perceptron update rule? } h_{\theta^{(i)}} \text{ is calculated as in part b}
-\end{align}
+\end{aligned}
 $$
 
 Update rule:
 $$
-\begin{align}
+\begin{aligned}
 \theta \gets \theta + \alpha \left(y^{(i)}- h_\theta \left(\phi \left(x^{(i)} \right) \right) \right) \phi\left(x^{(i)} \right)
-\end{align}
+\end{aligned}
 $$
-
-___
 
 ### **3. Spam classification**
 
@@ -217,11 +192,7 @@ Train your parameters using the document-word matrix in `MATRIX.TRAIN`, and then
 
 **Remark.** If you implement naive Bayes the straightforward way, you’ll find that the computed $p(x \mid y) = \prod_i p(x_i \mid y)$ often equals zero. This is because $p(x_i \mid y)$, which is the product of many numbers less than one, is a very small number. The standard computer representation of real numbers cannot handle numbers that are too small, and instead rounds them off to zero. (This is called "underflow.") You’ll have to find a way to compute naive Bayes’ predicted class labels without explicitly representing very small numbers such as $p(x_i \mid y)$. [Hint: Think about using logarithms.]
 
-___
-
 Test set error = 1.625%. See python notebook `ps2-3.ipynb`.
-
-___
 
 **(b)** Intuitively, some tokens may be particularly indicative of an email being in a particular class. We can try to get an informal sense of how indicative token $i$ is for the SPAM class by looking at:
 
@@ -230,21 +201,13 @@ $$
 $$
 Using the parameters fit in part (a), find the 5 tokens that are most indicative of the SPAM class (i.e., have the highest positive value on the measure above). The numbered list of tokens in the file `TOKENS_LIST` should be useful for identifying the words/tokens.
 
-___
-
 Top 5 predictive tokens: 'httpaddr', 'spam', 'unsubscrib', 'ebai', 'valet'. See python notebook `ps2-3.ipynb`.
 
-___
-
 **(c)** Repeat part (a), but with training sets of size ranging from 50, 100, 200, ... , up to 1400, by using the files `MATRIX.TRAIN.*`. Plot the test error each time (use `MATRIX.TEST` as the test data) to obtain a learning curve (test set error vs. training set size). You may need to change the call to `readMatrix` in `nb_train.m` to read the correct file each time. Which training-set size gives the best test set error?
-
-___
 
 <center>![](figures/ps2-3c.png)</center>
 
 The lowest test set error is observed for the largest training set (1400 examples). See python notebook `ps2-3.ipynb`.
-
-___
 
 **(d)** Train an SVM on this dataset using stochastic gradient descent and the radial basis function (also known as the Gaussian) kernel, which sets
 $$
@@ -268,21 +231,11 @@ The output of your training code, which you should implement in `svm_test.m`, sh
 
 **(e)** How do naive Bayes and Support Vector Machines compare (in terms of generalization error) as a function of the training set size?
 
-___
-
-
-
-
-
-___
-
 ### **4. Properties of the VC dimension**
 
 In this problem, we investigate a few properties of the Vapnik-Chervonenkis dimension, mostly relating to how $\text{VC}(H)$ increases as the set $H$ increases. For each part of this problem, you should state whether the given statement is true, and justify your answer with either a formal proof or a counter-example.
 
 **(a)** Let two hypothesis classes $H_1$ and $H_2$ satisfy $H_1 \subseteq H_2$. Prove or disprove: $\text{VC}\left(H_1 \right) \leq \text{VC}\left(H_2 \right)$.
-
-___
 
 True.
 
@@ -291,11 +244,7 @@ True.
   - Since $H_1$ is contained within $H_2$, $H_2$ also shatters $d$.
   - Therefore, $\text{VC}\left(H_1 \right) \leq \text{VC}\left(H_2 \right)$.
 
-___
-
 **(b)** Let $H_1 = H_2 \cup \left\{h_1, \dots, h_k \right\}$. (I.e., $H_1$ is the union of $H_2$ and some set of $k$ additional hypotheses.) Prove or disprove: $\text{VC}\left(H_1\right) \leq \text{VC} \left(H_2 \right) + k$. [Hint: You might want to start by considering the case of $k=1$.]
-
-___
 
 True.
 
@@ -307,32 +256,27 @@ True.
       - Define $H^\prime: H_1 \backslash \{h_1\}$.
           - $H^\prime$ achieves all possible labelings on $S^\prime \equiv S_1 \backslash \{x\}$, i.e. $H^\prime$ shatters $S^\prime$
       - then,
-      
+
       $$
-      \begin{align}
+      \begin{aligned}
       \text{VC}\left(H^\prime \right) & \geq \left\lvert S^\prime \right\rvert && \text{since } H^\prime \text{ shatters the set } S^\prime, \text{VC}(H^\prime) \text{ is at least the size of } S^\prime  \\
       \text{VC}\left(H^\prime \right) & \geq d-1
-      \end{align}
+      \end{aligned}
       $$
-      
+
       $$
-      \begin{align}
+      \begin{aligned}
       H^\prime & \subseteq H_2 \\
       \text{VC}\left(H^\prime \right) & \leq \text{VC} \left(H_2 \right) && \text{from part a} \\
       d-1 & \leq \text{VC} \left(H_2 \right) &&\text{VC}\left(H^\prime \right) \geq d-1\\
       \text{VC}\left(H_1 \right) - 1 & \leq \text{VC} \left(H_2 \right) && \text{VC}\left(H_1 \right) \equiv d \\
       \text{VC}\left(H_1 \right) & \leq \text{VC}\left(H_2 \right) + 1
-      \end{align}
+      \end{aligned}
       $$
 
 (At first I thought the answer was obviously false, until I understood the difference between a hypothesis and a hypothesis class. A single hypothesis can't shatter a set, since it only realizes one set of labels on the set. I didn't get this until after I looked at the solutions, so this answer is pretty much from the solutions.)
 
-___
-
-
 **(c)** Let $H_1 = H_2 \cup H_3$. Prove or disprove: $\text{VC} \left(H_1 \right) \leq \text{VC} \left(H_2 \right) + \text{VC} \left(H_3 \right)$.
-
-___
 
 False.
 
@@ -340,8 +284,6 @@ False.
       - $\text{VC}\left(H_3 \right) \leq \left\lvert H_3 \right\rvert$, since a hypothesis class cannot shatter a set larger than the number of hypotheses in the hypothesis class
       - if $\text{VC}\left(H_3 \right) = k$, then the statement is true
       - however, if $\text{VC}\left(H_3 \right) < k$, then the statement is not necessarily true
-
-___
 
 ### **5. Training and testing on different distributions**
 
@@ -359,22 +301,17 @@ Note that $\varepsilon_0(h)$ is the generalization error with respect to the "cl
 
 **(a)** For any hypothesis $h$, the quantity $\varepsilon_0(h)$ can be calculated as a function of $\varepsilon_\tau(h)$ and $\tau$. Write down a formula for $\varepsilon_0(h)$ in terms of $\varepsilon_\tau(h)$ and $\tau$, and justify your answer.
 
-___
-
 An error in the 'corrupted' distribution occurs if a classification error was made on the original distribution and the label was not inverted, or if classification was correct on the original distribution but the label was inverted. Therefore,
 
 $$
-\begin{align}
+\begin{aligned}
 \varepsilon_\tau & = \left(\text{error on } \mathcal{D} \right) \left(\text{label not inverted} \right) + \left(  \text{no error on } \mathcal{D}\right) \left(\text{label inverted} \right) \\
 \varepsilon_\tau & = \varepsilon_0 \left(1-\tau \right) + \left(1-\varepsilon_0 \right) \tau \\
 \varepsilon_\tau & = \varepsilon_0 - \tau \varepsilon_0 + \tau - \tau \varepsilon_0 \\
 \varepsilon_\tau & = \varepsilon_0 \left(1-2 \tau \right)  + \tau \\
 \varepsilon_0 & = \frac{\varepsilon_\tau - \tau}{1 - 2\tau}
-\end{align}
+\end{aligned}
 $$
-
-
-___
 
 **(b)** Let $\lvert H \rvert$ be finite, and suppose our training set $S = \left\{\left(x^{(i)}, y^{(i)} \right); i= 1, \dots, m \right\}$ is obtained by drawing $m$ examples IID from the corrupted distribution $\mathcal{D}_\tau$. Suppose we pick $h \in H$ using empirical risk minimization: $\hat{h} = \arg \min_{h \in H} \hat{\varepsilon}_S(h)$. Also, let $h^* = \arg \min_{h \in H} \varepsilon_0(h)$.
 
@@ -390,10 +327,8 @@ $$
 m \geq \frac{1}{2(1-2\tau)^2 \gamma^2} \log \frac{2 \lvert H \rvert}{ \delta}.
 $$
 
-___
-
 $$
-\begin{align}
+\begin{aligned}
 \varepsilon_0 \left(\hat{h} \right) & = \frac{\varepsilon_\tau \left(\hat{h} \right) - \tau}{1-2\tau} \\
                                     & \leq \frac{\hat{\varepsilon}_\tau \left(\hat{h} \right) + \bar{\gamma}- \tau}{1-2\tau} \hspace{1em}\text{ w.p. } \left(1-\delta \right) && \left\lvert \varepsilon_\tau \left(\hat{h} \right) - \hat{\varepsilon}_\tau\left(\hat{h} \right)\right\rvert \leq \bar{\gamma}   \text{ by Hoeffding ineq.}\\
                                     & \leq \frac{\hat{\varepsilon}_\tau \left(h^* \right) + \bar{\gamma}- \tau}{1-2\tau} \hspace{1em} \text{ w.p. } \left(1-\delta \right) && \hat{\varepsilon}_\tau \left(\hat{h} \right) \leq \hat{\varepsilon}_\tau \left(h^* \right), \text{ i.e. train err. } < \text{ generalization err.} \\
@@ -401,31 +336,24 @@ $$
                                     & \leq \frac{\left(1-2\tau \right)\varepsilon_0 \left(h^* \right) + \tau + 2 \bar{\gamma}-\tau}{1-2\tau} \hspace{1em} \text{w.p. } \left(1-\delta \right) && \varepsilon_\tau\left(h^* \right) = \left(1-2\tau \right) \varepsilon_0 \left(h^* \right) + \tau \text{ (from part a)} \\
                                     & \leq \varepsilon_0 \left(h^* \right) + \frac{2 \bar{\gamma}}{1-2\tau} \hspace{1em} \text{w.p. } \left(1-\delta \right) \\
 \varepsilon_0 \left(\hat{h} \right) & \leq \varepsilon_0 \left(h^* \right) + 2 \gamma \hspace{1em} \text{w.p. }\left(1-\delta \right) && \text{letting } \bar{\gamma} = \gamma\left(1-2\tau \right), \text{ where } \delta = 2\lvert H\rvert \exp \left(-2 \bar{\gamma}^2 m \right)
-\end{align}
+\end{aligned}
 $$
 
 $$
-\begin{align}
+\begin{aligned}
 \delta & = 2\lvert H\rvert \exp \left(-2 \bar{\gamma}^2 m \right) \\
 \delta & = 2\lvert H\rvert \exp \left(-2 \left(\gamma \left(1-2\tau \right) \right)^2 m \right) && \bar{\gamma} = \gamma\left(1-2\tau \right) \\
 \frac{\delta}{2\lvert H\rvert} & = \exp \left(-2 \left(\gamma \left(1-2\tau \right) \right)^2 m \right) \\
 \log\frac{\delta}{2\lvert H\rvert} & = -2 \left(\gamma \left(1-2\tau \right) \right)^2 m \\
 m & \geq \frac{1}{2  \left(1-2\tau \right)^2\gamma^2} \log \frac{2\lvert H\rvert}{\delta}
-\end{align}
+\end{aligned}
 $$
 
-___
-
-
-**Remark.** This result suggests that, roughly, $m$ examples that have been corrupted at noise level $\tau$ are worth about as much as $(1-2\tau)^2m$ uncorrupted training examples. This is a useful rule-of-thumb to know if you ever need to decide whether/how much to pay for a more reliable source of training data. (If you've taken a class in information theory, you may also have heard that $\left(1-\mathcal{H}(\tau) \right) m$ is a good estimate of the information in the $m$ corrupted examples, where $\mathcal{H}(\tau) = -\left( \tau \log_2 \tau + \left(1-\tau \right) \log_2 \left(1-\tau \right) \right)$ is the "binary entropy" function. And indeed, the functions $(1-2\tau)^2$ and $1-\mathcal{H}(\tau)$ are quite close to each other.) 
+**Remark.** This result suggests that, roughly, $m$ examples that have been corrupted at noise level $\tau$ are worth about as much as $(1-2\tau)^2m$ uncorrupted training examples. This is a useful rule-of-thumb to know if you ever need to decide whether/how much to pay for a more reliable source of training data. (If you've taken a class in information theory, you may also have heard that $\left(1-\mathcal{H}(\tau) \right) m$ is a good estimate of the information in the $m$ corrupted examples, where $\mathcal{H}(\tau) = -\left( \tau \log_2 \tau + \left(1-\tau \right) \log_2 \left(1-\tau \right) \right)$ is the "binary entropy" function. And indeed, the functions $(1-2\tau)^2$ and $1-\mathcal{H}(\tau)$ are quite close to each other.)
 
 **(c)** Comment **briefly** on what happens as $\tau$ approaches $0.5$.
 
-___
-
 As $\tau \rightarrow 0.5$, the number of samples $m$ needed for the guarantee in part b goes to infinity. This makes sense since at $\tau=0.5$, the labels of the training data are assigned randomly.
-
-___
 
 ### **6. Boosting and high energy physics**
 
@@ -453,7 +381,7 @@ $$
 \sum_{i=1}^m p_i \mathbf{1} \left\{y^{(i)} \neq \phi_{s, +} \left(x^{(i)} \right) \right\} \leq \frac{1}{2} - \gamma \hspace{1em} \text{or} \hspace{1em} \sum_{i=1}^m p_i \mathbf{1} \left\{y^{(i)} \neq \phi_{s, -}\left(x^{(i)} \right) \right\} \leq \frac{1}{2} - \gamma
 $$
 
-For simplicity, we assume that all of the $x^{(i)}$ are *distinct*, so that none of them are equal. We also assume (without loss of generality, but this makes the problem notationally simpler) that 
+For simplicity, we assume that all of the $x^{(i)}$ are *distinct*, so that none of them are equal. We also assume (without loss of generality, but this makes the problem notationally simpler) that
 
 $$
 x^{(1)} > x^{(2)} > \cdots > x^{(m)}.
@@ -472,18 +400,12 @@ $$
 
 Treat sums over empty sets of indices as zero, so that $\sum_{i=1}^0 a_i = 0$ for any $a_i$, and similarly $\sum_{i = m+1}^m a_i = 0$.
 
-___
-
-
-
-___
-
 **(b)** Define, for each $m_0 \in \left\{ 0, 1, \dots, m \right\}$,
 
 $$
 f\left(m_0\right) = \sum_{i=1}^{m_0} y^{(i)}p_i - \sum_{i=m_0+1}^m y^{(i)}p_i.
 $$
-Show that there exists *some* $\gamma > 0$, which may depend on the training set size $m$ (but should not depend on $p$), such that for any set of probabilities $p$ on the training set, where $p_i \geq 0$ and $\sum_{i=1}^m p_i = 1$, we can find $m_0$ with 
+Show that there exists *some* $\gamma > 0$, which may depend on the training set size $m$ (but should not depend on $p$), such that for any set of probabilities $p$ on the training set, where $p_i \geq 0$ and $\sum_{i=1}^m p_i = 1$, we can find $m_0$ with
 
 $$
 \left\lvert f\left(m_0\right) \right\rvert \geq 2 \gamma.
@@ -492,11 +414,6 @@ What is your $\gamma$?
 
 (*Hint:* Consider the difference $f(m_0) - f(m_0 + 1)$.)
 
-___
-
-
-___
-
 **(c)** Based on your answer to part (6b), what edge can thresholded decision stumps guarantee on any training set $\left\{x^{(i)}, y^{(i)} \right\}_{i=1}^m$, where the raw attributes $x^{(i)} \in \mathbb{R}$ are all distinct? Recall that the edge of a weak classifier $\phi: \mathbb{R} \rightarrow \left\{-1, 1 \right\}$ is the constant $\gamma \in \left[0, \frac{1}{2} \right]$ such that
 
 $$
@@ -504,10 +421,5 @@ $$
 $$
 
 Can you give an upper bound on the number of thresholded deicision stumps required to achieve zero error on a given training set?
-
-___
-
-
-___
 
 **(d)**
